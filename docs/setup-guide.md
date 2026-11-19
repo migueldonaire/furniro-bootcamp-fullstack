@@ -45,7 +45,7 @@ Netlify no despliega imágenes Docker, solo ficheros estáticos. Por eso la API 
 
 | Fichero | Qué hace |
 |---|---|
-| `.github/workflows/ci.yml` | Checks de la PR: `pr-size`, `htmlhint`, `api`, `web (shop)`, `web (backoffice)`, `sonar`, `secrets` |
+| `.github/workflows/ci.yml` | Checks de la PR. Solo revisa las carpetas que cambia la PR (`api`, `shop`, `backoffice`, `database`); `pr-size` y `secrets` van siempre. Al final, `ci-ok` resume todo |
 | `.github/workflows/staging.yml` | Push a `main`: imagen `sha-<commit>`, despliegue en staging y OWASP ZAP |
 | `.github/workflows/release.yml` | Botón: versión a producción |
 | `.github/workflows/deploy.yml` | Lo usan los dos anteriores. También es el botón de rollback |
@@ -87,7 +87,7 @@ No lo he metido en el setup porque es la tarjeta **C2** (iniciar sesión), que s
 **Settings → Code, planning, and automation → Rulesets → New branch ruleset**, sobre la rama por defecto:
 
 - Require a pull request before merging (1 aprobación: la de otra pareja o la tuya).
-- Require status checks to pass: `pr-size`, `htmlhint`, `api`, `web (shop)`, `web (backoffice)`, `secrets`. Añade `sonar` cuando lo actives.
+- Require status checks to pass: **solo `ci-ok`**. Es el check que resume los demás: sale en verde si todo lo que tenía que pasar ha pasado. Así una PR que solo toca `shop/` no se queda esperando al check de la API, que se ha saltado.
 - Block force pushes.
 
 Los checks solo aparecen en el buscador después de que hayan corrido una vez (por ejemplo, en esta PR).
