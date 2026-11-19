@@ -9,7 +9,7 @@ Tienda online de muebles del bootcamp Full Stack. Monorepo con cuatro carpetas:
 | `backoffice/` | Panel de administración, mismo stack | `npm run dev` (5174), `npm run lint`, `npm test` |
 | `database/` | `schema.sql` y `seed.sql` (datos de prueba) | `docker compose up -d` en la raíz |
 
-Documentación: `docs/class-diagram.md` (modelo), `docs/backlog.md` (tarjetas y dependencias), `docs/setup-guide.md` (CI/CD).
+Documentación: `docs/how-we-work.md` (cómo trabajamos), `docs/class-diagram.md` (modelo), `docs/backlog.md` (tarjetas y dependencias), `docs/setup-guide.md` (CI/CD).
 
 ## Normas
 

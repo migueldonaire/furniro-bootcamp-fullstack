@@ -45,4 +45,4 @@ Usuarios de prueba (contraseña `Furniro123`): `luis@furniro.com` (administrador
 6. Espera a que los checks salgan en verde y a la revisión. Corrige y vuelve a subir.
 7. Cuando se fusione, tu cambio sale solo en staging.
 
-Las normas del proyecto (también para la IA) están en [`CLAUDE.md`](CLAUDE.md).
+Todas las normas, explicadas: [`docs/how-we-work.md`](docs/how-we-work.md). Las normas para la IA están en [`CLAUDE.md`](CLAUDE.md).
