@@ -1,0 +1,160 @@
+# CI: runs on every pull request to main (and on every push to main).
+# Each job is a "check" with ✅ or ❌ in the PR. The ruleset of main requires them.
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true # a new push to the PR cancels the old run
+
+jobs:
+  # Check: small PRs. Over 400 changed lines (without package-lock.json) fails.
+  # The teacher can add the label "big-pr" to let a big PR pass.
+  pr-size:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Count changed lines
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          BIG_PR: ${{ contains(github.event.pull_request.labels.*.name, 'big-pr') }}
+        run: |
+          LINES=$(git diff --numstat "$BASE" "$HEAD" -- . ':(exclude)**/package-lock.json' \
+            | awk '{ added += $1; removed += $2 } END { print added + removed + 0 }')
+          echo "Changed lines: $LINES"
+          echo "### Tamaño de la PR: $LINES líneas" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$LINES" -gt 400 ] && [ "$BIG_PR" != "true" ]; then
+            echo "::error::La PR cambia $LINES líneas (máximo 400). Pártela en PRs más pequeñas."
+            exit 1
+          fi
+
+  # Check: the HTML of the two webs
+  htmlhint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+      - name: HTMLHint
+        run: npx --yes htmlhint@1 "shop/**/*.html" "backoffice/**/*.html" --ignore "**/node_modules/**,**/dist/**,**/coverage/**"
+
+  # Check: the API (NestJS)
+  api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Dependency audit (npm audit)
+        run: npm audit --audit-level=high --omit=dev
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Unit tests with coverage
+        run: npm test -- --coverage
+      - name: Save coverage for Sonar
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-api
+          path: api/coverage/lcov.info
+      - name: Build the Docker image
+        run: docker build -t furniro-api:ci .
+      - name: Scan the image with Trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: furniro-api:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+
+  # Check: the two webs (React). One job for each: "web (shop)" and "web (backoffice)"
+  web:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [shop, backoffice]
+    defaults:
+      run:
+        working-directory: ${{ matrix.app }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Dependency audit (npm audit)
+        run: npm audit --audit-level=high --omit=dev
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Tests with coverage
+        run: npx vitest run --coverage
+      - name: Save coverage for Sonar
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-${{ matrix.app }}
+          path: ${{ matrix.app }}/coverage/lcov.info
+
+  # Check: code quality with SonarQube Cloud (OSS plan, public repo).
+  # It is skipped until the variable SONAR_ENABLED is "true" (see docs/setup-guide.md).
+  sonar:
+    needs: [api, web]
+    if: vars.SONAR_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Sonar needs the full history
+      - name: Download the coverage of the three projects
+        uses: actions/download-artifact@v5
+        with:
+          pattern: coverage-*
+          path: coverage
+      - name: Fix the paths of the reports (src/x.ts -> api/src/x.ts)
+        run: |
+          for app in api shop backoffice; do
+            sed -i "s#^SF:src/#SF:$app/src/#" "coverage/coverage-$app/lcov.info"
+          done
+      - name: SonarQube Cloud analysis
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # Check: nobody uploads passwords or tokens (Gitleaks)
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Look for secrets with Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

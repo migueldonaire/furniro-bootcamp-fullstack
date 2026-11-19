@@ -1,2 +1,48 @@
-# furniro-clase-fullstack
-Proyecto de los alumnos del bootcamp fullstack valencia 
+# Furniro
+
+Tienda online de muebles del bootcamp Full Stack de Valencia.
+
+| Carpeta | Qué es |
+|---|---|
+| [`api/`](api) | API en NestJS + PostgreSQL |
+| [`shop/`](shop) | Tienda (React) |
+| [`backoffice/`](backoffice) | Panel de administración (React) |
+| [`database/`](database) | Tablas y datos de prueba (SQL) |
+| [`docs/`](docs) | Diagrama de clases, backlog y guía de CI/CD |
+
+## Arrancar en local
+
+Necesitas Node.js 24 y Docker Desktop.
+
+```bash
+docker compose up -d          # PostgreSQL con los datos de prueba
+
+cd api
+cp .env.example .env
+npm install
+npm run start:dev             # http://localhost:3000/docs
+
+cd ../shop                    # en otra terminal
+cp .env.example .env
+npm install
+npm run dev                   # http://localhost:5173
+
+cd ../backoffice              # en otra terminal
+cp .env.example .env
+npm install
+npm run dev                   # http://localhost:5174
+```
+
+Usuarios de prueba (contraseña `Furniro123`): `luis@furniro.com` (administrador), `ana@mail.com` y `pedro@mail.com` (clientes).
+
+## Cómo trabajamos
+
+1. Coge tu tarjeta en Jira y muévela a "En curso".
+2. Crea tu rama: `git switch -c feature/<funcionalidad>`.
+3. Programa dentro de tu carpeta (mira [`docs/backlog.md`](docs/backlog.md)).
+4. Antes de subir: `npm run lint` y `npm test` en la carpeta que hayas tocado.
+5. Abre una PR pequeña (menos de 400 líneas). Rellena la plantilla.
+6. Espera a que los checks salgan en verde y a la revisión. Corrige y vuelve a subir.
+7. Cuando se fusione, tu cambio sale solo en staging.
+
+Las normas del proyecto (también para la IA) están en [`CLAUDE.md`](CLAUDE.md).

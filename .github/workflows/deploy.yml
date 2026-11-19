@@ -1,0 +1,109 @@
+# Deploys ONE version to ONE environment (staging or production).
+# staging.yml and release.yml use it, and it has a button for rollbacks:
+#   Actions -> deploy -> Run workflow -> environment + version
+name: deploy
+
+on:
+  workflow_dispatch: # the button: rollback or deploy again
+    inputs:
+      environment:
+        description: "Environment"
+        type: environment
+        required: true
+      version:
+        description: "Version already released, e.g. 1.2.0 (it must have its tag v1.2.0)"
+        type: string
+        required: true
+  workflow_call: # used by staging.yml and release.yml
+    inputs:
+      environment:
+        type: string
+        required: true
+      version: # what the user sees: 1.2.0 or staging-abc1234
+        type: string
+        required: true
+      image-tag: # tag of the image in Docker Hub: 1.2.0 or sha-<commit>
+        type: string
+        required: true
+      ref: # commit or tag to build the webs from
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ vars.API_URL }}/health
+    steps:
+      - name: Ask Render to deploy the image
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+          IMAGE: docker.io/${{ vars.DOCKERHUB_USERNAME }}/furniro-api:${{ inputs.image-tag || inputs.version }}
+        run: curl -fsS -X POST "$HOOK&imgURL=$(jq -rn --arg v "$IMAGE" '$v|@uri')"
+
+      - name: Smoke test (is the new version online?)
+        env:
+          URL: ${{ vars.API_URL }}/health
+          VERSION: ${{ inputs.version }}
+        run: |
+          for i in $(seq 1 40); do
+            if [ "$(curl -fsS "$URL" | jq -r .version || true)" = "$VERSION" ]; then
+              echo "OK: API $VERSION is online"
+              exit 0
+            fi
+            echo "Waiting for Render... ($i/40)"
+            sleep 15
+          done
+          echo "::error::API $VERSION does not answer at $URL"
+          exit 1
+
+  web:
+    needs: api # the webs go after the API they use
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        app: [shop, backoffice]
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || format('v{0}', inputs.version) }}
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ${{ matrix.app }}/package-lock.json
+      - name: Build the web for this environment
+        working-directory: ${{ matrix.app }}
+        env:
+          VITE_API_URL: ${{ vars.API_URL }}
+          VITE_APP_VERSION: ${{ inputs.version }}
+        run: |
+          npm ci
+          npm run build
+      - name: Upload it to Netlify
+        working-directory: ${{ matrix.app }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          SITE_ID: ${{ matrix.app == 'shop' && vars.SHOP_NETLIFY_SITE_ID || vars.BACKOFFICE_NETLIFY_SITE_ID }}
+        run: npx --yes netlify-cli@27 deploy --dir=dist --prod --site="$SITE_ID" --message="${{ inputs.version }}"
+
+  summary:
+    needs: [api, web]
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    steps:
+      - name: Summary
+        run: |
+          {
+            echo "### ${{ inputs.environment }}: version ${{ inputs.version }}"
+            echo "- API: ${{ vars.API_URL }}/health"
+            echo "- Shop: ${{ vars.SHOP_URL }}"
+            echo "- Backoffice: ${{ vars.BACKOFFICE_URL }}"
+          } >> "$GITHUB_STEP_SUMMARY"
