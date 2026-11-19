@@ -5,6 +5,8 @@ name: ci
 on:
   pull_request:
     branches: [main]
+    # labeled/unlabeled: so that adding the label "big-pr" runs the checks again
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   push:
     branches: [main]
 
