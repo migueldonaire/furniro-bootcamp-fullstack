@@ -1,5 +1,5 @@
 # Stage 1: compile TypeScript
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
@@ -8,13 +8,13 @@ COPY src ./src
 RUN npm run build
 
 # Stage 2: only the production dependencies
-FROM node:24-alpine AS deps
+FROM node:26-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci --omit=dev
 
 # Stage 3: only what is needed to run
-FROM node:24-alpine
+FROM node:26-alpine
 # Alpine security patches (Trivy) and no npm: the API does not need it to start
 RUN apk upgrade --no-cache \
     && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
