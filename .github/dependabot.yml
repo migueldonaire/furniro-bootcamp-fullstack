@@ -1,0 +1,18 @@
+# Dependabot opens PRs to update dependencies once a week
+version: 2
+updates:
+  - package-ecosystem: npm
+    directories: ["/api", "/shop", "/backoffice"]
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+
+  - package-ecosystem: docker
+    directory: /api
+    schedule:
+      interval: weekly

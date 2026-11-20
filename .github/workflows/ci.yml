@@ -1,0 +1,279 @@
+# CI: runs on every pull request to main (and on every push to main).
+# Each PR only checks the folders it changes (api, shop, backoffice, database).
+# The ruleset of main only requires ONE check: "ci-ok". It is green when every
+# job that had to run passed (the skipped ones do not block).
+name: ci
+
+on:
+  pull_request:
+    branches: [main]
+    # labeled/unlabeled: so that adding the label "big-pr" runs the checks again
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true # a new push to the PR cancels the old run
+
+jobs:
+  # Which folders has this PR changed? The other jobs read the answer.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      api: ${{ steps.filter.outputs.api }}
+      shop: ${{ steps.filter.outputs.shop }}
+      backoffice: ${{ steps.filter.outputs.backoffice }}
+      database: ${{ steps.filter.outputs.database }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Look at the changed files
+        id: filter
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [ "$EVENT" != "pull_request" ]; then
+            FILES="everything"   # push to main: check everything
+          else
+            FILES=$(git diff --name-only "$BASE" "$HEAD")
+          fi
+          echo "$FILES"
+          # A change in the CI itself also checks everything
+          ALL=false
+          if [ "$FILES" = "everything" ] || echo "$FILES" | grep -q '^\.github/workflows/ci\.yml$'; then
+            ALL=true
+          fi
+          for folder in api shop backoffice database; do
+            if [ "$ALL" = true ] || echo "$FILES" | grep -q "^$folder/"; then
+              echo "$folder=true" >> "$GITHUB_OUTPUT"
+              echo "- $folder: yes" >> "$GITHUB_STEP_SUMMARY"
+            else
+              echo "$folder=false" >> "$GITHUB_OUTPUT"
+              echo "- $folder: no changes, skipped" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+
+  # Small PRs. Over 400 changed lines (without package-lock.json) fails.
+  # The teacher can add the label "big-pr" to let a big PR pass.
+  pr-size:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Count changed lines
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+          BIG_PR: ${{ contains(github.event.pull_request.labels.*.name, 'big-pr') }}
+        run: |
+          LINES=$(git diff --numstat "$BASE" "$HEAD" -- . ':(exclude)**/package-lock.json' \
+            | awk '{ added += $1; removed += $2 } END { print added + removed + 0 }')
+          echo "Changed lines: $LINES"
+          echo "### Tamaño de la PR: $LINES líneas" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$LINES" -gt 400 ] && [ "$BIG_PR" != "true" ]; then
+            echo "::error::La PR cambia $LINES líneas (máximo 400). Pártela en PRs más pequeñas."
+            exit 1
+          fi
+
+  # The API (NestJS)
+  api:
+    needs: changes
+    if: needs.changes.outputs.api == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Dependency audit (npm audit)
+        run: npm audit --audit-level=high --omit=dev
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Unit tests with coverage
+        run: npm test -- --coverage
+      - name: Save coverage for Sonar
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-api
+          path: api/coverage/lcov.info
+      - name: Build the Docker image
+        run: docker build -t furniro-api:ci .
+      - name: Scan the image with Trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: furniro-api:ci
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
+
+  # The shop (React)
+  shop:
+    needs: changes
+    if: needs.changes.outputs.shop == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: shop
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: shop/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Dependency audit (npm audit)
+        run: npm audit --audit-level=high --omit=dev
+      - name: HTMLHint
+        run: npx --yes htmlhint@1 "**/*.html" --ignore "node_modules/**,dist/**,coverage/**"
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Tests with coverage
+        run: npx vitest run --coverage
+      - name: Save coverage for Sonar
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-shop
+          path: shop/coverage/lcov.info
+
+  # The backoffice (React). Same steps as the shop.
+  backoffice:
+    needs: changes
+    if: needs.changes.outputs.backoffice == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backoffice
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: backoffice/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Dependency audit (npm audit)
+        run: npm audit --audit-level=high --omit=dev
+      - name: HTMLHint
+        run: npx --yes htmlhint@1 "**/*.html" --ignore "node_modules/**,dist/**,coverage/**"
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Tests with coverage
+        run: npx vitest run --coverage
+      - name: Save coverage for Sonar
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-backoffice
+          path: backoffice/coverage/lcov.info
+
+  # The SQL: loads schema.sql and seed.sql into an empty PostgreSQL 17
+  database:
+    needs: changes
+    if: needs.changes.outputs.database == 'true'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: furniro
+          POSTGRES_PASSWORD: furniro_ci
+          POSTGRES_DB: furniro
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U furniro"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v7
+      - name: Load schema.sql and seed.sql
+        env:
+          PGPASSWORD: furniro_ci
+        run: |
+          psql -h localhost -U furniro -d furniro -v ON_ERROR_STOP=1 -q \
+            -f database/schema.sql -f database/seed.sql
+          psql -h localhost -U furniro -d furniro -c \
+            "SELECT (SELECT count(*) FROM users) AS users, (SELECT count(*) FROM products) AS products, (SELECT count(*) FROM orders) AS orders;"
+
+  # Code quality with SonarQube Cloud (OSS plan, public repo).
+  # Skipped until the variable SONAR_ENABLED is "true" (see docs/setup-guide.md).
+  sonar:
+    needs: [api, shop, backoffice]
+    if: >-
+      always() && vars.SONAR_ENABLED == 'true'
+      && !contains(needs.*.result, 'failure') && !contains(needs.*.result, 'cancelled')
+      && contains(needs.*.result, 'success')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Sonar needs the full history
+      - name: Download the coverage of the projects that ran
+        uses: actions/download-artifact@v5
+        with:
+          pattern: coverage-*
+          path: coverage
+      - name: Fix the paths of the reports (src/x.ts -> api/src/x.ts)
+        run: |
+          for app in api shop backoffice; do
+            FILE="coverage/coverage-$app/lcov.info"
+            if [ -f "$FILE" ]; then sed -i "s#^SF:src/#SF:$app/src/#" "$FILE"; fi
+          done
+      - name: SonarQube Cloud analysis
+        uses: SonarSource/sonarqube-scan-action@v8
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  # Nobody uploads passwords or tokens (Gitleaks). Always runs.
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Look for secrets with Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # THE check the ruleset requires. Green if nothing failed (skipped = OK).
+  ci-ok:
+    needs: [changes, pr-size, api, shop, backoffice, database, sonar, secrets]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Did every job that ran pass?
+        env:
+          RESULTS: ${{ join(needs.*.result, ' ') }}
+        run: |
+          echo "Results: $RESULTS"
+          if echo "$RESULTS" | grep -qE 'failure|cancelled'; then
+            echo "::error::Some check failed. Open the red job to see why."
+            exit 1
+          fi
+          echo "All good"
