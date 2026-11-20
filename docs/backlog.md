@@ -78,7 +78,7 @@ Para que la web y la API avancen a la vez, estas son las rutas acordadas (todas 
 | Tarjeta | Ruta | Quién puede |
 |---|---|---|
 | C1 | `POST /auth/register` | Cualquiera |
-| C2 | `POST /auth/login` → `{ accessToken, user }` y `GET /auth/me` | Cualquiera / con token |
+| C2 | `POST /auth/login` → solo `{ accessToken }`. El usuario se pide con `GET /auth/me` | Cualquiera / con token |
 | T1, T3 | `GET /products?search=nora` (solo `ACTIVE`) | Cualquiera |
 | T2 | `GET /categories` y `GET /products?categoryId=...` | Cualquiera |
 | T4 | `GET /products/:id` | Cualquiera |

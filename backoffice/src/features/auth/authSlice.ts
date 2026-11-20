@@ -1,34 +1,31 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
-export type User = {
-  id: string;
-  name: string;
-  lastName: string;
-  email: string;
-  role: "CUSTOMER" | "ADMIN";
-};
-
+// The store only keeps the token. The user (name, email, role...) is NOT
+// saved anywhere: the app asks the API for it with GET /auth/me (authApi.ts).
 type AuthState = {
-  token: string | null;
-  user: User | null; // null = nobody has logged in
+  token: string | null; // null = nobody has logged in
 };
 
-const initialState: AuthState = { token: null, user: null };
+const initialState: AuthState = { token: null };
 
-// Ready for the login card (C2): dispatch(loggedIn({ token, user }))
+// Reducers never change the state: they return a NEW object
+// with the old values (...state) and the ones that change.
 export const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    loggedIn(state, action: PayloadAction<{ token: string; user: User }>) {
-      state.token = action.payload.token;
-      state.user = action.payload.user;
-    },
-    loggedOut(state) {
-      state.token = null;
-      state.user = null;
-    },
+    // Card C2: POST /auth/login answers { accessToken } -> dispatch(loggedIn(accessToken))
+    loggedIn: (state, action: PayloadAction<string>) => ({
+      ...state,
+      token: action.payload,
+    }),
+    // Card C3: dispatch(loggedOut()) and then dispatch(api.util.resetApiState())
+    // so that the data of the previous user (GET /auth/me...) is forgotten
+    loggedOut: (state) => ({
+      ...state,
+      token: null,
+    }),
   },
 });
 

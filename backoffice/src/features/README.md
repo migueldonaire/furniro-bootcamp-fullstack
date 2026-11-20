@@ -24,5 +24,16 @@ export const { useGetProductsQuery } = catalogApi;
 ```
 
 - Los slices ya están registrados en `app/rootReducer.ts` (auth).
+- **Reducers sin mutar**: devuelven siempre un objeto nuevo con *spread*, nunca `state.x = ...` ni `push`:
+
+```ts
+// features/cart/cartSlice.ts (ejemplo de T5)
+itemAdded: (state, action: PayloadAction<CartItem>) => ({
+  ...state,
+  items: [...state.items, action.payload],
+}),
+```
+
+- **Nada confidencial en `localStorage`**: solo se guarda el token (`app/store.ts`). El usuario se pide a la API con `useGetMeQuery()` (`features/auth/authApi.ts`).
 - Precios: usa `formatEuro` y `priceWithTax` de `lib/money.ts`.
 - Cada tarjeta lleva al menos un test (`*.test.tsx` al lado del componente).
