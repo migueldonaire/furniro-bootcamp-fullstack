@@ -234,7 +234,7 @@ jobs:
         with:
           fetch-depth: 0 # Sonar needs the full history
       - name: Download the coverage of the projects that ran
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           pattern: coverage-*
           path: coverage
