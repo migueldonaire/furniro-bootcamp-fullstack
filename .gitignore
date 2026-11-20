@@ -4,3 +4,4 @@ coverage
 .env
 .DS_Store
 .idea
+database/update-image-urls.sql
