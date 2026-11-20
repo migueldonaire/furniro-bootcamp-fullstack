@@ -6,11 +6,26 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 3
+    groups:
+      # All the @nestjs packages must have the same version: one PR for all of them
+      nestjs:
+        patterns: ["@nestjs/*"]
+    ignore:
+      # Major versions break things (NestJS 12, TypeScript 7 with ts-jest...).
+      # The teacher updates them by hand when the whole project is ready.
+      - dependency-name: "@nestjs/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    groups:
+      # upload-artifact and download-artifact go together
+      artifacts:
+        patterns: ["actions/*-artifact"]
 
   - package-ecosystem: docker
     directory: /api
