@@ -5,7 +5,6 @@
 | `schema.sql` | Las tablas (sale del diagrama de clases, `docs/class-diagram.md`) |
 | `seed.sql` | Datos de prueba: 13 usuarios, 6 categorías, 32 productos, 41 imágenes y 12 pedidos |
 | `images/` | Las fotos de los productos |
-| `scripts/upload-images.mjs` | Sube las fotos a Supabase Storage |
 
 En local no tienes que hacer nada: `docker compose up -d` (en la raíz) carga `schema.sql` y `seed.sql`.
 
@@ -23,31 +22,22 @@ https://raw.githubusercontent.com/migueldonaire/furniro-bootcamp-fullstack/main/
 
 Así funcionan desde el primer día, también en local. Solo hace falta que las imágenes estén en `main`.
 
-## Subir las imágenes a Supabase Storage
+## En Supabase (staging y producción)
 
-En staging y producción las imágenes viven en Supabase Storage. Para cada proyecto de Supabase:
+Cada entorno es un proyecto de Supabase con dos cosas:
 
-1. Carga `schema.sql` y `seed.sql` en el **SQL Editor**, como siempre.
-2. Copia el fichero de variables y rellénalo:
+- **Base de datos:** `schema.sql` y `seed.sql` cargados en el SQL Editor.
+- **Storage:** un bucket público `products` con las fotos de `images/`.
 
-```bash
-cp database/.env.example database/.env
+Al subir las fotos, las URLs de la base de datos se cambian para que apunten al bucket:
+
+```sql
+UPDATE product_images SET url = replace(url,
+  'https://raw.githubusercontent.com/migueldonaire/furniro-bootcamp-fullstack/main/database/images/',
+  'https://<ref-del-proyecto>.supabase.co/storage/v1/object/public/products/');
 ```
 
-| Variable | Dónde está en Supabase |
-|---|---|
-| `SUPABASE_URL` | Project Settings → Data API → Project URL |
-| `SUPABASE_SECRET_KEY` | Project Settings → API Keys → Secret key (o la antigua `service_role`) |
-| `SUPABASE_BUCKET` | El nombre que quieras para el bucket. Por defecto, `products` |
-
-3. Desde la raíz del repositorio:
-
-```bash
-node database/scripts/upload-images.mjs
-```
-
-El script crea el bucket (público) si no existe, sube las 41 fotos (si ya estaban, las reemplaza) y genera `database/update-image-urls.sql`.
-
-4. Pega `database/update-image-urls.sql` en el **SQL Editor** de ese mismo proyecto. Cambia las URLs de GitHub por las de Supabase y te enseña cinco para comprobarlo.
-
-La clave secreta da acceso total al proyecto: está en `database/.env`, que no se sube a GitHub. Nunca la pongas en el frontend.
+| Entorno | Proyecto de Supabase | Fotos |
+|---|---|---|
+| Staging | `furniro-staging` | `https://zkcsxazavcsgsxejipfw.supabase.co/storage/v1/object/public/products/` |
+| Producción | `furniro-prod` | Pendiente |

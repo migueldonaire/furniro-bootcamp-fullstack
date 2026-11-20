@@ -96,7 +96,7 @@ Los checks solo aparecen en el buscador después de que hayan corrido una vez (p
 
 Dos proyectos: `furniro-staging` y `furniro-prod`. En cada uno, **SQL Editor**: pega `database/schema.sql` y luego `database/seed.sql` (en producción, si quieres, solo el schema y las categorías).
 
-Después sube las imágenes de los productos a Supabase Storage con el script de `database/scripts/` y cambia sus URLs: los pasos están en [`database/README.md`](../database/README.md).
+Después crea un bucket público `products` en Storage, sube las fotos de `database/images/` y cambia sus URLs en la base de datos: el `UPDATE` está en [`database/README.md`](../database/README.md).
 
 Para la conexión usa el **Session pooler** y termina la URL en `?sslmode=no-verify` (Render no sale por IPv6 y `pg` falla con `sslmode=require`).
 
