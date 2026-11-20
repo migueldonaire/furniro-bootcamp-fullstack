@@ -40,4 +40,4 @@ UPDATE product_images SET url = replace(url,
 | Entorno | Proyecto de Supabase | Fotos |
 |---|---|---|
 | Staging | `furniro-staging` | `https://zkcsxazavcsgsxejipfw.supabase.co/storage/v1/object/public/products/` |
-| Producción | `furniro-prod` | Pendiente |
+| Producción | `furniro-prod` | `https://xfioympsjjfvlspeewbg.supabase.co/storage/v1/object/public/products/` |
