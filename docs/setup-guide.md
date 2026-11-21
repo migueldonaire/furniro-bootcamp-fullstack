@@ -110,7 +110,7 @@ Para la conexión usa el **Session pooler** y termina la URL en `?sslmode=no-ver
 Dos Web Services, `furniro-api-staging` y `furniro-api-prod`, con **Deploy an existing image**:
 
 - Imagen: `docker.io/<tu-usuario>/furniro-api:staging` (staging) y `docker.io/<tu-usuario>/furniro-api:latest` (prod). La primera vez tendrás que haber ejecutado el workflow una vez para que exista la imagen, o crear el servicio con `node:24-alpine` y cambiarla después.
-- Environment: `DATABASE_URL`, `JWT_SECRET` (uno distinto en cada entorno), `CORS_ORIGIN` (las dos URLs de Netlify de ese entorno, separadas por comas) y `SHIPPING_COST=8`.
+- Environment: `DATABASE_URL`, `JWT_SECRET` (uno distinto en cada entorno), `CORS_ORIGIN` (las dos URLs de Netlify de ese entorno, separadas por comas) y `SHIPPING_COST=8`. Solo en producción, y cuando montes Grafana Cloud: `METRICS_TOKEN` (ver [`grafana-cloud.md`](grafana-cloud.md)).
 - Settings → **Deploy Hook**: copia la URL de cada servicio.
 
 ### 4.5. Netlify (webs)
