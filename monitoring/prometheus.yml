@@ -1,0 +1,11 @@
+# Prometheus reads (scrapes) the metrics of the API every 15 seconds.
+# The API runs on your computer (npm run start:dev), not inside Docker:
+# host.docker.internal is "your computer" seen from a container.
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: furniro-api
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['host.docker.internal:3000']

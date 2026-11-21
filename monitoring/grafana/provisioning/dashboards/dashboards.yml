@@ -1,0 +1,8 @@
+# Grafana loads every dashboard (.json) from this folder when it starts
+apiVersion: 1
+providers:
+  - name: furniro
+    folder: Furniro
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards

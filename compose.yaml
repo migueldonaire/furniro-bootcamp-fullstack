@@ -16,5 +16,81 @@ services:
       - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
       - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
 
+  # Monitoring (optional): docker compose --profile monitoring up -d
+  # See monitoring/README.md
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: furniro-prometheus
+    profiles: [monitoring]
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    extra_hosts:
+      - "host.docker.internal:host-gateway" # so it also works on Linux
+
+  grafana:
+    image: grafana/grafana:12.1.0
+    container_name: furniro-grafana
+    profiles: [monitoring]
+    ports:
+      - "3001:3000" # 3000 is the API
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin # only for your computer
+      # Alert emails go to Mailpit, a fake mail server (http://localhost:8025)
+      GF_SMTP_ENABLED: "true"
+      GF_SMTP_HOST: mailpit:1025
+      GF_SMTP_FROM_ADDRESS: grafana@furniro.local
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+      - mailpit
+
+  # Catches the emails that Grafana sends: nothing leaves your computer
+  mailpit:
+    image: axllent/mailpit:v1.27
+    container_name: furniro-mailpit
+    profiles: [monitoring]
+    ports:
+      - "8025:8025"
+
+  # Logs (optional): docker compose --profile monitoring --profile logs up -d --build
+  # The API runs inside Docker, so Alloy can read its logs and send them to Loki.
+  # Stop "npm run start:dev" first: both use port 3000.
+  api:
+    build: ./api
+    container_name: furniro-api
+    profiles: [logs]
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://furniro:furniro_dev_123@postgres:5432/furniro
+      JWT_SECRET: only_for_your_computer
+      NODE_ENV: development # /metrics open, as with npm run start:dev
+      NO_COLOR: "1" # logs without colour codes
+    depends_on:
+      - postgres
+
+  loki:
+    image: grafana/loki:3.5.0
+    container_name: furniro-loki
+    profiles: [logs]
+    ports:
+      - "3100:3100"
+
+  alloy:
+    image: grafana/alloy:v1.10.0
+    container_name: furniro-alloy
+    profiles: [logs]
+    command: run /etc/alloy/config.alloy
+    volumes:
+      - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro # to read the logs of the containers
+    depends_on:
+      - loki
+
 volumes:
   furniro-data:

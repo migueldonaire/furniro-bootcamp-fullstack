@@ -33,6 +33,8 @@ npm install
 npm run dev                   # http://localhost:5174
 ```
 
+Monitorización (opcional): Prometheus, Grafana y Loki con `docker compose --profile monitoring up -d`. Mira [`monitoring/`](monitoring).
+
 Usuarios de prueba (contraseña `Furniro123`): `luis@furniro.com` (administrador), `ana@mail.com` y `pedro@mail.com` (clientes).
 
 ## Cómo trabajamos
