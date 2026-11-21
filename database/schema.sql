@@ -3,7 +3,10 @@
 -- Run it first, then seed.sql. It deletes everything and starts again.
 
 DROP TABLE IF EXISTS order_lines, order_addresses, orders,
-  product_images, products, categories, user_addresses, users CASCADE;
+  product_images, products, categories, user_addresses, user_tokens, users CASCADE;
+
+-- unaccent() removes accents: search "sofa" and find "Sofá"
+CREATE EXTENSION IF NOT EXISTS unaccent;
 
 -- Accounts of customers and administrators (one table, one role)
 CREATE TABLE users (
@@ -14,11 +17,26 @@ CREATE TABLE users (
   password_hash TEXT NOT NULL,                 -- never the plain password
   role          TEXT NOT NULL DEFAULT 'CUSTOMER'
                 CHECK (role IN ('CUSTOMER', 'ADMIN')),
-  phone         TEXT,
+  phone         TEXT NOT NULL,
+  -- New accounts wait until an admin activates them (no emails in the MVP)
+  status        TEXT NOT NULL DEFAULT 'PENDING'
+                CHECK (status IN ('PENDING', 'ACTIVE', 'INACTIVE')),
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 -- The email is unique and does not care about upper/lower case
 CREATE UNIQUE INDEX users_email_unique ON users (lower(email));
+
+-- One-use links sent by email: confirm the email and reset the password.
+-- We save the HASH of the token, never the token that goes in the link.
+CREATE TABLE user_tokens (
+  id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id    UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+  type       TEXT NOT NULL CHECK (type IN ('VERIFY_EMAIL', 'RESET_PASSWORD')),
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMPTZ NOT NULL,
+  used_at    TIMESTAMPTZ,                     -- NULL until the link is used
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
 
 -- Usual address of a user: 0 or 1 per user
 CREATE TABLE user_addresses (
@@ -68,7 +86,8 @@ CREATE UNIQUE INDEX product_images_one_primary
   ON product_images (product_id) WHERE is_primary;
 
 -- Orders. Subtotal, VAT and total are NOT stored: they are calculated from the lines.
--- Status list proposed by the designs (pending PO confirmation).
+-- Status: PENDING (paid, stock already taken) -> SHIPPED -> DELIVERED,
+-- or PENDING -> CANCELLED (only from the backoffice; gives the stock back).
 CREATE TABLE orders (
   id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id       UUID NOT NULL REFERENCES users (id),
@@ -84,6 +103,7 @@ CREATE TABLE order_addresses (
   id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   order_id    UUID NOT NULL UNIQUE REFERENCES orders (id) ON DELETE CASCADE,
   full_name   TEXT NOT NULL,
+  phone       TEXT NOT NULL,
   street      TEXT NOT NULL,
   city        TEXT NOT NULL,
   province    TEXT,
