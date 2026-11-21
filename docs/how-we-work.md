@@ -98,7 +98,7 @@ Si una tarjeta la ha escrito entera una sola persona, no cuenta como hecha.
 
 # 6. Cómo se reparten las tarjetas
 
-1. Cada pareja tiene un **carril**: un bloque del MVP (cuentas, catálogo, carrito, compra, productos o pedidos). Está en [`backlog.md`](backlog.md).
+1. Cada pareja tiene un **carril**: un bloque del MVP (acceso, catálogo, carrito, compra, productos o pedidos y clientes). Está en [`backlog.md`](backlog.md).
 2. El profesor asigna **una tarjeta** a cada pareja.
 3. Cuando la PR de esa tarjeta está fusionada, la pareja coge la siguiente de su carril.
 4. Si una pareja termina su carril, ayuda a otra o coge una tarjeta libre (hablándolo antes con el profesor).
