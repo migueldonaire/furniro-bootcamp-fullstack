@@ -6,12 +6,15 @@ import {
 import helmet from 'helmet';
 import { AllExceptionsFilter } from './common/all-exceptions.filter';
 import { requestLogger } from './common/request-logger';
+import { metricsHandler, metricsMiddleware } from './metrics/metrics';
 
 // The app configuration, in one place.
 // main.ts and the e2e tests both use it, so they behave the same.
 export function configureApp(app: INestApplication) {
   app.use(helmet()); // security headers
   app.use(requestLogger); // one console line per request
+  app.use(metricsMiddleware); // counts and times every request
+  app.use('/metrics', metricsHandler); // GET /metrics for Prometheus (outside /api)
 
   // CORS: which websites can call the API from the browser.
   // CORS_ORIGIN can hold several URLs separated by commas (shop and backoffice).
