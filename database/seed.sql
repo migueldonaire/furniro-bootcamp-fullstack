@@ -5,6 +5,8 @@
 --   Admin:    luis@furniro.com   (ADMIN)
 --   Customer: ana@mail.com       (CUSTOMER, 2 orders)
 --   Customer: pedro@mail.com     (CUSTOMER, no orders)
+--   Pending:  diego@mail.com     (CUSTOMER, PENDING: cannot log in until an admin activates it)
+--   Disabled: pablo@mail.com     (CUSTOMER, INACTIVE: disabled by an admin)
 --
 -- Products used in the user stories:
 --   "Silla Nora"         100 EUR without VAT, 21 % VAT, 5 units, category "Sillas"
@@ -19,20 +21,20 @@
 
 
 -- Users (13 accounts: 2 ADMIN, 11 CUSTOMER)
-INSERT INTO users (id, name, last_name, email, password_hash, role, phone, created_at) VALUES
-  ('a0000000-0000-4000-8000-000000000001', 'Luis', 'Martínez', 'luis@furniro.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'ADMIN', '600111222', '2026-10-01 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000002', 'Ana', 'López', 'ana@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '611223344', '2026-10-03 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000003', 'Pedro', 'García', 'pedro@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, '2026-10-05 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000004', 'Lucía', 'Fernández', 'lucia@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '622334455', '2026-10-07 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000005', 'Javier', 'Ruiz', 'javier@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, '2026-10-09 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000006', 'Marta', 'Sánchez', 'marta@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '633445566', '2026-10-11 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000007', 'Carlos', 'Gómez', 'carlos@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, '2026-10-13 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000008', 'Elena', 'Díaz', 'elena@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '644556677', '2026-10-15 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000009', 'Pablo', 'Moreno', 'pablo@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, '2026-10-17 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000010', 'Sara', 'Navarro', 'sara@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '655667788', '2026-10-19 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000011', 'Diego', 'Torres', 'diego@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, '2026-10-21 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000012', 'Laura', 'Romero', 'laura@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '666778899', '2026-10-23 10:00:00+01'),
-  ('a0000000-0000-4000-8000-000000000013', 'Marina', 'Ortega', 'marina@furniro.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'ADMIN', NULL, '2026-10-25 10:00:00+01');
+INSERT INTO users (id, name, last_name, email, password_hash, role, phone, status, created_at) VALUES
+  ('a0000000-0000-4000-8000-000000000001', 'Luis', 'Martínez', 'luis@furniro.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'ADMIN', '600111222', 'ACTIVE', '2026-10-01 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000002', 'Ana', 'López', 'ana@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '611223344', 'ACTIVE', '2026-10-03 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000003', 'Pedro', 'García', 'pedro@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, 'ACTIVE', '2026-10-05 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000004', 'Lucía', 'Fernández', 'lucia@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '622334455', 'ACTIVE', '2026-10-07 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000005', 'Javier', 'Ruiz', 'javier@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, 'ACTIVE', '2026-10-09 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000006', 'Marta', 'Sánchez', 'marta@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '633445566', 'ACTIVE', '2026-10-11 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000007', 'Carlos', 'Gómez', 'carlos@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, 'ACTIVE', '2026-10-13 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000008', 'Elena', 'Díaz', 'elena@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '644556677', 'ACTIVE', '2026-10-15 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000009', 'Pablo', 'Moreno', 'pablo@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, 'INACTIVE', '2026-10-17 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000010', 'Sara', 'Navarro', 'sara@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '655667788', 'ACTIVE', '2026-10-19 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000011', 'Diego', 'Torres', 'diego@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', NULL, 'PENDING', '2026-10-21 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000012', 'Laura', 'Romero', 'laura@mail.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'CUSTOMER', '666778899', 'ACTIVE', '2026-10-23 10:00:00+01'),
+  ('a0000000-0000-4000-8000-000000000013', 'Marina', 'Ortega', 'marina@furniro.com', '$argon2id$v=19$m=65536,t=3,p=4$3IWxOUm7AXSFMsdIKU7gYA$yyGS0m2EhbIBsEcBvCPtL3HphMmVamTvkqiwHwDnZSs', 'ADMIN', NULL, 'ACTIVE', '2026-10-25 10:00:00+01');
 
 -- Usual addresses (only some users have one)
 INSERT INTO user_addresses (id, user_id, street, city, province, postal_code, country) VALUES

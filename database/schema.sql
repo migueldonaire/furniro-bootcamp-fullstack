@@ -15,6 +15,9 @@ CREATE TABLE users (
   role          TEXT NOT NULL DEFAULT 'CUSTOMER'
                 CHECK (role IN ('CUSTOMER', 'ADMIN')),
   phone         TEXT,
+  -- New accounts wait until an admin activates them (no emails in the MVP)
+  status        TEXT NOT NULL DEFAULT 'PENDING'
+                CHECK (status IN ('PENDING', 'ACTIVE', 'INACTIVE')),
   created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 -- The email is unique and does not care about upper/lower case

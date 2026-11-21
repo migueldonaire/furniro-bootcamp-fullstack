@@ -113,6 +113,7 @@ Product "1" <-- "0..*" OrderLine : historical reference
 ## Notas
 
 - `role`: `CUSTOMER` o `ADMIN`. No hay clases `Customer` ni `Admin`.
+- `User.status`: `PENDING` (recién registrado, no puede iniciar sesión), `ACTIVE` o `INACTIVE`. Un administrador activa o desactiva la cuenta desde el backoffice.
 - `Product.status`: `ACTIVE` o `INACTIVE`. Eliminar un producto desde el backoffice lo desactiva (borrado lógico); así `OrderLine.productId` siempre apunta a un producto existente.
 - `basePrice` es el precio sin IVA. El precio mostrado al cliente se calcula con `priceWithTax()`.
 - Subtotales, IVA y total del pedido no se guardan: se calculan con los métodos `calculate…()` a partir de `OrderLine` y `shippingCost`.
