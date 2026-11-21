@@ -1,73 +1,96 @@
 # Backlog del MVP y dependencias
 
-26 tarjetas para 6 parejas (la C4, datos de prueba, ya está hecha: `database/seed.sql`).
-Las historias completas, con sus escenarios, están en Jira.
+31 historias para 6 equipos (cinco parejas y un trío). Las historias completas, con sus escenarios y la ayuda técnica, están en Jira (**FUR-25 a FUR-55**). La explicación larga está en Confluence, en la página "Orden de trabajo y dependencias".
 
-## 1. Seis carriles, uno por pareja
+## 1. Seis carriles, uno por equipo
 
-Cada pareja tiene un **carril**: un bloque del MVP que vive en sus propias carpetas.
+Cada equipo tiene un **carril**: un bloque del MVP que vive en sus propias carpetas.
 Así casi nunca tocáis los mismos ficheros.
 
-| Pareja | Carril | Tarjetas, en orden | Carpetas |
+| Equipo | Carril | Tarjetas, en orden | Carpetas |
 |---|---|---|---|
-| 1 | Cuentas | **C2** → C1 → C3 → B9 → B10 | `api/src/auth`, `api/src/users`, `*/features/auth`, `backoffice/src/features/customers` |
-| 2 | Catálogo | **T1** → T4 → T2 → T3 | `api/src/products` (público), `api/src/categories`, `shop/src/features/catalog` |
-| 3 | Carrito | **T5** → T6 → T7 → T8 | `shop/src/features/cart` (no hay API: el carrito vive en la web) |
-| 4 | Compra | **T9** → T10 → T11 | `api/src/orders` (crear pedido), `shop/src/features/checkout` |
-| 5 | Productos (backoffice) | **B1** → B4 → B2 → B3 → B5 | `api/src/products` (admin), `backoffice/src/features/products` |
-| 6 | Pedidos | **B6** → B7 → B8 → T12 → T13 | `api/src/orders` (admin y "mis pedidos"), `backoffice/src/features/orders`, `shop/src/features/myOrders` |
+| 1 (trío) | Acceso | **FUR-27** → 28 → 25 → 26 → 30 → 31 | `api/src/auth`, `api/src/users`, `*/features/auth` |
+| 2 | Catálogo | **FUR-32** → 35 → 33 → 34 | `api/src/products` (público), `api/src/categories`, `shop/src/features/catalog` |
+| 3 | Carrito | **FUR-36** → 37 → 38 → 39 → 29 → 42 | `shop/src/features/cart`, pago en `shop/src/features/checkout` |
+| 4 | Compra | **FUR-40** → 41 → 43 → 44 | `api/src/orders` (`orders.controller.ts`), `shop/src/features/checkout`, `shop/src/features/myOrders` |
+| 5 | Productos (backoffice) | **FUR-45** → 48 → 46 → 47 → 49 | `api/src/products` (`admin-products.controller.ts`), `backoffice/src/features/products` |
+| 6 | Pedidos y clientes (backoffice) | **FUR-50** → 51 → 52 → 53 → 54 → 55 | `api/src/orders` (`admin-orders.controller.ts`), `api/src/users` (admin), `backoffice/src/features/orders`, `backoffice/src/features/customers` |
 
-En **negrita**, la tarjeta con la que empieza cada pareja el primer día. Ninguna de las seis choca con otra.
+En **negrita**, la tarjeta con la que empieza cada equipo el primer día. Ninguna de las seis choca con otra.
 
-Si una pareja acaba su carril, coge tarjetas de otra que vaya con retraso (hablándolo antes).
+Si un equipo acaba su carril, coge tarjetas de otro que vaya con retraso (hablándolo antes).
+
+### Las 31 tarjetas
+
+| Tarjeta | Historia | Tarjeta | Historia |
+|---|---|---|---|
+| FUR-25 | Registrarse en la tienda | FUR-41 | Confirmar el pedido |
+| FUR-26 | Activar la cuenta desde el email | FUR-42 | Pantalla de pago de demostración |
+| FUR-27 | Iniciar sesión en la tienda (+ guards) | FUR-43 | Ver mis pedidos |
+| FUR-28 | Iniciar sesión en el backoffice | FUR-44 | Ver el detalle de un pedido mío |
+| FUR-29 | Cerrar sesión | FUR-45 | Listado de productos (backoffice) |
+| FUR-30 | Recuperar la contraseña (tienda) | FUR-46 | Crear un producto |
+| FUR-31 | Recuperar la contraseña (backoffice) | FUR-47 | Editar un producto |
+| FUR-32 | Ver el catálogo | FUR-48 | Activar o desactivar un producto |
+| FUR-33 | Filtrar por categoría | FUR-49 | Añadir imágenes a un producto |
+| FUR-34 | Buscar por nombre | FUR-50 | Listado de pedidos (backoffice) |
+| FUR-35 | Ficha de producto | FUR-51 | Detalle de un pedido (backoffice) |
+| FUR-36 | Añadir al carrito | FUR-52 | Cambiar el estado de un pedido |
+| FUR-37 | Cambiar la cantidad | FUR-53 | Listado de clientes |
+| FUR-38 | Quitar del carrito | FUR-54 | Ficha de un cliente con sus pedidos |
+| FUR-39 | Resumen con IVA y envío | FUR-55 | Activar o desactivar un cliente |
+| FUR-40 | Dirección de entrega | | |
 
 ## 2. Qué depende de qué
 
 ```mermaid
 flowchart LR
-  C2[C2 Login + guards] --> C1[C1 Registro]
-  C2 --> C3[C3 Logout]
-  C2 --> B9[B9 Clientes] --> B10[B10 Ficha cliente]
-  T1[T1 Catálogo] --> T4[T4 Ficha producto]
-  T1 --> T2[T2 Categoría]
-  T1 --> T3[T3 Buscar]
-  T4 --> T5[T5 Añadir al carrito]
-  T5 --> T6[T6 Cambiar cantidad]
-  T5 --> T7[T7 Quitar]
-  T5 --> T8[T8 Resumen IVA y envío]
-  C2 --> T9[T9 Dirección]
-  T8 --> T10[T10 Confirmar pedido]
-  T9 --> T10
-  T10 --> T11[T11 Pago demo]
-  C2 --> B1[B1 Listado productos]
-  B1 --> B4[B4 Desactivar]
-  B1 --> B2[B2 Crear] --> B3[B3 Editar] --> B5[B5 Imágenes]
-  C2 --> B6[B6 Listado pedidos] --> B7[B7 Detalle] --> B8[B8 Cambiar estado]
-  C2 --> T12[T12 Mis pedidos] --> T13[T13 Detalle mío]
-  T10 -.mismo controlador.-> T12
+  F27[27 Login + guards] --> F28[28 Login backoffice]
+  F25[25 Registro] --> F26[26 Activar cuenta]
+  F30[30 Recuperar tienda] --> F31[31 Recuperar backoffice]
+  F32[32 Catálogo] --> F35[35 Ficha]
+  F32 --> F33[33 Categoría]
+  F32 --> F34[34 Buscar]
+  F35 --> F36[36 Añadir al carrito]
+  F36 --> F37[37 Cantidad]
+  F36 --> F38[38 Quitar]
+  F36 --> F39[39 Resumen]
+  F27 --> F40[40 Dirección]
+  F39 --> F41[41 Confirmar pedido]
+  F40 --> F41
+  F41 --> F42[42 Pago demo]
+  F41 --> F43[43 Mis pedidos] --> F44[44 Detalle mío]
+  F27 --> F45[45 Productos] --> F48[48 Activar/desactivar]
+  F45 --> F46[46 Crear] --> F47[47 Editar] --> F49[49 Imágenes]
+  F27 --> F50[50 Pedidos] --> F51[51 Detalle] --> F52[52 Estado]
+  F27 --> F53[53 Clientes] --> F54[54 Ficha cliente]
+  F53 --> F55[55 Activar/desactivar]
 ```
+
+FUR-26, FUR-30 y FUR-31 envían emails: en local salen por la consola; en staging necesitan Brevo configurado.
 
 ## 3. Cómo arrancar sin esperar a nadie
 
-La flecha más importante es **C2 → casi todo**: sin login no hay token, y sin token no hay rutas protegidas.
+La flecha más importante es **FUR-27 → casi todo**: sin login no hay token, y sin token no hay rutas protegidas.
 Para que nadie se quede parado:
 
-1. **La pareja 1 hace primero la parte de API de C2**: `POST /api/v1/auth/login`, el `AuthGuard` (comprueba el token) y el `AdminGuard` (comprueba que el rol es `ADMIN`). Objetivo: fusionada el primer día antes de comer.
+1. **El equipo 1 hace primero la parte de API de FUR-27**: `POST /api/v1/auth/login`, `GET /api/v1/auth/me`, el `AuthGuard` (comprueba el token) y el `AdminGuard` (comprueba que el rol es `ADMIN`). Objetivo: fusionada el primer día antes de comer.
 2. **Mientras tanto, el resto hace la parte que no necesita login**:
-   - Pareja 2: `GET /products` es público. Sin bloqueo.
-   - Pareja 3: el `cartSlice` y sus tests no necesitan la API. El botón "Añadir" se engancha cuando esté T4.
-   - Pareja 4: el formulario de dirección como componente con su test. La página se conecta cuando esté C2.
-   - Parejas 5 y 6: el endpoint (`GET /admin/products`, `GET /admin/orders`) y su servicio **sin guard**, probado con Swagger. En cuanto se fusione C2, una PR pequeña añade `@UseGuards(AuthGuard, AdminGuard)` y el escenario "una clienta recibe 403".
-3. Los datos ya están en la base de datos (`seed.sql`): hay pedidos de Ana para T12 y B6 aunque T10 no esté hecha.
+   - Equipo 2: `GET /products` es público. Sin bloqueo.
+   - Equipo 3: el `cartSlice` y sus tests no necesitan la API. El botón "Añadir" se engancha cuando esté FUR-35.
+   - Equipo 4: el formulario de dirección como componente con su test. La página se conecta cuando esté FUR-27.
+   - Equipos 5 y 6: el endpoint (`GET /admin/products`, `GET /admin/orders`) y su servicio **sin guard**, probado con Swagger (`http://localhost:3000/docs`). En cuanto se fusione FUR-27, una PR pequeña añade `@UseGuards(AuthGuard, AdminGuard)` y el escenario "una clienta recibe 403".
+3. Los datos ya están en la base de datos (`seed.sql`): hay pedidos de Ana para FUR-43, FUR-50 y FUR-54 aunque FUR-41 no esté hecha.
 
 ## 4. Ficheros compartidos (ojo)
 
 | Fichero | Quién lo toca | Cómo evitar líos |
 |---|---|---|
-| `api/src/products/products.module.ts` | Parejas 2 y 5 | La 2 usa `products.controller.ts` (público) y la 5 `admin-products.controller.ts`. En el módulo solo añadís una línea cada uno. |
-| `api/src/orders/orders.module.ts` | Parejas 4 y 6 | La 4 usa `orders.controller.ts`; la 6 `admin-orders.controller.ts`. T12 y T13 van al final, cuando T10 ya está fusionada. |
-| `api/src/auth/*.guard.ts` | Pareja 1 (los crea) | El resto solo los importa. |
-| `shop/src/features/cart/cartSlice.ts` | Pareja 3 (y la 4 lo lee en T10) | La 4 solo usa los selectores. |
+| `api/src/products/products.module.ts` | Equipos 2 y 5 | El 2 usa `products.controller.ts` (público) y el 5 `admin-products.controller.ts`. En el módulo solo añadís una línea cada uno. |
+| `api/src/orders/orders.module.ts` | Equipos 4 y 6 | El 4 usa `orders.controller.ts` (también "mis pedidos"); el 6 `admin-orders.controller.ts`. |
+| `api/src/users/` | Equipos 1 y 6 | El 1 crea el servicio; el 6 añade `admin-users.controller.ts`. |
+| `api/src/auth/*.guard.ts` | Equipo 1 (los crea) | El resto solo los importa. |
+| `shop/src/features/cart/cartSlice.ts` | Equipo 3 (y el 4 lo lee en FUR-41) | El 4 solo usa los selectores. |
 
 Si hay conflicto: `git pull origin main` en vuestra rama, arreglad el conflicto juntos y avisad al profesor si no lo veis claro.
 
@@ -77,20 +100,24 @@ Para que la web y la API avancen a la vez, estas son las rutas acordadas (todas 
 
 | Tarjeta | Ruta | Quién puede |
 |---|---|---|
-| C1 | `POST /auth/register` | Cualquiera |
-| C2 | `POST /auth/login` → solo `{ accessToken }`. El usuario se pide con `GET /auth/me` | Cualquiera / con token |
-| T1, T3 | `GET /products?search=nora` (solo `ACTIVE`) | Cualquiera |
-| T2 | `GET /categories` y `GET /products?categoryId=...` | Cualquiera |
-| T4 | `GET /products/:id` | Cualquiera |
-| T10 | `POST /orders` (el servidor calcula precios y stock) | Con token |
-| T12, T13 | `GET /orders/mine` y `GET /orders/mine/:id` | Con token (solo los suyos) |
-| B1 | `GET /admin/products` (también `INACTIVE`) | `ADMIN` |
-| B2, B3 | `POST /admin/products` y `PATCH /admin/products/:id` | `ADMIN` |
-| B4 | `DELETE /admin/products/:id` (pasa a `INACTIVE`) | `ADMIN` |
-| B5 | `POST /admin/products/:id/images` | `ADMIN` |
-| B6, B7 | `GET /admin/orders` y `GET /admin/orders/:id` | `ADMIN` |
-| B8 | `PATCH /admin/orders/:id/status` | `ADMIN` |
-| B9, B10 | `GET /admin/users` y `GET /admin/users/:id` (sin `passwordHash`) | `ADMIN` |
+| FUR-25 | `POST /auth/register` | Cualquiera |
+| FUR-27 | `POST /auth/login` → solo `{ accessToken }`. El usuario se pide con `GET /auth/me` | Cualquiera / con token |
+| FUR-26 | `POST /auth/verify-email` y `POST /auth/resend-verification` | Cualquiera |
+| FUR-30, FUR-31 | `POST /auth/forgot-password` y `POST /auth/reset-password` | Cualquiera |
+| FUR-39 | `GET /orders/shipping-cost` | Cualquiera |
+| FUR-32, FUR-34 | `GET /products?search=nora` (solo `ACTIVE`) | Cualquiera |
+| FUR-33 | `GET /categories` y `GET /products?categoryId=...` | Cualquiera |
+| FUR-35 | `GET /products/:id` | Cualquiera |
+| FUR-41 | `POST /orders` (el servidor calcula precios y stock) | Con token |
+| FUR-43, FUR-44 | `GET /orders/mine` y `GET /orders/mine/:id` | Con token (solo los suyos) |
+| FUR-45 | `GET /admin/products` (también `INACTIVE`) | `ADMIN` |
+| FUR-46, FUR-47 | `POST /admin/products` y `PATCH /admin/products/:id` | `ADMIN` |
+| FUR-48 | `DELETE /admin/products/:id` (pasa a `INACTIVE`) | `ADMIN` |
+| FUR-49 | `POST /admin/products/:id/images` | `ADMIN` |
+| FUR-50, FUR-51 | `GET /admin/orders` y `GET /admin/orders/:id` | `ADMIN` |
+| FUR-52 | `PATCH /admin/orders/:id/status` | `ADMIN` |
+| FUR-53, FUR-54 | `GET /admin/users` y `GET /admin/users/:id` (sin `passwordHash`) | `ADMIN` |
+| FUR-55 | `PATCH /admin/users/:id/status` | `ADMIN` |
 
 ## 6. Usuarios de prueba
 
