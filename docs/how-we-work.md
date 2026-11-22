@@ -33,6 +33,8 @@ Nosotros haremos lo que se ve hoy en muchos equipos:
 | Tarjetas pequeñas, de punta a punta (API + web + test) | Reparto por especialidades (solo front, solo back) |
 | PR pequeña + checks + revisión | Reuniones largas |
 
+Las historias de Jira ya traen **puntos de historia** (S = 4, M = 8, L = 12). Los usaremos el día de Scrum y, el resto del proyecto, solo como referencia del tamaño de cada tarjeta.
+
 Scrum lo veremos igualmente en una sesión de un día (apartado 10), porque lo vas a oír en entrevistas y en muchas empresas.
 
 ---
@@ -209,11 +211,11 @@ En modo plan, pide a la IA que te explique qué hace `api/src/app.controller.ts`
 
 # 10. Un día de Scrum
 
-Un día del proyecto lo hacemos "a lo Scrum", como juego de rol, para conocer cómo se ha trabajado en muchas empresas:
+El **primer día** del proyecto lo hacemos "a lo Scrum", como juego de rol, para conocer cómo se ha trabajado en muchas empresas:
 
 | Ceremonia | Qué haremos |
 |---|---|
-| **Sprint planning** | Elegir las tarjetas del "sprint" y estimarlas con puntos de historia y *planning poker* |
+| **Sprint planning** | Elegir las tarjetas del "sprint" y repasar sus puntos de historia (ya vienen puestos en Jira) con *planning poker* |
 | **Daily** | 15 minutos de pie: qué hice, qué haré, qué me bloquea |
 | **Sprint review** | Enseñar lo hecho al Product Owner |
 | **Retrospectiva** | Qué ha ido bien, qué ha ido mal y qué cambiamos |
