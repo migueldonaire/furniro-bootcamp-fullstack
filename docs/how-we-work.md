@@ -66,7 +66,7 @@ Una tarjeta solo pasa a **Lista** si tiene estas cuatro cosas:
 3. **Las subtareas**: los trozos de trabajo que hay que hacer.
 4. **Las dudas resueltas**: si hay una pregunta para el Product Owner (el profesor), primero se pregunta.
 
-Ejemplo de subtareas de **T4 · Ver la ficha de un producto**:
+Ejemplo de subtareas de **FUR-35 · Ver la ficha de un producto**:
 
 | Subtarea | Dónde |
 |---|---|
@@ -79,7 +79,7 @@ Cada subtarea suele ser **una PR pequeña**.
 
 ### Ejercicio 2
 
-Escribe las subtareas de **T3 · Buscar productos por nombre**. Pista: piensa qué cambia en la API, qué cambia en la web y qué tests demuestran que funciona.
+Escribe las subtareas de **FUR-34 · Buscar productos por nombre**. Pista: piensa qué cambia en la API, qué cambia en la web y qué tests demuestran que funciona.
 
 ---
 
@@ -98,10 +98,21 @@ Si una tarjeta la ha escrito entera una sola persona, no cuenta como hecha.
 
 # 6. Cómo se reparten las tarjetas
 
-1. Cada pareja tiene un **carril**: un bloque del MVP (acceso, catálogo, carrito, compra, productos o pedidos y clientes). Está en [`backlog.md`](backlog.md).
+1. Cada pareja tiene un **carril**: un bloque del MVP (acceso, catálogo, carrito, compra, productos o pedidos y clientes). Está en Confluence, en la página [Orden de trabajo y dependencias](https://bootcamp-fullstack-valencia-2026.atlassian.net/wiki/spaces/DDS/pages/753665), junto con el contrato de la API y los usuarios de prueba.
 2. El profesor asigna **una tarjeta** a cada pareja.
 3. Cuando la PR de esa tarjeta está fusionada, la pareja coge la siguiente de su carril.
 4. Si una pareja termina su carril, ayuda a otra o coge una tarjeta libre (hablándolo antes con el profesor).
+
+Cada pareja va a su ritmo. No hay prisa por fusionar el primer día: el objetivo es terminar el MVP en una semana y pico, y si hacen falta dos, se tarda dos.
+
+### Si la API que necesitas aún no está
+
+No te quedes parado: **empieza por el frontend**.
+
+1. Divide la tarjeta en subtareas (API, web, tests).
+2. Haz la parte de la web contra un **servidor simulado** con json-server: `npx json-server db.json`.
+3. El `db.json` con datos de ejemplo se lo puedes pedir a la IA, dándole el contrato de la API de Confluence para que los campos coincidan.
+4. Cuando la API esté fusionada, cambia la URL y conecta la web de verdad.
 
 Nadie toca la tarjeta de otra pareja sin hablar antes con ella.
 
@@ -112,13 +123,15 @@ Nadie toca la tarjeta de otra pareja sin hablar antes con ella.
 Nadie sube código directamente a `main`. El camino es siempre este:
 
 1. Mueve la tarjeta a **En curso**.
-2. Crea tu rama desde `main`:
+2. Crea tu rama desde `main`. **La rama se llama como la tarjeta de Jira**: `feature/FUR-35` para la tarjeta FUR-35. El código va en mayúsculas, igual que en Jira, para que la rama se relacione con su tarjeta.
 
 ```bash
 git switch main
 git pull
-git switch -c feature/product-page
+git switch -c feature/FUR-35
 ```
+
+Si una tarjeta se hace en varias PRs (una por subtarea), añade una palabra al final: `feature/FUR-35-api`, `feature/FUR-35-web`.
 
 3. Programad en pareja, con commits pequeños.
 4. Antes de subir, en la carpeta que hayas tocado:
@@ -128,12 +141,29 @@ npm run lint
 npm test
 ```
 
-5. Sube la rama y abre una **PR** contra `main`. Rellena la plantilla y pon el código de la tarjeta (FUR-XX).
+5. Sube la rama y abre una **PR** contra `main`, con un buen título y una buena descripción (ver "Título y descripción de la PR", justo debajo).
 6. Mueve la tarjeta a **En revisión**.
 7. Espera a que el check **`ci-ok`** salga en verde. Si sale en rojo, abre el detalle, arréglalo y vuelve a subir.
 8. Revisan la PR **otra pareja** y el **revisor automático (Claude)**. Responde a cada comentario y corrige.
 9. Con la aprobación y `ci-ok` en verde, se fusiona. En unos minutos el cambio está en **staging**.
 10. Comprueba en staging que funciona y mueve la tarjeta a **Hecha**.
+
+### Título y descripción de la PR
+
+Con los títulos de las PRs se genera la **release** (las notas de cada versión que sale a producción). Por eso el título y la descripción importan tanto como el código.
+
+**Título**: el código de la tarjeta y qué hace, en una frase que entienda cualquiera.
+
+- Bien: `FUR-35 - Ficha de producto: endpoint GET /products/:id y página`
+- Mal: `cambios`, `arreglos`, `feature/FUR-35`
+
+**Descripción**: rellena la plantilla que aparece al abrir la PR:
+
+- **Qué se ha hecho**: los cambios, en lista.
+- **Qué no se ha hecho**: lo que queda pendiente o se deja para otra PR, y por qué.
+- **Cómo probarlo**: pasos para que quien revisa lo compruebe.
+
+Puedes pedir a la IA que te ayude a redactar la descripción a partir de tus commits y del diff (por ejemplo, en Claude Code: "resume los cambios de esta rama para la descripción de la PR"). Léela y corrígela antes de publicarla: la firmas tú.
 
 ### Las PRs, pequeñas
 
