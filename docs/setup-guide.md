@@ -1,43 +1,46 @@
-# Guía de setup y CI/CD de Furniro
+# CI/CD de Furniro
 
-Guía para el profesor. Qué hay montado, qué falta configurar y cómo funciona el ciclo de CI/CD.
+Cómo llega el código de una rama a producción, qué comprueba cada paso y dónde está configurado cada servicio.
 
 ## 1. El ciclo completo
 
 ```mermaid
 flowchart LR
-  A[Rama feature/x] -->|PR| B[CI: lint, tests,<br/>Trivy, Sonar, Gitleaks,<br/>tamaño, Claude]
+  A[Rama feature/FUR-XX] -->|PR| B[CI: lint, tests, Trivy,<br/>Sonar, Gitleaks, tamaño<br/>+ revisor de Claude]
   B -->|aprobada y fusionada| C[main]
-  C -->|automático| D[staging.yml<br/>imagen sha-commit<br/>Render + Netlify staging<br/>OWASP ZAP]
-  C -->|botón: versión 1.0.0| E[release.yml<br/>tag v1.0.0 + Release<br/>imagen furniro-api:1.0.0<br/>Render + Netlify prod]
+  C -->|CI de main en verde| D[staging.yml<br/>imagen sha-commit<br/>Render + Netlify staging<br/>OWASP ZAP]
+  C -->|botón: versión 0.2.0| E[release.yml<br/>tag v0.2.0 + Release<br/>imagen furniro-api:0.2.0<br/>Render + Netlify prod]
   E -.algo va mal.-> F[deploy.yml<br/>botón: versión anterior]
 ```
 
 En tres frases:
 
 1. **CI**: cada PR pasa los checks. Sin todos en verde, no se puede fusionar.
-2. **Staging**: cada vez que algo entra en `main`, se despliega solo. Staging es siempre el reflejo de `main`.
-3. **Producción**: tú pulsas un botón y escribes la versión. Se crea el tag y la Release, se publica la imagen en Docker Hub con ese número y se despliega.
+2. **Staging**: cuando algo entra en `main` y su CI sale en verde, se despliega solo. Staging es siempre el reflejo de `main`.
+3. **Producción**: el profesor pulsa un botón y escribe la versión. Se crea el tag y la Release, se publica la imagen en Docker Hub con ese número y se despliega (después de aprobarlo en el entorno `production`).
 
-### ¿Staging también con versiones?
+### ¿Por qué staging no usa versiones?
 
-No. Staging usa el commit (`staging-abc1234`) y producción usa versiones (`1.0.0`).
+Staging usa el commit (`staging-abc1234`) y producción usa versiones (`0.2.0`).
 
-- Si staging usara la versión de `package.json`, cada PR tendría que subirla. Con 6 parejas fusionando a la vez, chocarían todas en la misma línea de `package.json`.
-- La versión es una decisión de producto ("esto ya se puede enseñar"), así que la decide quien pulsa el botón: tú.
-- Con el commit sabes exactamente qué hay en staging: el pie de la web lo enseña (`Web staging-abc1234 · API staging-abc1234`).
+- Si staging usara la versión de `package.json`, cada PR tendría que subirla y todas las parejas chocarían en la misma línea.
+- La versión es una decisión de producto ("esto ya se puede enseñar"), así que la decide quien pulsa el botón.
+- Con el commit se sabe exactamente qué hay en staging: el pie de la web lo enseña (`Web staging-abc1234 · API staging-abc1234`).
+
+Las versiones siguen `MAJOR.MINOR.PATCH`. La primera fue la `0.1.0` (el esqueleto); la `1.0.0` queda para cuando el MVP esté terminado.
 
 ### ¿Cómo sabe producción qué desplegar?
 
-Pulsas **Actions → release → Run workflow** y escribes la versión (por ejemplo `1.0.0`). El workflow:
+**Actions → release → Run workflow** con la versión (por ejemplo `0.2.0`). El workflow:
 
 1. Comprueba que la versión es válida y no existe.
-2. Crea el tag `v1.0.0` sobre lo que hay ahora en `main` (lo mismo que ya está en staging) y la GitHub Release con las notas de las PRs.
-3. Construye la imagen desde ese tag y la sube a Docker Hub como `furniro-api:1.0.0` y `latest`.
-4. Pide a Render que despliegue `furniro-api:1.0.0` y espera a que `/api/v1/health` responda `"version": "1.0.0"`.
-5. Construye la tienda y el backoffice desde el tag y los sube a Netlify producción.
+2. Crea el tag `v0.2.0` sobre lo que hay en `main` (lo mismo que ya está en staging) y la GitHub Release. Las notas salen de los **títulos de las PRs**: por eso importa escribirlos bien.
+3. Construye la imagen desde ese tag y la sube a Docker Hub como `furniro-api:0.2.0` y `latest`.
+4. Espera la aprobación del entorno `production`.
+5. Pide a Render que despliegue `furniro-api:0.2.0` y espera a que `/api/v1/health` responda con esa versión.
+6. Construye la tienda y el backoffice desde el tag y los sube a Netlify producción.
 
-**Rollback:** **Actions → deploy → Run workflow**, eliges `production` y escribes una versión anterior (`0.9.0`). Despliega esa imagen y esa web otra vez, sin construir nada.
+**Rollback:** **Actions → deploy → Run workflow**, entorno `production` y una versión anterior (`0.1.0`). Vuelve a desplegar esa imagen, y las webs se reconstruyen desde su tag.
 
 Netlify no despliega imágenes Docker, solo ficheros estáticos. Por eso la API va en imagen (Render) y las webs se construyen y se suben con `netlify deploy` desde GitHub Actions.
 
@@ -45,145 +48,77 @@ Netlify no despliega imágenes Docker, solo ficheros estáticos. Por eso la API 
 
 | Fichero | Qué hace |
 |---|---|
-| `.github/workflows/ci.yml` | Checks de la PR. Solo revisa las carpetas que cambia la PR (`api`, `shop`, `backoffice`, `database`); `pr-size` y `secrets` van siempre. Al final, `ci-ok` resume todo |
-| `.github/workflows/staging.yml` | Push a `main`: imagen `sha-<commit>`, despliegue en staging y OWASP ZAP |
+| `.github/workflows/ci.yml` | Checks de la PR. Solo revisa las carpetas que cambia la PR (`api`, `shop`, `backoffice`, `database`); `pr-size` y `secrets` van siempre. Al final, `ci-ok` resume todo. En `main` también corre, y nunca se cancela |
+| `.github/workflows/claude-review.yml` | Revisión de cada PR con Claude, que puede bloquearla |
+| `.github/workflows/staging.yml` | Cuando el CI de `main` sale en verde: imagen `sha-<commit>`, despliegue en staging y OWASP ZAP |
 | `.github/workflows/release.yml` | Botón: versión a producción |
-| `.github/workflows/deploy.yml` | Lo usan los dos anteriores. También es el botón de rollback |
-| `.github/workflows/claude-review.yml` | Revisión automática de cada PR con Claude |
+| `.github/workflows/deploy.yml` | Lo usan staging y release. También es el botón de rollback |
 | `.github/dependabot.yml` | PRs semanales para actualizar dependencias |
+| `.github/pull_request_template.md` | Plantilla de la descripción de la PR |
 | `sonar-project.properties` | Un proyecto de Sonar para todo el monorepo |
-| `CLAUDE.md` | Normas del proyecto. Las leen la IA de los alumnos y el revisor |
+| `CLAUDE.md` | Normas del proyecto. Las leen la IA de cada pareja y el revisor |
 
-Seguridad en la pipeline: `npm audit` (dependencias), Gitleaks (secretos), Trivy (imagen Docker), SonarQube Cloud (código), Dependabot y OWASP ZAP (ataque básico a staging, solo avisa).
+## 3. Los gates: qué impide fusionar una PR
 
-Mientras no configures nada, los workflows de staging, release, Sonar y Claude **se saltan solos** (salen en gris). El CI básico funciona desde el primer día.
+El ruleset de `main` exige:
 
-## 3. Tareas de setup
+- **PR con 1 aprobación** (de otra pareja o del profesor) y la rama al día con `main`.
+- **`ci-ok`**: resume el CI. Sale en verde si todo lo que tenía que pasar ha pasado (lo que se salta no bloquea). Incluye:
+  - lint, tests y `npm audit` de cada carpeta que cambia;
+  - tamaño de la PR (máximo 400 líneas sin `package-lock.json`; la etiqueta `big-pr` lo salta);
+  - Gitleaks (secretos subidos por error) y Trivy (vulnerabilidades de la imagen Docker);
+  - **SonarQube Cloud**: si la quality gate falla, el job `sonar` sale en rojo y `ci-ok` también.
+- **`claude-review`**: Claude comenta las líneas, deja un resumen y da un veredicto. Si encuentra algo que bloquea (un fallo, seguridad, una norma de `CLAUDE.md` o una tarjeta sin test), sale en rojo.
+- Solo *squash merge* y sin *force push*.
 
-| # | Tarea | Estado |
+Después de fusionar, OWASP ZAP ataca staging de forma básica (solo avisa, no bloquea) y Dependabot propone actualizaciones cada semana.
+
+### SonarQube Cloud
+
+- Proyecto público en el plan OSS: cualquiera puede ver el análisis sin cuenta.
+- Perfil de reglas *Sonar way comprehensive*.
+- Quality gate **Furniro** (sobre el código nuevo de la PR): cobertura ≥ 50 %, duplicados ≤ 3 %, ratings A de fiabilidad, seguridad y mantenibilidad, y todos los *security hotspots* revisados.
+- Sonar deja un comentario en cada PR con el resultado.
+
+### Revisor de Claude: casos especiales
+
+- En PRs en borrador y en las de Dependabot no se ejecuta (sale como *skipped* y no bloquea).
+- Una PR que modifica `claude-review.yml` sale en rojo sin revisar: es una protección de la action para que nadie cambie el revisor y se apruebe a sí mismo. Esas PRs solo las fusiona el profesor.
+- Si no da veredicto (falla o se queda sin turnos), sale en rojo: se relanza con **Re-run jobs**.
+
+## 4. Dónde está configurado cada servicio
+
+| Servicio | Staging | Producción |
 |---|---|---|
-| S1 | Monorepo con `api/`, `shop/`, `backoffice/`, `database/` | Hecho en esta PR |
-| S2 | Base de datos: `schema.sql` + `seed.sql` + `compose.yaml` (era la tarjeta C4) | Hecho en esta PR |
-| S3 | Módulos vacíos en la API y páginas vacías en las webs, ya enlazados | Hecho en esta PR |
-| S4 | CI de PR | Hecho en esta PR |
-| S5 | Ruleset de `main` que exige los checks | Tú (apartado 4.1) |
-| S6 | Base de datos de staging y producción en Supabase | Tú (4.2) |
-| S7 | Docker Hub, Render y Netlify | Tú (4.3 a 4.5) |
-| S8 | Entornos, secretos y variables en GitHub | Tú (4.6) |
-| S9 | SonarQube Cloud | Tú (4.7) |
-| S10 | Revisor de PRs con Claude | Tú (apartado 5) |
-| S11 | Invitar a los alumnos como colaboradores (Write) | Tú |
+| Base de datos (Supabase) | `furniro-staging` | `furniro-prod` |
+| API (Render, imagen de Docker Hub `furniro-api`) | `furniro-api-staging` | `furniro-api-prod` |
+| Tienda (Netlify) | `furniro-shop-staging` | `furniro-shop-prod` |
+| Backoffice (Netlify) | `furniro-backoffice-staging` | `furniro-backoffice-prod` |
+| Entorno de GitHub | `staging` | `production` (pide aprobación) |
 
-### Lo de la "base de autenticación"
+Variables de la API en Render: `DATABASE_URL`, `JWT_SECRET` (distinto en cada entorno), `CORS_ORIGIN` (las dos URLs de Netlify del entorno, separadas por comas), `SHIPPING_COST`, `BREVO_API_KEY`, `MAIL_FROM` y `SHOP_URL`. Solo en producción, y solo cuando se monte Grafana Cloud: `METRICS_TOKEN` (ver [`grafana-cloud.md`](grafana-cloud.md)). En local se usan las de `api/.env.example`.
 
-Me refería a esto: casi todas las tarjetas necesitan saber **quién** hace la petición (el token) y si es `ADMIN`. Eso son dos piezas: el `AuthGuard` y el `AdminGuard`. Si no existen, las parejas 4, 5 y 6 se quedan esperando.
+Secretos y variables de GitHub:
 
-No lo he metido en el setup porque es la tarjeta **C2** (iniciar sesión), que salió en la clase de BDD y es buena para los alumnos. La propuesta, en `docs/backlog.md`: la pareja 1 empieza por la API de C2 y la fusiona el primer día; el resto empieza por lo que no necesita login. Si prefieres que nadie espere, la puedes hacer tú en directo el primer día (es lo mismo que en la clase de autenticación de NestJS).
-
-## 4. Configuración paso a paso
-
-### 4.1. Ruleset de `main`
-
-**Settings → Code, planning, and automation → Rulesets → New branch ruleset**, sobre la rama por defecto:
-
-- Require a pull request before merging (1 aprobación: la de otra pareja o la tuya).
-- Require status checks to pass: **solo `ci-ok`**. Es el check que resume los demás: sale en verde si todo lo que tenía que pasar ha pasado. Así una PR que solo toca `shop/` no se queda esperando al check de la API, que se ha saltado.
-- Block force pushes.
-
-Los checks solo aparecen en el buscador después de que hayan corrido una vez (por ejemplo, en esta PR).
-
-### 4.2. Bases de datos (Supabase)
-
-Dos proyectos: `furniro-staging` y `furniro-prod`. En cada uno, **SQL Editor**: pega `database/schema.sql` y luego `database/seed.sql` (en producción, si quieres, solo el schema y las categorías).
-
-Después crea un bucket público `products` en Storage, sube las fotos de `database/images/` y cambia sus URLs en la base de datos: el `UPDATE` está en [`database/README.md`](../database/README.md).
-
-Para la conexión usa el **Session pooler** y termina la URL en `?sslmode=no-verify` (Render no sale por IPv6 y `pg` falla con `sslmode=require`).
-
-### 4.3. Docker Hub
-
-1. Crea un **Personal access token** (Read & Write) en Account settings → Personal access tokens.
-2. Las imágenes saldrán como `<tu-usuario>/furniro-api`, públicas.
-
-### 4.4. Render (API)
-
-Dos Web Services, `furniro-api-staging` y `furniro-api-prod`, con **Deploy an existing image**:
-
-- Imagen: `docker.io/<tu-usuario>/furniro-api:staging` (staging) y `docker.io/<tu-usuario>/furniro-api:latest` (prod). La primera vez tendrás que haber ejecutado el workflow una vez para que exista la imagen, o crear el servicio con `node:24-alpine` y cambiarla después.
-- Environment: `DATABASE_URL`, `JWT_SECRET` (uno distinto en cada entorno), `CORS_ORIGIN` (las dos URLs de Netlify de ese entorno, separadas por comas), `SHIPPING_COST=8`, `BREVO_API_KEY` (la clave de Brevo), `MAIL_FROM=furnirobootcampfullstack@gmail.com` y `SHOP_URL` (la URL de Netlify de la tienda de ese entorno). Solo en producción, y cuando montes Grafana Cloud: `METRICS_TOKEN` (ver [`grafana-cloud.md`](grafana-cloud.md)).
-- Settings → **Deploy Hook**: copia la URL de cada servicio.
-
-### 4.5. Netlify (webs)
-
-Cuatro sites vacíos: `furniro-shop-staging`, `furniro-backoffice-staging`, `furniro-shop`, `furniro-backoffice`.
-
-- Créalos con **Add new site → Deploy manually** (no los conectes a GitHub: los despliega la pipeline).
-- De cada uno copia el **Site ID** (Site configuration → General).
-- User settings → Applications → **Personal access token**: uno para todos.
-
-### 4.6. GitHub: entornos, secretos y variables
-
-**Settings → Environments**: crea `staging` y `production`. En `production` marca **Required reviewers** → tú (gratis en repos públicos; así el botón de release te pide confirmación antes de desplegar).
-
-| Nombre | Tipo | Dónde | Valor |
+| Nombre | Tipo | Dónde | Para qué |
 |---|---|---|---|
-| `DOCKERHUB_USERNAME` | Variable | Repositorio | Tu usuario de Docker Hub |
-| `DOCKERHUB_TOKEN` | Secreto | Repositorio | Token de 4.3 |
-| `NETLIFY_AUTH_TOKEN` | Secreto | Repositorio | Token de 4.5 |
-| `RENDER_DEPLOY_HOOK` | Secreto | Entorno (cada uno el suyo) | Deploy Hook de 4.4 |
-| `API_URL` | Variable | Entorno | `https://furniro-api-staging.onrender.com/api/v1` |
-| `SHOP_URL` | Variable | Entorno | URL de Netlify de la tienda |
-| `BACKOFFICE_URL` | Variable | Entorno | URL de Netlify del backoffice |
-| `SHOP_NETLIFY_SITE_ID` | Variable | Entorno | Site ID de la tienda |
-| `BACKOFFICE_NETLIFY_SITE_ID` | Variable | Entorno | Site ID del backoffice |
-| `SONAR_TOKEN` | Secreto | Repositorio | Apartado 4.7 |
-| `SONAR_ENABLED` | Variable | Repositorio | `true` cuando Sonar esté listo |
-| `CLAUDE_CODE_OAUTH_TOKEN` | Secreto | Repositorio | Apartado 5 |
-| `CLAUDE_REVIEW_ENABLED` | Variable | Repositorio | `true` cuando el revisor esté listo |
+| `DOCKERHUB_USERNAME` | Variable | Repositorio | Usuario de Docker Hub (sin ella, staging se salta) |
+| `DOCKERHUB_TOKEN` | Secreto | Repositorio | Subir la imagen |
+| `NETLIFY_AUTH_TOKEN` | Secreto | Repositorio | Subir las webs |
+| `SONAR_TOKEN` | Secreto | Repositorio | Análisis de Sonar |
+| `SONAR_ENABLED` | Variable | Repositorio | `true` activa el job de Sonar |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Secreto | Repositorio | Revisor de Claude |
+| `CLAUDE_REVIEW_ENABLED` | Variable | Repositorio | `true` activa el revisor |
+| `RENDER_DEPLOY_HOOK` | Secreto | Entorno | Ordenar a Render que despliegue |
+| `API_URL`, `SHOP_URL`, `BACKOFFICE_URL` | Variable | Entorno | URLs de ese entorno |
+| `SHOP_NETLIFY_SITE_ID`, `BACKOFFICE_NETLIFY_SITE_ID` | Variable | Entorno | A qué site de Netlify se sube cada web |
 
-En cuanto exista `DOCKERHUB_USERNAME`, el siguiente push a `main` despliega staging.
+Un secreto que usa un job sin `environment:` tiene que estar en el **repositorio**, no en un entorno: si no, el job no lo ve.
 
-### 4.7. SonarQube Cloud (plan OSS)
+### Detalles que costaron encontrar
 
-1. Entra en sonarcloud.io con GitHub e importa el repositorio (tiene que ser público para el plan OSS).
-2. En **Administration → Analysis Method**, desactiva **Automatic Analysis** (lo hace la pipeline).
-3. Copia la organización y la project key en `sonar-project.properties` (los dos `CHANGE_ME`).
-4. Crea un token (My Account → Security) y guárdalo como `SONAR_TOKEN`. Pon `SONAR_ENABLED=true`.
+- Supabase: conexión por **Session pooler** y URL terminada en `?sslmode=no-verify` (Render no sale por IPv6 y `pg` falla con `sslmode=require`).
+- Render Free: 750 horas al mes para todo el workspace y los servicios se duermen tras 15 minutos sin visitas (el primer acceso tarda un minuto). Cualquier cosa que los llame cada poco (por ejemplo, un monitor) los mantiene despiertos y gasta las horas.
+- Render Free no deja enviar correo por SMTP: los correos van por la API HTTP de Brevo.
 
-## 5. Revisor de PRs con Claude
-
-Usa la GitHub Action oficial `anthropics/claude-code-action@v1` con el plugin `code-review`: deja comentarios en las líneas de la PR. Lee el `CLAUDE.md` del repo, donde están las normas y cómo tiene que comentar (en español, con pistas, sin dar la solución).
-
-### Camino rápido (recomendado)
-
-1. En tu ordenador, dentro del repo, abre Claude Code (`claude`).
-2. Escribe `/install-github-app` y sigue los pasos: instala la app de Claude en el repo y crea el secreto. Necesitas ser admin del repo.
-3. Si te propone su propio workflow, quédate con el nuestro (`claude-review.yml`) o compáralos.
-4. Pon la variable `CLAUDE_REVIEW_ENABLED=true`.
-
-### Camino manual
-
-1. Instala la app: https://github.com/apps/claude (solo en este repo).
-2. En tu terminal: `claude setup-token`. Copia el token que sale y guárdalo como secreto `CLAUDE_CODE_OAUTH_TOKEN`. Usa tu suscripción de Claude (Pro o Max).
-3. Pon la variable `CLAUDE_REVIEW_ENABLED=true`.
-
-### A tener en cuenta
-
-- Solo revisa PRs de ramas de este repo (no de forks), y la persona que abre la PR necesita permiso de escritura. Por eso los alumnos van como colaboradores con Write.
-- Cada revisión gasta uso de tu suscripción. Está limitado a 30 turnos y 15 minutos por PR. Con PRs de menos de 400 líneas, el gasto es pequeño.
-- El workflow tiene que estar en `main` para que funcione: no revisará esta PR, sí las siguientes.
-- Claude **es un gate**: comenta las líneas, deja un resumen y, si encuentra un problema que bloquea (un fallo, seguridad, una norma de `CLAUDE.md` o una tarjeta sin test), el check `claude-review` sale en rojo. El ruleset de `main` exige ese check, así que la PR no se puede fusionar hasta arreglarlo. La aprobación de una persona sigue siendo obligatoria.
-
-## 6. Arrancar en local
-
-```bash
-docker compose up -d                    # base de datos con datos de prueba
-
-cd api && cp .env.example .env && npm install && npm run start:dev
-# http://localhost:3000/api/v1/health y http://localhost:3000/docs
-
-cd shop && cp .env.example .env && npm install && npm run dev        # http://localhost:5173
-cd backoffice && cp .env.example .env && npm install && npm run dev  # http://localhost:5174
-```
-
-Usuarios de prueba (contraseña `Furniro123`): `luis@furniro.com` (ADMIN), `ana@mail.com` y `pedro@mail.com`.
+Para arrancar el proyecto en local, mira el [README](../README.md).
