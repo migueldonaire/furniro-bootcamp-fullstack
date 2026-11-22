@@ -15,7 +15,7 @@ Solo se monitoriza **producción**. Staging no lleva `METRICS_TOKEN`, así que a
 
 | Dónde | `METRICS_TOKEN` | `GET /metrics` |
 |---|---|---|
-| Tu ordenador (`npm run start:dev`) | sin poner | abierto |
+| En local (`npm run start:dev`) | sin poner | abierto |
 | Render staging | sin poner | 404 |
 | Render producción | puesto | 401 sin token; métricas con `Authorization: Bearer <token>` |
 
@@ -45,7 +45,7 @@ Guárdalo: lo usarás en Render y en Grafana Cloud. No lo subas al repositorio.
 
 1. Render → servicio **furniro-api-prod** → **Environment → Add Environment Variable**.
 2. `METRICS_TOKEN` = el token. **Save, rebuild and deploy** (o *Save changes*: Render reinicia el servicio).
-3. Comprueba (en Windows, `curl.exe`; cambia la URL por la de tu servicio):
+3. Comprueba (en Windows, `curl.exe`; con la URL del servicio de producción):
 
    ```bash
    curl -i https://furniro-api-prod.onrender.com/metrics          # 401
@@ -59,7 +59,7 @@ Guárdalo: lo usarás en Render y en Grafana Cloud. No lo subas al repositorio.
 
 ### 5. Conectar la API (Metrics Endpoint)
 
-1. En tu stack: menú **Connections → Add new connection** → busca **Metrics Endpoint**.
+1. En el stack: menú **Connections → Add new connection** → busca **Metrics Endpoint**.
 2. Crea un *scrape job*:
    - **Scrape job name**: `furniro-api-prod` (será la etiqueta `job`).
    - **Scrape job URL**: `https://furniro-api-prod.onrender.com/metrics`.
@@ -72,13 +72,13 @@ Guárdalo: lo usarás en Render y en Grafana Cloud. No lo subas al repositorio.
 
 1. **Dashboards → New → Import**.
 2. Sube [`monitoring/furniro-api-dashboard.json`](../monitoring/furniro-api-dashboard.json).
-3. En **Data source** elige el Prometheus de tu stack (`grafanacloud-…-prom`) → **Import**.
+3. En **Data source** elige el Prometheus del stack (`grafanacloud-…-prom`) → **Import**.
 
 Navega un poco por la tienda de producción y, en 2-3 minutos, verás datos.
 
 ### 7. (Opcional) Alerta "API caída" por correo
 
-1. **Alerting → Contact points → + Create contact point**: nombre `Furniro team`, *Email*, tu correo. **Test**.
+1. **Alerting → Contact points → + Create contact point**: nombre `Furniro team`, *Email*, el correo de quien deba recibir los avisos. **Test**.
 2. **Alerting → Alert rules → + New alert rule**:
    - Nombre `API down (prod)`.
    - Consulta (modo *Code*): `up{job="furniro-api-prod"}`. Condición **IS BELOW `1`**.
@@ -86,7 +86,7 @@ Navega un poco por la tienda de producción y, en 2-3 minutos, verás datos.
    - **Configure no data and error handling → Alert state if no data: Alerting**.
    - Contact point `Furniro team`. **Save**.
 
-Si `up{job="furniro-api-prod"}` no devuelve nada en tu stack, usa `furniro_process_start_time_seconds{job="furniro-api-prod"}` con la misma condición: sin datos también avisa.
+Si `up{job="furniro-api-prod"}` no devuelve nada en el stack, usa `furniro_process_start_time_seconds{job="furniro-api-prod"}` con la misma condición: sin datos también avisa.
 
 ---
 
@@ -94,7 +94,7 @@ Si `up{job="furniro-api-prod"}` no devuelve nada en tu stack, usa `furniro_proce
 
 La API de Render Free se duerme tras 15 minutos sin visitas. Grafana Cloud la llama **cada minuto**, así que con el *scrape job* activo **no se duerme nunca** y gasta horas del plan (750 h al mes para todos los servicios gratis juntos; staging también las usa).
 
-Por eso: **activa el *scrape job* cuando quieras mirar producción** (una clase, una demo) y **desactívalo** después (**Connections → Metrics Endpoint → Scrape jobs**, interruptor *Enabled*).
+Por eso: **activar el *scrape job* solo para mirar producción** (una clase, una demo) y **desactivarlo** después (**Connections → Metrics Endpoint → Scrape jobs**, interruptor *Enabled*).
 
 ## Si algo falla
 
