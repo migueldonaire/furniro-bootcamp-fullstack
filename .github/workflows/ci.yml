@@ -47,9 +47,9 @@ jobs:
             FILES=$(git diff --name-only "$BASE" "$HEAD")
           fi
           echo "$FILES"
-          # A change in the CI itself also checks everything
+          # A change in the CI itself (or in the Sonar config) also checks everything
           ALL=false
-          if [ "$FILES" = "everything" ] || echo "$FILES" | grep -q '^\.github/workflows/ci\.yml$'; then
+          if [ "$FILES" = "everything" ] || echo "$FILES" | grep -qE '^(\.github/workflows/ci\.yml|sonar-project\.properties)$'; then
             ALL=true
           fi
           for folder in api shop backoffice database; do
