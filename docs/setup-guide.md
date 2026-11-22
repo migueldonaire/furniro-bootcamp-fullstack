@@ -78,7 +78,7 @@ Mientras no configures nada, los workflows de staging, release, Sonar y Claude *
 
 Me refería a esto: casi todas las tarjetas necesitan saber **quién** hace la petición (el token) y si es `ADMIN`. Eso son dos piezas: el `AuthGuard` y el `AdminGuard`. Si no existen, las parejas 4, 5 y 6 se quedan esperando.
 
-No lo he metido en el setup porque es la tarjeta **FUR-27** (iniciar sesión), que salió en la clase de BDD y es buena para los alumnos. La propuesta, en `docs/backlog.md`: el equipo 1 empieza por la API de FUR-27 y la fusiona el primer día; el resto empieza por lo que no necesita login. Si prefieres que nadie espere, la puedes hacer tú en directo el primer día (es lo mismo que en la clase de autenticación de NestJS).
+No lo he metido en el setup porque es la tarjeta **C2** (iniciar sesión), que salió en la clase de BDD y es buena para los alumnos. La propuesta, en `docs/backlog.md`: la pareja 1 empieza por la API de C2 y la fusiona el primer día; el resto empieza por lo que no necesita login. Si prefieres que nadie espere, la puedes hacer tú en directo el primer día (es lo mismo que en la clase de autenticación de NestJS).
 
 ## 4. Configuración paso a paso
 
