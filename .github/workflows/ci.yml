@@ -17,7 +17,9 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true # a new push to the PR cancels the old run
+  # In a PR, a new push cancels the old run. In main, never: each merged commit
+  # keeps its own CI result (if not, two quick merges show the first as cancelled).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # Which folders has this PR changed? The other jobs read the answer.
@@ -45,9 +47,9 @@ jobs:
             FILES=$(git diff --name-only "$BASE" "$HEAD")
           fi
           echo "$FILES"
-          # A change in the CI itself also checks everything
+          # A change in the CI itself (or in the Sonar config) also checks everything
           ALL=false
-          if [ "$FILES" = "everything" ] || echo "$FILES" | grep -q '^\.github/workflows/ci\.yml$'; then
+          if [ "$FILES" = "everything" ] || echo "$FILES" | grep -qE '^(\.github/workflows/ci\.yml|sonar-project\.properties)$'; then
             ALL=true
           fi
           for folder in api shop backoffice database; do

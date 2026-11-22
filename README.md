@@ -8,7 +8,7 @@ Tienda online de muebles del bootcamp Full Stack de Valencia.
 | [`shop/`](shop) | Tienda (React) |
 | [`backoffice/`](backoffice) | Panel de administración (React) |
 | [`database/`](database) | Tablas y datos de prueba (SQL) |
-| [`docs/`](docs) | Diagrama de clases, backlog, guía de CI/CD y [monitorización con Grafana Cloud](docs/grafana-cloud.md) |
+| [`docs/`](docs) | Cómo trabajamos, diagrama de clases, guía de CI/CD y [monitorización con Grafana Cloud](docs/grafana-cloud.md) |
 
 ## Arrancar en local
 
@@ -33,13 +33,15 @@ npm install
 npm run dev                   # http://localhost:5174
 ```
 
+Los `.env.example` ya traen valores que funcionan en local: basta con copiarlos. Trabaja siempre contra tu base de datos de Docker, no contra staging: staging solo enseña lo que ya está fusionado en `main` y puede estar a medias. Para empezar de cero con los datos de prueba: `docker compose down -v && docker compose up -d`.
+
 Usuarios de prueba (contraseña `Furniro123`): `luis@furniro.com` (administrador), `ana@mail.com` y `pedro@mail.com` (clientes).
 
 ## Cómo trabajamos
 
 1. Coge tu tarjeta en Jira y muévela a "En curso".
-2. Crea tu rama: `git switch -c feature/<funcionalidad>`.
-3. Programa dentro de tu carpeta (mira [`docs/backlog.md`](docs/backlog.md)).
+2. Crea tu rama: `git switch -c feature/FUR-35` (el código de tu tarjeta de Jira).
+3. Programa dentro de tu carpeta (mira tu carril en [Confluence](https://bootcamp-fullstack-valencia-2026.atlassian.net/wiki/spaces/DDS/pages/753665)).
 4. Antes de subir: `npm run lint` y `npm test` en la carpeta que hayas tocado.
 5. Abre una PR pequeña (menos de 400 líneas). Rellena la plantilla.
 6. Espera a que los checks salgan en verde y a la revisión. Corrige y vuelve a subir.

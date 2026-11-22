@@ -9,7 +9,7 @@ Tienda online de muebles del bootcamp Full Stack. Monorepo con cuatro carpetas:
 | `backoffice/` | Panel de administración, mismo stack | `npm run dev` (5174), `npm run lint`, `npm test` |
 | `database/` | `schema.sql` y `seed.sql` (datos de prueba) | `docker compose up -d` en la raíz |
 
-Documentación: `docs/how-we-work.md` (cómo trabajamos), `docs/class-diagram.md` (modelo), `docs/backlog.md` (tarjetas y dependencias), `docs/setup-guide.md` (CI/CD).
+Documentación: `docs/how-we-work.md` (cómo trabajamos), `docs/class-diagram.md` (modelo), `docs/setup-guide.md` (CI/CD). El orden de las tarjetas, el contrato de la API y las decisiones del PO están en Confluence (espacio Furniro).
 
 ## Normas
 
@@ -21,7 +21,7 @@ Documentación: `docs/how-we-work.md` (cómo trabajamos), `docs/class-diagram.md
 - Login: `POST /auth/login` devuelve solo `{ accessToken }`. El usuario se obtiene con `GET /auth/me`. En `localStorage` solo va el token: nunca el usuario ni otros datos personales.
 - Las rutas de administración exigen rol `ADMIN` en la API, no solo en el frontend.
 - Precios: `basePrice` sin IVA. El IVA y los totales se calculan, no se guardan.
-- Ramas `feature/<funcionalidad>`. PRs pequeñas (máximo 400 líneas sin contar `package-lock.json`), una tarjeta por PR.
+- Ramas con el código de la tarjeta de Jira: `feature/FUR-35`. PRs pequeñas (máximo 400 líneas sin contar `package-lock.json`), una tarjeta por PR.
 - Cada tarjeta lleva al menos un test.
 - No se instalan librerías nuevas sin preguntar al profesor (evita conflictos en `package-lock.json`).
 - Nunca se suben secretos: `.env` está en `.gitignore`; se sube `.env.example`.

@@ -172,7 +172,7 @@ Usa la GitHub Action oficial `anthropics/claude-code-action@v1` con el plugin `c
 - Solo revisa PRs de ramas de este repo (no de forks), y la persona que abre la PR necesita permiso de escritura. Por eso los alumnos van como colaboradores con Write.
 - Cada revisión gasta uso de tu suscripción. Está limitado a 30 turnos y 15 minutos por PR. Con PRs de menos de 400 líneas, el gasto es pequeño.
 - El workflow tiene que estar en `main` para que funcione: no revisará esta PR, sí las siguientes.
-- Claude no aprueba ni bloquea: solo comenta. La aprobación sigue siendo de una persona.
+- Claude **es un gate**: comenta las líneas, deja un resumen y, si encuentra un problema que bloquea (un fallo, seguridad, una norma de `CLAUDE.md` o una tarjeta sin test), el check `claude-review` sale en rojo. El ruleset de `main` exige ese check, así que la PR no se puede fusionar hasta arreglarlo. La aprobación de una persona sigue siendo obligatoria.
 
 ## 6. Arrancar en local
 
