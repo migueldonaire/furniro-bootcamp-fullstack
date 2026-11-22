@@ -17,7 +17,9 @@ permissions:
 
 concurrency:
   group: ci-${{ github.ref }}
-  cancel-in-progress: true # a new push to the PR cancels the old run
+  # In a PR, a new push cancels the old run. In main, never: each merged commit
+  # keeps its own CI result (if not, two quick merges show the first as cancelled).
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   # Which folders has this PR changed? The other jobs read the answer.
