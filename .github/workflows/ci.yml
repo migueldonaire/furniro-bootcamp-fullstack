@@ -235,16 +235,34 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # Sonar needs the full history
-      - name: Download the coverage of the projects that ran
+      # One download per project, each in its own folder. With a pattern, a single
+      # report lands directly in coverage/ and Sonar does not find it (0 % coverage).
+      - name: Download the coverage of api
+        if: needs.api.result == 'success'
         uses: actions/download-artifact@v8
         with:
-          pattern: coverage-*
-          path: coverage
+          name: coverage-api
+          path: coverage/coverage-api
+      - name: Download the coverage of shop
+        if: needs.shop.result == 'success'
+        uses: actions/download-artifact@v8
+        with:
+          name: coverage-shop
+          path: coverage/coverage-shop
+      - name: Download the coverage of backoffice
+        if: needs.backoffice.result == 'success'
+        uses: actions/download-artifact@v8
+        with:
+          name: coverage-backoffice
+          path: coverage/coverage-backoffice
       - name: Fix the paths of the reports (src/x.ts -> api/src/x.ts)
         run: |
           for app in api shop backoffice; do
             FILE="coverage/coverage-$app/lcov.info"
-            if [ -f "$FILE" ]; then sed -i "s#^SF:src/#SF:$app/src/#" "$FILE"; fi
+            if [ -f "$FILE" ]; then
+              sed -i "s#^SF:src/#SF:$app/src/#" "$FILE"
+              echo "Coverage of $app: $FILE"
+            fi
           done
       - name: SonarQube Cloud analysis
         uses: SonarSource/sonarqube-scan-action@v8
