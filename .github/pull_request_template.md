@@ -1,8 +1,16 @@
+<!-- Título de la PR: "FUR-XX - Qué hace, en una frase". Con los títulos se generan las notas de la release. -->
+
 ## Tarjeta
 
-FUR-XX: <título de la historia>
+FUR-XX: <título de la historia en Jira>
 
-## Qué hace
+## Qué se ha hecho
+
+-
+
+## Qué no se ha hecho (y por qué)
+
+<!-- Lo que queda pendiente o va en otra PR. Si no queda nada, escribe "Nada". -->
 
 -
 
@@ -13,7 +21,8 @@ FUR-XX: <título de la historia>
 ## Checklist
 
 - [ ] Una sola tarjeta (o una parte) y menos de 400 líneas
+- [ ] La rama se llama `feature/FUR-XX`
 - [ ] Código en inglés (variables, rutas, campos, ficheros)
 - [ ] Al menos un test nuevo y `npm test` en verde
 - [ ] He probado la pantalla y el endpoint a mano
-- [ ] Si he usado IA, entiendo y sé explicar todo el código
+- [ ] Si he usado IA (para el código o para esta descripción), entiendo y sé explicar todo
