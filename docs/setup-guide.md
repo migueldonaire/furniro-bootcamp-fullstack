@@ -110,7 +110,7 @@ Para la conexión usa el **Session pooler** y termina la URL en `?sslmode=no-ver
 Dos Web Services, `furniro-api-staging` y `furniro-api-prod`, con **Deploy an existing image**:
 
 - Imagen: `docker.io/<tu-usuario>/furniro-api:staging` (staging) y `docker.io/<tu-usuario>/furniro-api:latest` (prod). La primera vez tendrás que haber ejecutado el workflow una vez para que exista la imagen, o crear el servicio con `node:24-alpine` y cambiarla después.
-- Environment: `DATABASE_URL`, `JWT_SECRET` (uno distinto en cada entorno), `CORS_ORIGIN` (las dos URLs de Netlify de ese entorno, separadas por comas) y `SHIPPING_COST=8`.
+- Environment: `DATABASE_URL`, `JWT_SECRET` (uno distinto en cada entorno), `CORS_ORIGIN` (las dos URLs de Netlify de ese entorno, separadas por comas), `SHIPPING_COST=8`, `BREVO_API_KEY` (la clave de Brevo), `MAIL_FROM=furnirobootcampfullstack@gmail.com` y `SHOP_URL` (la URL de Netlify de la tienda de ese entorno).
 - Settings → **Deploy Hook**: copia la URL de cada servicio.
 
 ### 4.5. Netlify (webs)
@@ -172,7 +172,7 @@ Usa la GitHub Action oficial `anthropics/claude-code-action@v1` con el plugin `c
 - Solo revisa PRs de ramas de este repo (no de forks), y la persona que abre la PR necesita permiso de escritura. Por eso los alumnos van como colaboradores con Write.
 - Cada revisión gasta uso de tu suscripción. Está limitado a 30 turnos y 15 minutos por PR. Con PRs de menos de 400 líneas, el gasto es pequeño.
 - El workflow tiene que estar en `main` para que funcione: no revisará esta PR, sí las siguientes.
-- Claude no aprueba ni bloquea: solo comenta. La aprobación sigue siendo de una persona.
+- Claude **es un gate**: comenta las líneas, deja un resumen y, si encuentra un problema que bloquea (un fallo, seguridad, una norma de `CLAUDE.md` o una tarjeta sin test), el check `claude-review` sale en rojo. El ruleset de `main` exige ese check, así que la PR no se puede fusionar hasta arreglarlo. La aprobación de una persona sigue siendo obligatoria.
 
 ## 6. Arrancar en local
 

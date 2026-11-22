@@ -33,6 +33,8 @@ npm install
 npm run dev                   # http://localhost:5174
 ```
 
+Los `.env.example` ya traen valores que funcionan en local: basta con copiarlos. Trabaja siempre contra tu base de datos de Docker, no contra staging: staging solo enseña lo que ya está fusionado en `main` y puede estar a medias. Para empezar de cero con los datos de prueba: `docker compose down -v && docker compose up -d`.
+
 Usuarios de prueba (contraseña `Furniro123`): `luis@furniro.com` (administrador), `ana@mail.com` y `pedro@mail.com` (clientes).
 
 ## Cómo trabajamos
