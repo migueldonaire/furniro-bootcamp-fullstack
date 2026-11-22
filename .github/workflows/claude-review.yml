@@ -69,8 +69,14 @@ jobs:
           RESULT: ${{ steps.review.outputs.structured_output }}
         run: |
           echo "$RESULT"
-          if [ "$(echo "$RESULT" | jq -r '.blocking')" = "true" ]; then
+          BLOCKING=$(echo "$RESULT" | jq -r '.blocking' 2>/dev/null || echo "none")
+          if [ "$BLOCKING" = "false" ]; then
+            echo "Claude no ha encontrado nada que bloquee la PR."
+          elif [ "$BLOCKING" = "true" ]; then
             echo "::error::Claude ha encontrado problemas que hay que arreglar. Mira sus comentarios en la PR."
             exit 1
+          else
+            # No verdict (Claude failed or ran out of turns): red, never green by mistake
+            echo "::error::Claude no ha dado veredicto. Vuelve a lanzar el job (Re-run) o avisa al profesor."
+            exit 1
           fi
-          echo "Claude no ha encontrado nada que bloquee la PR."
