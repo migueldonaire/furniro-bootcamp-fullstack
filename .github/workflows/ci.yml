@@ -112,7 +112,7 @@ jobs:
       - name: Build
         run: npm run build
       - name: Unit tests with coverage
-        run: npm run test:cov
+        run: npm test -- --coverage
       - name: Save coverage for Sonar
         uses: actions/upload-artifact@v7
         with:
@@ -156,7 +156,7 @@ jobs:
       - name: Build
         run: npm run build
       - name: Tests with coverage
-        run: npm run test:cov
+        run: npx vitest run --coverage
       - name: Save coverage for Sonar
         uses: actions/upload-artifact@v7
         with:
@@ -191,7 +191,7 @@ jobs:
       - name: Build
         run: npm run build
       - name: Tests with coverage
-        run: npm run test:cov
+        run: npx vitest run --coverage
       - name: Save coverage for Sonar
         uses: actions/upload-artifact@v7
         with:
