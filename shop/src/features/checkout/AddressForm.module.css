@@ -1,0 +1,40 @@
+.form {
+  display: grid;
+  gap: 16px;
+  max-width: 480px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field input,
+.field select {
+  padding: 12px;
+  border: 1px solid var(--color-muted);
+  border-radius: 8px;
+  font: inherit;
+}
+
+.field input:focus-visible,
+.field select:focus-visible,
+.submit:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.field input[aria-invalid="true"] {
+  border-color: #e97171;
+}
+
+.submit {
+  justify-self: start;
+  padding: 12px 32px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
