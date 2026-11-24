@@ -10,8 +10,8 @@ describe("Header", () => {
     expect(screen.getByRole("link", { name: "Productos" })).toBeInTheDocument();
   });
 
-  // styles.css paints the menu with ".header" and the current page with ".active"
-  it("uses the classes of styles.css and marks the current page", () => {
+  // index.css paints the menu with ".header" and the current page with ".active"
+  it("uses the classes of index.css and marks the current page", () => {
     renderWithProviders(<Header />, "/orders");
     expect(screen.getByRole("banner")).toHaveClass("header");
     expect(screen.getByRole("link", { name: "Pedidos" })).toHaveClass("active");
