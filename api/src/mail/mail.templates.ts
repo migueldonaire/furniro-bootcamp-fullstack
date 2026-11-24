@@ -9,11 +9,11 @@ export interface EmailContent {
 // The name comes from the user: escape it so nobody can inject HTML
 export function escapeHtml(text: string): string {
   return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 // Shared frame of every email: header, content and footer
@@ -44,27 +44,24 @@ function button(link: string, text: string): string {
 // 1. After registering: confirm the email to activate the account
 export function verifyEmailTemplate(name: string, link: string): EmailContent {
   return {
-    subject: 'Confirma tu cuenta de Furniro',
+    subject: "Confirma tu cuenta de Furniro",
     html: layout(
       `¡Hola, ${escapeHtml(name)}!`,
       `<p>Gracias por registrarte. Pulsa el botón para activar tu cuenta.</p>
-      ${button(link, 'Activar mi cuenta')}
+      ${button(link, "Activar mi cuenta")}
       <p>El enlace caduca en 24 horas.</p>`,
     ),
   };
 }
 
 // 2. Forgot password: link to choose a new one
-export function resetPasswordTemplate(
-  name: string,
-  link: string,
-): EmailContent {
+export function resetPasswordTemplate(name: string, link: string): EmailContent {
   return {
-    subject: 'Cambia tu contraseña de Furniro',
+    subject: "Cambia tu contraseña de Furniro",
     html: layout(
       `Hola, ${escapeHtml(name)}`,
       `<p>Hemos recibido una petición para cambiar tu contraseña.</p>
-      ${button(link, 'Elegir una contraseña nueva')}
+      ${button(link, "Elegir una contraseña nueva")}
       <p>El enlace caduca en 30 minutos y solo se puede usar una vez.</p>`,
     ),
   };

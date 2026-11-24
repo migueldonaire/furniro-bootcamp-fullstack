@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module } from "@nestjs/common";
 
 // Categories module: add here the controllers and services of your cards.
 // Example: controllers: [CategoriesController], providers: [CategoriesService]

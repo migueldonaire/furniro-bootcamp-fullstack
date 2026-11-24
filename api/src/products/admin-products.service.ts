@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { Pool } from 'pg';
+import { Injectable } from "@nestjs/common";
+import { Pool } from "pg";
 export type AdminProduct = {
   id: string;
   name: string;

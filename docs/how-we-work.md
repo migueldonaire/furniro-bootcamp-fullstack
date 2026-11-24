@@ -139,9 +139,12 @@ Si una tarjeta se hace en varias PRs (una por subtarea), añade una palabra al f
 4. Antes de subir, en la carpeta que hayas tocado:
 
 ```bash
+npm run format   # deja el código con el formato común (Prettier)
 npm run lint
 npm test
 ```
+
+Con VS Code y la extensión **Prettier** (el editor la recomienda al abrir el repo), el formato se aplica solo al guardar. El CI comprueba el formato con `npm run format:check`.
 
 5. Sube la rama y abre una **PR** contra `main`, con un buen título y una buena descripción (ver "Título y descripción de la PR", justo debajo).
 6. Mueve la tarjeta a **En revisión**.

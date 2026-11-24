@@ -5,13 +5,13 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+} from "@nestjs/common";
+import { Request, Response } from "express";
 
 // @Catch() sin nada dentro = atrapa TODOS los errores (apuntes 07, apartado 7)
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
-  private readonly logger = new Logger('Errors');
+  private readonly logger = new Logger("Errors");
 
   catch(exception: unknown, host: ArgumentsHost) {
     const http = host.switchToHttp(); // la petición y la respuesta de Express
@@ -20,18 +20,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     // ¿Es un error "conocido" (404, 400, 409...)? Si no, es un 500
     const isHttp = exception instanceof HttpException;
-    const statusCode = isHttp
-      ? exception.getStatus()
-      : HttpStatus.INTERNAL_SERVER_ERROR; // = 500
+    const statusCode = isHttp ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR; // = 500
 
     // El mensaje: el del error conocido, o uno genérico para el 500
-    let message: string | string[] = 'Error interno del servidor';
+    let message: string | string[] = "Error interno del servidor";
     if (isHttp) {
       const body = exception.getResponse(); // texto u objeto { message }
-      message =
-        typeof body === 'string'
-          ? body
-          : (body as { message: string | string[] }).message;
+      message = typeof body === "string" ? body : (body as { message: string | string[] }).message;
     }
 
     // Los 500 se apuntan en la consola con todo el detalle (nunca al cliente)
