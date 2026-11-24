@@ -9,4 +9,12 @@ describe("Header", () => {
     expect(screen.getByText("Furniro Backoffice")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Productos" })).toBeInTheDocument();
   });
+
+  // styles.css paints the menu with ".header" and the current page with ".active"
+  it("uses the classes of styles.css and marks the current page", () => {
+    renderWithProviders(<Header />, "/orders");
+    expect(screen.getByRole("banner")).toHaveClass("header");
+    expect(screen.getByRole("link", { name: "Pedidos" })).toHaveClass("active");
+    expect(screen.getByRole("link", { name: "Entrar" })).not.toHaveClass("active");
+  });
 });
