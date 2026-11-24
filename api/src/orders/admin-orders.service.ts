@@ -1,11 +1,6 @@
-import { Injectable } from '@nestjs/common';
-import { Pool } from 'pg';
-import {
-  AdminOrder,
-  AdminOrderRow,
-  OrderStatus,
-  toAdminOrder,
-} from './admin-order';
+import { Injectable } from "@nestjs/common";
+import { Pool } from "pg";
+import { AdminOrder, AdminOrderRow, OrderStatus, toAdminOrder } from "./admin-order";
 
 @Injectable()
 export class AdminOrdersService {
@@ -13,7 +8,7 @@ export class AdminOrdersService {
 
   // All the orders, newest first. With status, only the orders in that status
   async findAll(status?: OrderStatus): Promise<AdminOrder[]> {
-    const where = status !== undefined ? 'WHERE o.status = $1' : '';
+    const where = status !== undefined ? "WHERE o.status = $1" : "";
     const values = status !== undefined ? [status] : [];
 
     const result = await this.pool.query<AdminOrderRow>(

@@ -1,4 +1,4 @@
-export type OrderStatus = 'PENDING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+export type OrderStatus = "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 
 // A row of the query, as pg returns it
 export interface AdminOrderRow {
