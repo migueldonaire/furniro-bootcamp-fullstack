@@ -96,7 +96,7 @@ Después de fusionar, OWASP ZAP ataca staging de forma básica (solo avisa, no b
 | Backoffice (Netlify) | `furniro-backoffice-staging` | `furniro-backoffice-prod` |
 | Entorno de GitHub | `staging` | `production` (pide aprobación) |
 
-Variables de la API en Render: `DATABASE_URL`, `JWT_SECRET` (distinto en cada entorno), `CORS_ORIGIN` (las dos URLs de Netlify del entorno, separadas por comas), `SHIPPING_COST`, `BREVO_API_KEY`, `MAIL_FROM` y `SHOP_URL`. En local se usan las de `api/.env.example`.
+Variables de la API en Render: `DATABASE_URL`, `JWT_SECRET` (distinto en cada entorno), `CORS_ORIGIN` (las dos URLs de Netlify del entorno, separadas por comas), `SHIPPING_COST`, `BREVO_API_KEY`, `MAIL_FROM` y `SHOP_URL`. Solo en producción, y solo cuando se monte Grafana Cloud: `METRICS_TOKEN` (ver [`grafana-cloud.md`](grafana-cloud.md)). En local se usan las de `api/.env.example`.
 
 Secretos y variables de GitHub:
 

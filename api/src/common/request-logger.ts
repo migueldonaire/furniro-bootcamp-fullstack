@@ -5,6 +5,7 @@ const logger = new Logger('HTTP');
 
 // Middleware: apunta cada petición con su código y lo que ha tardado
 export function requestLogger(req: Request, res: Response, next: NextFunction) {
+  if (req.path === '/metrics') return next(); // Prometheus calls it every 15 s
   const start = Date.now();
 
   // 'finish' salta cuando la respuesta ya se ha enviado

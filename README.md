@@ -8,7 +8,7 @@ Tienda online de muebles del bootcamp Full Stack de Valencia.
 | [`shop/`](shop) | Tienda (React) |
 | [`backoffice/`](backoffice) | Panel de administración (React) |
 | [`database/`](database) | Tablas y datos de prueba (SQL) |
-| [`docs/`](docs) | Cómo trabajamos, diagrama de clases y guía de CI/CD |
+| [`docs/`](docs) | Cómo trabajamos, diagrama de clases, guía de CI/CD y [monitorización con Grafana Cloud](docs/grafana-cloud.md) |
 
 ## Arrancar en local
 
