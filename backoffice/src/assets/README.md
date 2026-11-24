@@ -33,7 +33,7 @@ import logo from "../../assets/images/logo.png";
 La tipografía del diseño es **Poppins**. Va en ficheros propios, sin Google Fonts:
 
 - `fonts/poppins-400.woff2`, `500`, `600` y `700`: un fichero por grosor (normal, medio, seminegrita y negrita).
-- `fonts/fonts.css`: declara cada fichero con `@font-face`. Lo importa `src/styles.css` en la primera línea.
+- `fonts/fonts.css`: declara cada fichero con `@font-face`. Lo importa `src/index.css` en la primera línea.
 - `fonts/OFL.txt`: la licencia de la fuente (libre, se puede usar y distribuir).
 
 En el CSS basta con `font-weight: 600` (o 400, 500, 700). Otros grosores no existen y el navegador se los inventa.
