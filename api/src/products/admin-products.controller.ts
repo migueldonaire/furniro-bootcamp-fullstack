@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from "@nestjs/common";
+import { BadRequestException, Controller, Get, Query } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AdminProductsService, type ProductStatus } from "./admin-products.service";
 
@@ -9,6 +9,9 @@ export class AdminProductsController {
 
   @Get()
   async findAll(@Query("search") search?: string, @Query("status") status?: ProductStatus) {
+    if (status && !["ACTIVE", "INACTIVE"].includes(status)) {
+      throw new BadRequestException("Estado no válido. Debe ser 'ACTIVE' o 'INACTIVE'.");
+    }
     return this.adminProductsService.findAll(search, status);
   }
 }
