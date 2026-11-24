@@ -144,6 +144,8 @@ npm run lint
 npm test
 ```
 
+Cómo escribir los tests (API y web), con ejemplos: [`testing.md`](testing.md).
+
 Con VS Code y la extensión **Prettier** (el editor la recomienda al abrir el repo), el formato se aplica solo al guardar. El CI comprueba el formato con `npm run format:check`.
 
 5. Sube la rama y abre una **PR** contra `main`, con un buen título y una buena descripción (ver "Título y descripción de la PR", justo debajo).

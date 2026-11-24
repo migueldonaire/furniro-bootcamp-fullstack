@@ -8,6 +8,8 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: "./src/test/setup.ts",
+    // RTK Query needs a full URL. In the tests nobody answers there: we fake fetch
+    env: { VITE_API_URL: "http://localhost:3000/api/v1" },
     coverage: { reporter: ["text", "lcov"] }, // lcov for SonarQube Cloud
   },
 });

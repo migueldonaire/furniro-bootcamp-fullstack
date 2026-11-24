@@ -36,4 +36,4 @@ itemAdded: (state, action: PayloadAction<CartItem>) => ({
 
 - **Nada confidencial en `localStorage`**: solo se guarda el token (`app/store.ts`). El usuario se pide a la API con `useGetMeQuery()` (`features/auth/authApi.ts`).
 - Precios: usa `formatEuro` y `priceWithTax` de `lib/money.ts`.
-- Cada tarjeta lleva al menos un test (`*.test.tsx` al lado del componente).
+- Cada tarjeta lleva al menos un test (`*.test.tsx` al lado del componente). Ejemplos y `mockFetch` para fingir la API: [`docs/testing.md`](../../../docs/testing.md).

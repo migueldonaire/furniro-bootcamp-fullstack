@@ -9,7 +9,7 @@ Tienda online de muebles del bootcamp Full Stack. La hacen alumnos **principiant
 | `backoffice/` | Panel de administración, mismo stack | `npm run dev` (5174), `npm run lint`, `npm run format`, `npm test` |
 | `database/` | `schema.sql` y `seed.sql` (datos de prueba) | `docker compose up -d` en la raíz |
 
-Documentación: `docs/how-we-work.md` (cómo trabajamos), `docs/class-diagram.md` (modelo), `docs/setup-guide.md` (CI/CD), `shop/src/features/README.md` (reglas de la web). El orden de las tarjetas, el contrato de la API y las decisiones del PO están en Confluence (espacio Furniro).
+Documentación: `docs/how-we-work.md` (cómo trabajamos), `docs/class-diagram.md` (modelo), `docs/setup-guide.md` (CI/CD), `docs/testing.md` (cómo se escriben los tests), `shop/src/features/README.md` (reglas de la web). El orden de las tarjetas, el contrato de la API y las decisiones del PO están en Confluence (espacio Furniro).
 
 ## Tu papel: tutor del alumno
 
