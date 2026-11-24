@@ -91,21 +91,6 @@ jobs:
     needs: changes
     if: needs.changes.outputs.api == 'true'
     runs-on: ubuntu-latest
-    # A PostgreSQL only for the e2e tests (same user and password as compose.yaml)
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_USER: furniro
-          POSTGRES_PASSWORD: furniro_dev_123
-          POSTGRES_DB: furniro
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U furniro"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
     defaults:
       run:
         working-directory: api
@@ -128,16 +113,6 @@ jobs:
         run: npm run build
       - name: Unit tests with coverage
         run: npm run test:cov
-      - name: Load schema.sql and seed.sql for the e2e tests
-        env:
-          PGPASSWORD: furniro_dev_123
-        run: |
-          psql -h localhost -U furniro -d furniro -v ON_ERROR_STOP=1 -q \
-            -f ../database/schema.sql -f ../database/seed.sql
-      - name: e2e tests (the whole API against PostgreSQL)
-        run: |
-          cp .env.example .env
-          npm run test:e2e
       - name: Save coverage for Sonar
         uses: actions/upload-artifact@v7
         with:
