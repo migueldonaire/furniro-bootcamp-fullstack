@@ -39,6 +39,8 @@ El test va **al lado** del fichero que prueba:
 | Un componente o una página | `ProductPage.test.tsx` | `shop/src/components/layout/Header.test.tsx` |
 | Una página que pide datos a la API | `ProductPage.test.tsx` | `shop/src/features/auth/ProtectedRoute.test.tsx` |
 
+Los ejemplos de abajo usan ficheros que haréis vosotros (`ProductsService`, `ProductPage`...): son ilustrativos. Los de la tabla de arriba sí existen.
+
 ## 1. Servicio de la API con un `Pool` falso
 
 Un test unitario no usa la base de datos de verdad. Le damos al servicio un `Pool` falso que responde lo que queramos:
