@@ -1,4 +1,6 @@
 /* Global styles only. Each component has its own .module.css */
+@import "./assets/fonts/fonts.css";
+
 :root {
   --color-primary: #b88e2f; /* Furniro gold */
   --color-text: #333333;
