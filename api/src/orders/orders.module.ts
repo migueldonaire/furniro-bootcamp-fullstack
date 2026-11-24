@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
+import { AdminOrdersController } from './admin-orders.controller';
+import { AdminOrdersService } from './admin-orders.service';
 
-// Orders module: add here the controllers and services of your cards.
-// Example: controllers: [OrdersController], providers: [OrdersService]
 @Module({
-  controllers: [],
-  providers: [],
+  controllers: [AdminOrdersController],
+  providers: [AdminOrdersService],
   exports: [],
 })
 export class OrdersModule {}
