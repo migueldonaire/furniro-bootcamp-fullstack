@@ -1,11 +1,7 @@
-import {
-  INestApplication,
-  ValidationPipe,
-  VersioningType,
-} from '@nestjs/common';
-import helmet from 'helmet';
-import { AllExceptionsFilter } from './common/all-exceptions.filter';
-import { requestLogger } from './common/request-logger';
+import { INestApplication, ValidationPipe, VersioningType } from "@nestjs/common";
+import helmet from "helmet";
+import { AllExceptionsFilter } from "./common/all-exceptions.filter";
+import { requestLogger } from "./common/request-logger";
 
 // The app configuration, in one place.
 // main.ts and the e2e tests both use it, so they behave the same.
@@ -15,13 +11,13 @@ export function configureApp(app: INestApplication) {
 
   // CORS: which websites can call the API from the browser.
   // CORS_ORIGIN can hold several URLs separated by commas (shop and backoffice).
-  const origins = (
-    process.env.CORS_ORIGIN ?? 'http://localhost:5173,http://localhost:5174'
-  ).split(',');
+  const origins = (process.env.CORS_ORIGIN ?? "http://localhost:5173,http://localhost:5174").split(
+    ",",
+  );
   app.enableCors({ origin: origins });
 
-  app.setGlobalPrefix('api'); // every route starts with /api
-  app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' }); // /api/v1/...
+  app.setGlobalPrefix("api"); // every route starts with /api
+  app.enableVersioning({ type: VersioningType.URI, defaultVersion: "1" }); // /api/v1/...
 
   // Validates the DTOs on every route
   app.useGlobalPipes(

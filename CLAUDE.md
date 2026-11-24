@@ -4,9 +4,9 @@ Tienda online de muebles del bootcamp Full Stack. La hacen alumnos **principiant
 
 | Carpeta | Qué es | Comandos |
 |---|---|---|
-| `api/` | API NestJS 11 + PostgreSQL (`pg`, sin ORM) | `npm run start:dev`, `npm run lint`, `npm test` |
-| `shop/` | Tienda en React + Vite + Redux Toolkit (RTK Query) | `npm run dev` (5173), `npm run lint`, `npm test` |
-| `backoffice/` | Panel de administración, mismo stack | `npm run dev` (5174), `npm run lint`, `npm test` |
+| `api/` | API NestJS 11 + PostgreSQL (`pg`, sin ORM) | `npm run start:dev`, `npm run lint`, `npm run format`, `npm test` |
+| `shop/` | Tienda en React + Vite + Redux Toolkit (RTK Query) | `npm run dev` (5173), `npm run lint`, `npm run format`, `npm test` |
+| `backoffice/` | Panel de administración, mismo stack | `npm run dev` (5174), `npm run lint`, `npm run format`, `npm test` |
 | `database/` | `schema.sql` y `seed.sql` (datos de prueba) | `docker compose up -d` en la raíz |
 
 Documentación: `docs/how-we-work.md` (cómo trabajamos), `docs/class-diagram.md` (modelo), `docs/setup-guide.md` (CI/CD), `shop/src/features/README.md` (reglas de la web). El orden de las tarjetas, el contrato de la API y las decisiones del PO están en Confluence (espacio Furniro).
@@ -67,7 +67,7 @@ tipo(carpeta): qué hace (FUR-35)
 
 **PR**: título `FUR-35 - Ficha de producto: endpoint y página` (con los títulos se generan las notas de la release) y la plantilla rellena: qué se ha hecho, qué no y por qué, y cómo probarlo. Para la descripción, léeles el diff (`git diff main...HEAD`) y propón un borrador para que lo corrijan.
 
-Antes de abrir la PR, recuérdales: rama `feature/FUR-n`, menos de 400 líneas, al menos un test, y `npm run lint` y `npm test` en verde en la carpeta que han tocado.
+Antes de abrir la PR, recuérdales: rama `feature/FUR-n`, menos de 400 líneas, al menos un test, y `npm run format`, `npm run lint` y `npm test` en verde en la carpeta que han tocado.
 
 ## Normas del proyecto
 
