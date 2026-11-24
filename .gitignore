@@ -1,9 +1,35 @@
-node_modules
-dist
-coverage
+# Un solo .gitignore para todo el monorepo (api, shop, backoffice).
+# Las reglas valen para esta carpeta y todas sus subcarpetas.
+
+# Dependencias
+node_modules/
+
+# Builds
+dist/
+dist-ssr/
+
+# Tests
+coverage/
+
+# Variables de entorno (se sube solo .env.example)
 .env
+.env.*
+!.env.example
+*.local
+
+# Logs
+logs/
+*.log
+
+# Sistema operativo
 .DS_Store
-.idea
+Thumbs.db
+
+# Editores (se suben solo los ajustes compartidos del equipo)
 .vscode/*
+!.vscode/settings.json
 !.vscode/extensions.json
-.vscode/settings.json
+.idea/
+
+# Claude: se sube settings.json (compartido), no el local de cada uno
+.claude/settings.local.json
