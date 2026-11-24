@@ -1,9 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import {
-  EmailContent,
-  resetPasswordTemplate,
-  verifyEmailTemplate,
-} from './mail.templates';
+import { Injectable, Logger } from "@nestjs/common";
+import { EmailContent, resetPasswordTemplate, verifyEmailTemplate } from "./mail.templates";
 
 // Sends emails with Brevo (https://www.brevo.com), through its HTTP API.
 // Why not SMTP with Gmail? Render (free plan) blocks the SMTP ports.
@@ -30,11 +26,11 @@ export class MailService {
     }
 
     // Docs: https://developers.brevo.com/reference/sendtransacemail
-    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: { 'api-key': apiKey, 'content-type': 'application/json' },
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: { "api-key": apiKey, "content-type": "application/json" },
       body: JSON.stringify({
-        sender: { name: 'Furniro', email: process.env.MAIL_FROM },
+        sender: { name: "Furniro", email: process.env.MAIL_FROM },
         to: [{ email: to }],
         subject: email.subject,
         htmlContent: email.html,
@@ -44,7 +40,7 @@ export class MailService {
     if (!response.ok) {
       // We log the details, but never show them to the user
       this.logger.error(`Brevo ${response.status}: ${await response.text()}`);
-      throw new Error('The email could not be sent');
+      throw new Error("The email could not be sent");
     }
   }
 }

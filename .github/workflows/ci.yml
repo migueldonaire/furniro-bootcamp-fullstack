@@ -107,6 +107,8 @@ jobs:
         run: npm audit --audit-level=high --omit=dev
       - name: Lint
         run: npm run lint
+      - name: Format (Prettier). If it fails, run "npm run format" and commit
+        run: npm run format:check
       - name: Build
         run: npm run build
       - name: Unit tests with coverage
@@ -149,6 +151,8 @@ jobs:
         run: npx --yes htmlhint@1 "**/*.html" --ignore "node_modules/**,dist/**,coverage/**"
       - name: Lint
         run: npm run lint
+      - name: Format (Prettier). If it fails, run "npm run format" and commit
+        run: npm run format:check
       - name: Build
         run: npm run build
       - name: Tests with coverage
@@ -182,6 +186,8 @@ jobs:
         run: npx --yes htmlhint@1 "**/*.html" --ignore "node_modules/**,dist/**,coverage/**"
       - name: Lint
         run: npm run lint
+      - name: Format (Prettier). If it fails, run "npm run format" and commit
+        run: npm run format:check
       - name: Build
         run: npm run build
       - name: Tests with coverage
