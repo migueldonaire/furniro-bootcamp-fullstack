@@ -1,5 +1,5 @@
 /* Poppins, the font of the Furniro design, served from our own files.
-   Only the weights the design uses. index.css imports this file. */
+   Only the weights the design uses. styles.css imports this file. */
 @font-face {
   font-family: "Poppins";
   src: url("./poppins-400.woff2") format("woff2");
