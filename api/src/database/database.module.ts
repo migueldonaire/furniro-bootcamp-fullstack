@@ -1,10 +1,10 @@
-import { Global, Module } from '@nestjs/common';
-import { Pool } from 'pg';
+import { Global, Module } from "@nestjs/common";
+import { Pool } from "pg";
 
 // Creates the Pool and logs (without crashing) if PostgreSQL drops a connection
 function createPool() {
   const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-  pool.on('error', (error) => console.error('PostgreSQL:', error.message));
+  pool.on("error", (error) => console.error("PostgreSQL:", error.message));
   return pool;
 }
 
