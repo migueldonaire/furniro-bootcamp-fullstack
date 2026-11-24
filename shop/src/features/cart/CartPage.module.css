@@ -1,0 +1,24 @@
+.cart {
+  width: 817px;
+}
+
+.specsProduct {
+  width: 817px;
+  display: flex;
+  gap: 30 px;
+  align-items: flex-start ;
+}
+
+.productImage {
+  width: 108px;
+}
+
+.cartTotal {
+  width: 393px;
+}
+
+.layout {
+  display: flex; /* children side by side */
+  gap: 30px; /* space between table and totals (947 - 917 in Figma) */
+  align-items: flex-start; /* totals box keeps its own height */
+}
