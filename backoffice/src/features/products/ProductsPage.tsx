@@ -50,7 +50,7 @@ export function ProductsPage() {
               <td>{product.categoryName}</td>
               <td>{formatEuro(Number(product.basePrice))}</td>
               <td>{product.stock}</td>
-              <td>{product.status == "ACTIVE" ? "Activo" : "Desactivado"}</td>
+              <td>{product.status === "ACTIVE" ? "Activo" : "Desactivado"}</td>
             </tr>
           ))}
         </tbody>
