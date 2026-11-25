@@ -183,3 +183,39 @@ Un nombre tiene que decir **qué es** o **qué hace** sin tener que leer el cód
 - Nombres mejorables.
 - Faltan tests de algún escenario, si al menos hay uno (se dice cuáles faltan).
 - Pequeños detalles de estilo o de orden.
+- Diferencias con la maqueta (apartado 7).
+
+---
+
+## 7. La maqueta
+
+Cada pantalla tiene una imagen de referencia en `docs/screens/`. Es una **referencia, no un contrato**: no hace falta que quede igual al píxel, pero sí que estén los datos, los campos y los botones de la tarjeta. Lo que sale en la imagen y no está en el MVP (favoritos, comparar, notas, actividad...) **no se hace**.
+
+| Tarjeta | Imagen en `docs/screens/` |
+|---|---|
+| FUR-25 Registrarse | `Registro Furniro_ Estilo y Confort.png` |
+| FUR-26 Activar la cuenta | No hay: mensaje sencillo con el estilo del login |
+| FUR-27, FUR-28 Iniciar sesión (tienda y backoffice) | `Página de inicio de sesión Furniro minimalista.png` |
+| FUR-29 Cerrar sesión | No hay: un botón en la cabecera |
+| FUR-30, FUR-31 Recuperar la contraseña | No hay: formularios con el estilo del login |
+| FUR-32 Catálogo | `Shop.png` (y la rejilla de productos de `Home.png`) |
+| FUR-33 Filtrar por categoría | `Shop.png` (barra de filtro) |
+| FUR-34 Buscar por nombre | Lupa de la cabecera y resultados como en `Shop.png` |
+| FUR-35 Ficha de producto | `Single Product.png` |
+| FUR-36 Añadir al carrito | `Single Product.png` (cantidad y botón) y `Cart Sidebar.png` |
+| FUR-37, FUR-38, FUR-39 Carrito y resumen | `Cart.png` |
+| FUR-40 Dirección de entrega | `Checkout.png` (formulario de la izquierda) |
+| FUR-41 Confirmar el pedido | `Checkout.png` (resumen y botón) y `Confirmación de pedido Furniro.png` |
+| FUR-42 Pago de demostración | No hay: pantalla sencilla con el aviso "pago de demostración" |
+| FUR-43 Mis pedidos (tienda) | `Panel de Pedidos Furniro.png` (*My Orders*) |
+| FUR-44 Detalle de un pedido mío | No hay: se puede basar en `Confirmación de pedido Furniro.png` |
+| FUR-45, FUR-48 Productos del backoffice | `Panel de Productos Furniro Minimalista.png` |
+| FUR-46, FUR-47, FUR-49 Crear y editar producto, imágenes | `Panel de edición de producto Furniro.png` |
+| FUR-50, FUR-52 Pedidos del backoffice | `Panel de pedidos Furniro (1).png` (*Orders* con menú lateral) |
+| FUR-51 Detalle de un pedido (backoffice) | No hay: datos de la confirmación de pedido y selector de estado |
+| FUR-53, FUR-55 Clientes del backoffice | `Panel de clientes de Furniro.png` |
+| FUR-54 Ficha de un cliente | `Panel de Cliente Furniro.png` (sin editar, sin notas ni actividad) |
+
+No son del MVP: `Blog.png`, `Contact.png`, `Product Comparison.png`, `Perfil de cliente Furniro moderno.png`, `Panel de categorías Furniro.png` y `Panel de configuración de tienda Furniro.png`.
+
+Qué mirar: que estén los **textos, columnas, campos y botones** de la tarjeta y que la **colocación grande** se parezca (dos columnas, tabla, tarjetas en rejilla). La cabecera, el pie y los banners no son de ninguna tarjeta. Las diferencias con la maqueta **nunca bloquean**: se sugieren.

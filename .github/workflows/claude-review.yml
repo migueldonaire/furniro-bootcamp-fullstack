@@ -68,6 +68,8 @@ jobs:
             - CLAUDE.md, sobre todo "Normas del proyecto" y "Revisión de PRs (para Claude)".
             - docs/review-guide.md: cómo tiene que quedar una tarjeta (API, webs, tests, nombres).
             - jira-card.md: la tarjeta de Jira de la rama (historia, reglas y escenarios).
+            - La imagen de la pantalla de la tarjeta en docs/screens/ (la tabla del
+              apartado 7 de docs/review-guide.md dice cuál es), si la PR toca una web.
             Usa `gh pr view` y `gh pr diff` para leer la PR.
 
             La tarjeta es la de la rama. Si un commit nombra otro FUR, es una
@@ -98,6 +100,11 @@ jobs:
                  comentarios `// Dado`, `// Cuando`, `// Entonces` con alguna
                  línea de ejemplo) y diles que pidan el resto a Claude en su
                  terminal pasándole el escenario.
+               - **Maqueta** (solo si la PR toca una web y la tarjeta tiene imagen):
+                 compara la imagen con el JSX y el CSS y lista lo que falte de la
+                 tarjeta (textos, columnas, campos, botones, colocación grande).
+                 Ignora cabecera, pie, banners y lo que no es del MVP. Dilo como
+                 sugerencia ("en la maqueta hay..."): puedes equivocarte. Nunca bloquea.
                - **Nombres**: si hay nombres vagos (`data`, `get`, `Props`...),
                  sugiere uno mejor. No bloquea.
                - **Siguiente paso**: una o dos frases con lo próximo que deben hacer.
@@ -113,7 +120,8 @@ jobs:
                  localStorage, precio que llega del cliente...), una norma de
                  CLAUDE.md que no se cumple o una tarjeta sin ningún test.
                - blocking = false si solo hay sugerencias (nombres, otra forma
-                 de hacerlo, tests de algún escenario si ya hay al menos uno).
+                 de hacerlo, tests de algún escenario si ya hay al menos uno,
+                 diferencias con la maqueta).
           claude_args: |
             --max-turns 40
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*)"
