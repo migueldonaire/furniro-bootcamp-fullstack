@@ -17,11 +17,21 @@ describe("AddToCartButton", () => {
   });
 
   it("shows a message when there is not enough stock", async () => {
-    renderWithProviders(<AddToCartButton product={nora} />);
+    const { store } = renderWithProviders(<AddToCartButton product={nora} />);
+    expect(store.getState().cart.items).toHaveLength(0); 
     const input = screen.getByLabelText("Cantidad");
     await userEvent.clear(input);
     await userEvent.type(input, "6");
     await userEvent.click(screen.getByRole("button", { name: "Añadir al carrito" }));
     expect(screen.getByRole("alert")).toHaveTextContent("Solo quedan 5 unidades");
+  });
+    it("shows a message when the quantity is 0", async () => {
+    const { store } = renderWithProviders(<AddToCartButton product={nora} />);
+    const input = screen.getByLabelText("Cantidad");
+    await userEvent.clear(input);
+    await userEvent.type(input, "0");
+    await userEvent.click(screen.getByRole("button", { name: "Añadir al carrito" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("La cantidad mínima es 1");
+    expect(store.getState().cart.items).toHaveLength(0);
   });
 });
