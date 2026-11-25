@@ -1,8 +1,8 @@
-import { vi, describe, it, expect } from "vitest";
+import { vi, describe, it, expect, afterEach } from "vitest";
 import { useGetAdminProductsQuery } from "./productsApi";
 import { ProductsPage } from "./ProductsPage";
 import { renderWithProviders } from "../../test/renderWithProviders";
-import { screen } from "@testing-library/react";
+import { screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 vi.mock("./productsApi", () => ({
@@ -10,6 +10,10 @@ vi.mock("./productsApi", () => ({
 }));
 
 describe("ProductsPage", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("se ven los productos", () => {
     vi.mocked(useGetAdminProductsQuery).mockReturnValue({
       data: [
@@ -85,5 +89,27 @@ describe("ProductsPage", () => {
     renderWithProviders(<ProductsPage />);
     await user.selectOptions(screen.getByLabelText("Estado:"), "Desactivados");
     expect(vi.mocked(useGetAdminProductsQuery)).toHaveBeenLastCalledWith({ status: "INACTIVE" });
+  });
+  it("busca por nombre o SKU cuando se deja de escribir", async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime });
+    vi.mocked(useGetAdminProductsQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: false,
+    } as never);
+    renderWithProviders(<ProductsPage />);
+    await user.type(screen.getByLabelText("Buscar:"), "FUR-SIL-001");
+    expect(vi.mocked(useGetAdminProductsQuery)).not.toHaveBeenLastCalledWith({
+      search: "FUR-SIL-001",
+      status: undefined,
+    });
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+    expect(vi.mocked(useGetAdminProductsQuery)).toHaveBeenLastCalledWith({
+      search: "FUR-SIL-001",
+      status: undefined,
+    });
   });
 });
