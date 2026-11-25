@@ -109,6 +109,8 @@ Secretos y variables de GitHub:
 | `SONAR_ENABLED` | Variable | Repositorio | `true` activa el job de Sonar |
 | `CLAUDE_CODE_OAUTH_TOKEN` | Secreto | Repositorio | Revisor de Claude |
 | `CLAUDE_REVIEW_ENABLED` | Variable | Repositorio | `true` activa el revisor |
+| `JIRA_BASE_URL` | Variable | Repositorio | Sitio de Jira, para que el revisor lea la tarjeta de la rama |
+| `JIRA_EMAIL`, `JIRA_API_TOKEN` | Secreto | Repositorio | Cuenta y token de Jira para leer la tarjeta (sin ellos, el revisor avisa y sigue) |
 | `RENDER_DEPLOY_HOOK` | Secreto | Entorno | Ordenar a Render que despliegue |
 | `API_URL`, `SHOP_URL`, `BACKOFFICE_URL` | Variable | Entorno | URLs de ese entorno |
 | `SHOP_NETLIFY_SITE_ID`, `BACKOFFICE_NETLIFY_SITE_ID` | Variable | Entorno | A qué site de Netlify se sube cada web |

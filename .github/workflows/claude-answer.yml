@@ -1,0 +1,56 @@
+# Claude answers the questions of the students in their PRs.
+# Write a comment in the PR with @claude, e.g. "@claude ¿cómo hago el test del escenario X?"
+# Claude answers in the same PR, following CLAUDE.md, docs/review-guide.md and
+# the Jira card of the branch. It only reads and comments: it never pushes code.
+#
+# Only people of the repo (owner and collaborators) can call it, so that
+# nobody from outside spends the token. Same switch as the reviewer:
+# CLAUDE_REVIEW_ENABLED = "true" and the secret CLAUDE_CODE_OAUTH_TOKEN.
+name: claude-answer
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+
+jobs:
+  claude-answer:
+    if: >-
+      vars.CLAUDE_REVIEW_ENABLED == 'true' &&
+      contains(github.event.comment.body, '@claude') &&
+      (github.event.issue.pull_request || github.event.pull_request) &&
+      contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      # The card of the branch of the PR (feature/FUR-30 -> FUR-30)
+      - name: Read the Jira card of the branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+          JIRA_BASE_URL: ${{ vars.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: |
+          BRANCH=$(gh pr view "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --json headRefName --jq .headRefName)
+          bash .github/scripts/fetch-jira-card.sh "$BRANCH" jira-card.md
+
+      - name: Claude answers
+        uses: anthropics/claude-code-action@4411a9e9b0283becf4b924f7bce360fd7756c78c # v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          claude_args: |
+            --max-turns 30
+            --allowedTools "Bash(gh pr view:*),Bash(gh pr diff:*)"
+            --disallowedTools "Edit,Write,MultiEdit,NotebookEdit"
+            --append-system-prompt "Respondes a un alumno principiante del bootcamp en su PR. Antes de contestar lee CLAUDE.md (apartado 'Revisión de PRs (para Claude)'), docs/review-guide.md y jira-card.md (la tarjeta de Jira de la rama: historia, reglas y escenarios; si un commit nombra otro FUR es una subtarea de esa misma tarjeta). Contesta en español, corto, amable y concreto. No cambies código ni hagas commits: solo respondes. Si pregunta por el test de un escenario, explícale en 2 o 3 frases qué comprueba (Dado, Cuando, Entonces) y dale el test completo y comentado para copiar y pegar, diciendo en qué fichero va y cómo ejecutarlo. Si pregunta por tests de relleno para la cobertura de Sonar, dáselos hechos, avisando de que valen poco. Para el resto del código, dile dónde está en los apuntes y dale una pista concreta o un ejemplo pequeño de un caso parecido, pero no le escribas la funcionalidad de la tarjeta. Si su forma de hacerlo funciona y está bien hecha, vale aunque no sea como en los apuntes."
