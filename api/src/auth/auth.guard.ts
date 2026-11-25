@@ -4,7 +4,7 @@ import { Request } from "express";
 
 declare module "express" {
   interface Request {
-    user?: {sub: string, email: string, role: string};
+    user?: { sub: string; email: string; role: string; status: string };
   }
 }
 
@@ -15,17 +15,25 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractToken(request);
+
     if (!token) {
       throw new UnauthorizedException("No hay token");
     }
+
     try {
-      const payload = await this.jwtService.verifyAsync(token);
+      const payload = await this.jwtService.verifyAsync<{
+        sub: string;
+        email: string;
+        role: string;
+        status: string;
+      }>(token);
       request.user = payload;
       return true;
     } catch {
       throw new UnauthorizedException("Token inválido o expirado");
     }
   }
+
   private extractToken(request: Request): string | undefined {
     const authHeader = request.headers.authorization;
     if (!authHeader?.startsWith("Bearer ")) return undefined;
