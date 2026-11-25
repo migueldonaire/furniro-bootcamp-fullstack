@@ -172,7 +172,7 @@ Puedes pedir a la IA que te ayude a redactar la descripción a partir de tus com
 
 ### Las PRs, pequeñas
 
-- **Máximo 400 líneas** cambiadas (sin contar `package-lock.json`). Si te pasas, el check `pr-size` sale en rojo.
+- **Máximo 400 líneas** cambiadas (sin contar `package-lock.json` ni los ficheros de test). Si te pasas, el check `pr-size` sale en rojo.
 - **Una tarjeta, o una subtarea, por PR.**
 - Una PR pequeña se revisa en 10 minutos. Una grande no la revisa nadie de verdad.
 
