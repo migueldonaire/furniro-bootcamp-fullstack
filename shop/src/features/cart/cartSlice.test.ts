@@ -21,7 +21,7 @@ describe("cartSlice", () => {
     const before = { items: [] };
     const tooMany = { ...nora, quantity: 6 };
 
-    expect(getAddToCartError(before.items, tooMany)).toBe("Only 5 units left");
+    expect(getAddToCartError(before.items, tooMany)).toBe("Solo quedan 5 unidades");
     expect(cartReducer(before, itemAdded(tooMany))).toBe(before);
   });
   it("adds units to the same line if the product is already in the cart", () => {
@@ -33,12 +33,12 @@ describe("cartSlice", () => {
 
   it("counts the units already in the cart", () => {
     const before = { items: [{ ...nora, quantity: 4 }] };
-    expect(getAddToCartError(before.items, { ...nora, quantity: 2 })).toBe("Only 5 units left");
+    expect(getAddToCartError(before.items, { ...nora, quantity: 2 })).toBe("Solo quedan 5 unidades");
   });
 
   it("does not add 0 units or negative units", () => {
-    expect(getAddToCartError([], { ...nora, quantity: 0 })).toBe("Need to have 1 unit");
-    expect(getAddToCartError([], { ...nora, quantity: -1 })).toBe("Need to have 1 unit");
+    expect(getAddToCartError([], { ...nora, quantity: 0 })).toBe("La cantidad mínima es 1");
+    expect(getAddToCartError([], { ...nora, quantity: -1 })).toBe("La cantidad mínima es 1");
   });
 
   it("returns a new state and does not change the old one", () => {

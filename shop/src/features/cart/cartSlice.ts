@@ -19,14 +19,14 @@ const initialState: CartState = { items: [] };
 // itemAdded: (state, action) => ({ ...state, items: [...state.items, action.payload] })
 export function getAddToCartError(items: CartItem[], item: CartItem): string | null {
   if (item.quantity < 1) {
-    return "Need to have 1 unit";
+    return "La cantidad mínima es 1";
   }
 
   const line = items.find((cartLine) => cartLine.productId === item.productId);
   const inCart = line?.quantity ?? 0;
 
   if (inCart + item.quantity > item.stock) {
-    return `Only ${item.stock} units left`;
+    return `Solo quedan ${item.stock} unidades`;
   }
   return null;
 }
