@@ -23,38 +23,40 @@ export function ProductsPage() {
       {isLoading && <p>Cargando productos...</p>}
       {products?.length === 0 && <p>No hay productos disponibles.</p>}
       {isError && <p>Error al cargar los productos.</p>}
-      <table>
-        <thead>
-          <tr>
-            <th>Imagen</th>
-            <th>Nombre</th>
-            <th>Categoría</th>
-            <th>Precio</th>
-            <th>Stock</th>
-            <th>Estado</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products?.map((product) => (
-            <tr key={product.id}>
-              <td>
-                {product.imageUrl ? (
-                  <img src={product.imageUrl} alt={product.name} width="50" />
-                ) : (
-                  <span>No hay imagen</span>
-                )}
-              </td>
-              <td>
-                <p>{product.name}</p> <small>SKU: {product.sku}</small>
-              </td>
-              <td>{product.categoryName}</td>
-              <td>{formatEuro(Number(product.basePrice))}</td>
-              <td>{product.stock}</td>
-              <td>{product.status === "ACTIVE" ? "Activo" : "Desactivado"}</td>
+      {products && products.length > 0 && (
+        <table>
+          <thead>
+            <tr>
+              <th>Imagen</th>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Estado</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {products?.map((product) => (
+              <tr key={product.id}>
+                <td>
+                  {product.imageUrl ? (
+                    <img src={product.imageUrl} alt={product.name} width="50" />
+                  ) : (
+                    <span>No hay imagen</span>
+                  )}
+                </td>
+                <td>
+                  <p>{product.name}</p> <small>SKU: {product.sku}</small>
+                </td>
+                <td>{product.categoryName}</td>
+                <td>{formatEuro(Number(product.basePrice))}</td>
+                <td>{product.stock}</td>
+                <td>{product.status === "ACTIVE" ? "Activo" : "Desactivado"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </section>
   );
 }
