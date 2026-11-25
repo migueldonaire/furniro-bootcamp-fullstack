@@ -16,16 +16,16 @@ describe("LoginPage", () => {
   });
 
   it("muestra error si no se marca el CAPTCHA", async () => {
-  renderWithProviders(<LoginPage />);
+    renderWithProviders(<LoginPage />);
 
-  fireEvent.change(screen.getByLabelText("Email"), {
-    target: { value: "test@example.com" },
-  });
-  fireEvent.change(screen.getByLabelText("Contraseña"), {
-    target: { value: "123456" },
-  });
-  fireEvent.click(screen.getByRole("button", { name: "Iniciar sesión" }));
+    fireEvent.change(screen.getByLabelText("Email"), {
+      target: { value: "test@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText("Contraseña"), {
+      target: { value: "123456" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Iniciar sesión" }));
 
-  expect(screen.getByText("Confirma que no eres un robot")).toBeInTheDocument();
-});
+    expect(screen.getByText("Confirma que no eres un robot")).toBeInTheDocument();
+  });
 });
