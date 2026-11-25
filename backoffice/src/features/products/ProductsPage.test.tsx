@@ -3,6 +3,8 @@ import { useGetAdminProductsQuery } from "./productsApi";
 import { ProductsPage } from "./ProductsPage";
 import { renderWithProviders } from "../../test/renderWithProviders";
 import { screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+
 vi.mock("./productsApi", () => ({
   useGetAdminProductsQuery: vi.fn(),
 }));
@@ -72,5 +74,16 @@ describe("ProductsPage", () => {
     } as never);
     renderWithProviders(<ProductsPage />);
     expect(screen.getByText("Error al cargar los productos.")).toBeInTheDocument();
+  });
+  it("el select con opcion desactivado muestra INACTIVE", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useGetAdminProductsQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: false,
+    } as never);
+    renderWithProviders(<ProductsPage />);
+    await user.selectOptions(screen.getByLabelText("Estado:"), "Desactivados");
+    expect(vi.mocked(useGetAdminProductsQuery)).toHaveBeenLastCalledWith({ status: "INACTIVE" });
   });
 });
