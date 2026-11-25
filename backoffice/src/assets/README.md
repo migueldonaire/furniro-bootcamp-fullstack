@@ -6,8 +6,8 @@ Imágenes fijas del panel: las que no cambian (logo, iconos).
 
 ## Qué hay
 
-| Fichero           | Para qué                                      |
-| ----------------- | --------------------------------------------- |
+| Fichero | Para qué |
+|---|---|
 | `images/logo.png` | Logo de la cabecera y de la pantalla de login |
 
 El icono de la pestaña del navegador está en `public/favicon.png`.
@@ -19,7 +19,7 @@ Se importa en el componente. Vite le pone la ruta buena al construir la web:
 ```tsx
 import logo from "../../assets/images/logo.png";
 
-<img src={logo} alt="Furniro" />;
+<img src={logo} alt="Furniro" />
 ```
 
 ## Si añades una imagen

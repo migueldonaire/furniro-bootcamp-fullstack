@@ -22,7 +22,16 @@ const lauraOrder: AdminOrder = {
   orderDate: "2026-11-17T12:00:00.000Z",
   status: "SHIPPED",
   customerName: "Laura Romero",
+  customerEmail: "laura@mail.com",
   total: 425.45,
+  products: [
+    {
+      id: "f1000000-0000-4000-8000-000000000022",
+      name: "Estantería Lira",
+      quantity: 1,
+      imageUrl: null,
+    },
+  ],
 };
 
 describe("OrdersPage", () => {

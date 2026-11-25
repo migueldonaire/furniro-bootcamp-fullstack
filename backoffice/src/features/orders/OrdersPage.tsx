@@ -92,7 +92,7 @@ export function OrdersPage() {
           No se han podido cargar los pedidos.
         </p>
       )}
-      {orders && orders.length === 0 && <p className="orders__feedback">Todavía no hay pedidos</p>}
+      {orders?.length === 0 && <p className="orders__feedback">Todavía no hay pedidos</p>}
 
       {orders && orders.length > 0 && (
         <>
@@ -123,7 +123,7 @@ export function OrdersPage() {
                     </th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="orders__table-body">
                   {filteredOrders.map((order) => {
                     const orderDate = new Date(order.orderDate);
 
@@ -133,12 +133,12 @@ export function OrdersPage() {
                           #{order.id.slice(-6)}
                         </td>
 
-                        <td className="orders__table-cell">
+                        <td className="orders__table-cell orders__table-cell--customer">
                           <div className="orders__customer-name">{order.customerName}</div>
                           <div className="orders__customer-email">{order.customerEmail}</div>
                         </td>
 
-                        <td className="orders__table-cell">
+                        <td className="orders__table-cell orders__table-cell--date">
                           <div className="orders__date">
                             {orderDate.toLocaleDateString("es-ES")}
                           </div>
@@ -150,7 +150,7 @@ export function OrdersPage() {
                           </div>
                         </td>
 
-                        <td className="orders__table-cell">
+                        <td className="orders__table-cell orders__table-cell--products">
                           <div className="orders__products">
                             <div className="orders__thumbs">
                               {order.products.map((product) =>
@@ -176,7 +176,7 @@ export function OrdersPage() {
                           {formatEuro(order.total)}
                         </td>
 
-                        <td className="orders__table-cell">
+                        <td className="orders__table-cell orders__table-cell--status">
                           <span
                             className={`orders__badge orders__badge--${order.status.toLowerCase()}`}
                           >

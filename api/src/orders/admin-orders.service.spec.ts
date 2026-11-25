@@ -6,7 +6,9 @@ const lauraRow = {
   order_date: new Date("2026-11-17T20:00:00Z"),
   status: "SHIPPED",
   customer_name: "Laura Romero",
+  customer_email: "laura@mail.com",
   total: "425.45",
+  products: [],
 };
 
 const orderWithProductsRow = {
@@ -45,7 +47,9 @@ describe("AdminOrdersService", () => {
         orderDate: new Date("2026-11-17T20:00:00Z"),
         status: "SHIPPED",
         customerName: "Laura Romero",
+        customerEmail: "laura@mail.com",
         total: 425.45,
+        products: [],
       },
     ]);
     expect(fakePool.query).toHaveBeenCalledWith(expect.not.stringContaining("WHERE"), []);

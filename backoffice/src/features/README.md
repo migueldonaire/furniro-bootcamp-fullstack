@@ -24,7 +24,7 @@ export const { useGetProductsQuery } = catalogApi;
 ```
 
 - Los slices ya están registrados en `app/rootReducer.ts` (auth).
-- **Reducers sin mutar**: devuelven siempre un objeto nuevo con _spread_, nunca `state.x = ...` ni `push`:
+- **Reducers sin mutar**: devuelven siempre un objeto nuevo con *spread*, nunca `state.x = ...` ni `push`:
 
 ```ts
 // features/cart/cartSlice.ts (ejemplo de T5)

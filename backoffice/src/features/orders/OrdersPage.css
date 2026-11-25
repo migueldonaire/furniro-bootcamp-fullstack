@@ -89,7 +89,7 @@
 }
 
 .orders__tab--active {
-  background-color: #b88e2f;
+  background-color: #8a6a1f;
   color: #ffffff;
 }
 
@@ -99,14 +99,23 @@
   border-radius: 8px;
 }
 
+/* Mobile: the table is shown as a list of cards (one card per order) */
 .orders__table {
+  display: block;
   width: 100%;
   border-collapse: collapse;
   text-align: left;
   font-size: 13px;
 }
 
+/* Mobile: the header row is hidden on screen but screen readers still read it */
 .orders__table-head {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
   background-color: #f9f3eb;
 }
 
@@ -117,28 +126,71 @@
   white-space: nowrap;
 }
 
+.orders__table-body {
+  display: block;
+}
+
+/* Mobile card: order and status on top, customer and total, then date and products */
+.orders__table-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas:
+    "id status"
+    "customer total"
+    "date date"
+    "products products";
+  align-items: center;
+  gap: 8px 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+}
+
 .orders__table-cell {
-  padding: 12px 10px;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 0;
   vertical-align: middle;
 }
 
 .orders__table-cell--id {
+  grid-area: id;
   font-weight: 600;
   color: #111827;
   white-space: nowrap;
 }
 
+.orders__table-cell--customer {
+  grid-area: customer;
+  min-width: 0;
+}
+
+.orders__table-cell--date {
+  grid-area: date;
+}
+
+.orders__table-cell--products {
+  grid-area: products;
+}
+
 .orders__table-cell--total {
+  grid-area: total;
+  justify-self: end;
   font-weight: 600;
   color: #111827;
   white-space: nowrap;
+}
+
+.orders__table-cell--status {
+  grid-area: status;
+  justify-self: end;
 }
 
 .orders__customer-name {
   font-weight: 600;
   color: #111827;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .orders__customer-email {
@@ -171,6 +223,7 @@
 }
 
 .orders__thumb {
+  flex-shrink: 0; /* thumbnails never get squeezed */
   width: 34px;
   height: 34px;
   object-fit: cover;
@@ -196,7 +249,7 @@
 
 .orders__badge--pending {
   background-color: #fdf6e7;
-  color: #b88e2f;
+  color: #8a6a1f;
 }
 
 .orders__badge--shipped {
@@ -206,12 +259,12 @@
 
 .orders__badge--delivered {
   background-color: #e6f6ec;
-  color: #15803d;
+  color: #166534;
 }
 
 .orders__badge--cancelled {
   background-color: #fde8e8;
-  color: #dc2626;
+  color: #b91c1c;
 }
 
 .orders__feedback {
@@ -267,8 +320,32 @@
     font-size: 14px;
   }
 
+  /* From tablet: a normal table again */
   .orders__table {
+    display: table;
     font-size: 14px;
+  }
+
+  .orders__table-head {
+    display: table-header-group;
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+  }
+
+  .orders__table-body {
+    display: table-row-group;
+  }
+
+  .orders__table-row {
+    display: table-row;
+    padding: 0;
+    margin: 0;
+    border: none;
+    border-radius: 0;
   }
 
   .orders__table-header {
@@ -276,13 +353,9 @@
   }
 
   .orders__table-cell {
+    display: table-cell;
     padding: 16px 12px;
-  }
-
-  .orders__products {
-    flex-direction: row;
-    align-items: center;
-    gap: 12px;
+    border-bottom: 1px solid #f0f0f0;
   }
 
   .orders__thumb {
@@ -308,6 +381,13 @@
 }
 
 @media (min-width: 1024px) {
+  /* Only on desktop there is room for thumbnails and text side by side */
+  .orders__products {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+  }
+
   .orders {
     max-width: 1120px;
     margin: 0 auto;
