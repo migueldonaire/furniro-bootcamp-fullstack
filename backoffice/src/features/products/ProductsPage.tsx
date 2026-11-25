@@ -1,14 +1,30 @@
 import { useGetAdminProductsQuery, type ProductStatus } from "./productsApi";
 import { formatEuro } from "../../lib/money";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function ProductsPage() {
   const [status, setStatus] = useState<ProductStatus | "">("");
+  const [searchText, setSearchText] = useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchText.trim());
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchText]);
+
   const {
     data: products,
     isLoading,
     isError,
-  } = useGetAdminProductsQuery({ status: status || undefined });
+  } = useGetAdminProductsQuery({
+    status: status || undefined,
+    search: debouncedSearch || undefined,
+  });
   return (
     <section>
       <div>
@@ -19,7 +35,14 @@ export function ProductsPage() {
       </div>
       <div>
         <div>
-          <p>Buscar productos por nombres</p>
+          <label htmlFor="product-search">Buscar:</label>
+          <input
+            type="search"
+            id="product-search"
+            placeholder="Buscar productos por nombres o por SKU"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+          />
         </div>
         <div>
           <label htmlFor="status-filter">Estado:</label>
