@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
 import { LoginPage } from "./LoginPage";
 import { useLoginMutation } from "./authApi";
+import { renderWithProviders } from "../../test/renderWithProviders";
 
 vi.mock("./authApi", () => ({
   useLoginMutation: vi.fn(),
@@ -15,8 +16,16 @@ describe("LoginPage", () => {
   });
 
   it("muestra error si no se marca el CAPTCHA", async () => {
-    render(<LoginPage />);
-    fireEvent.click(screen.getByText("Iniciar sesión"));
-    expect(screen.getByText("Confirma que no eres un robot")).toBeInTheDocument();
+  renderWithProviders(<LoginPage />);
+
+  fireEvent.change(screen.getByLabelText("Email"), {
+    target: { value: "test@example.com" },
   });
+  fireEvent.change(screen.getByLabelText("Contraseña"), {
+    target: { value: "123456" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Iniciar sesión" }));
+
+  expect(screen.getByText("Confirma que no eres un robot")).toBeInTheDocument();
+});
 });

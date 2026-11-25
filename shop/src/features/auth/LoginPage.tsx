@@ -10,7 +10,6 @@ export function LoginPage() {
   const [error, setError] = useState("");
   const [login] = useLoginMutation();
   const dispatch = useAppDispatch();
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -34,12 +33,7 @@ export function LoginPage() {
       <form onSubmit={handleSubmit}>
         <label>
           Email
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
+          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
         </label>
         <label>
           Contraseña
@@ -51,12 +45,7 @@ export function LoginPage() {
           />
         </label>
         <label>
-          <input
-            type="checkbox"
-            checked={captcha}
-            onChange={(e) => setCaptcha(e.target.checked)}
-          />
-          {" "}
+          <input type="checkbox" checked={captcha} onChange={(e) => setCaptcha(e.target.checked)} />{" "}
           Confirmo que no soy un robot
         </label>
         {error && <p className="error">{error}</p>}
