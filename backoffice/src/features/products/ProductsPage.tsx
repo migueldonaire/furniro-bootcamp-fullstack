@@ -30,7 +30,7 @@ export function ProductsPage() {
               <th>Imagen</th>
               <th>Nombre</th>
               <th>Categoría</th>
-              <th>Precio</th>
+              <th>Precio sin IVA</th>
               <th>Stock</th>
               <th>Estado</th>
             </tr>
