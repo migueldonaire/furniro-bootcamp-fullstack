@@ -4,17 +4,18 @@ import { addressSchema, type Address } from "./addressSchema";
 import styles from "./AddressForm.module.css";
 
 type AddressFormProps = {
+  initialAddress?: Address | null;
   onSubmit: (address: Address) => void;
 };
 
-export function AddressForm({ onSubmit }: AddressFormProps) {
+export function AddressForm({ initialAddress, onSubmit }: AddressFormProps) {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(addressSchema),
-    defaultValues: { country: "ES" },
+    defaultValues: initialAddress ?? { country: "ES" },
   });
 
   return (

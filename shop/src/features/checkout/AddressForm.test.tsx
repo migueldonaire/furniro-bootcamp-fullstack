@@ -12,6 +12,39 @@ async function fillForm(user: ReturnType<typeof userEvent.setup>) {
 }
 
 describe("AddressForm", () => {
+  it("prefills the usual address and submits the edited address", async () => {
+    const user = userEvent.setup();
+    const onSubmit = vi.fn();
+    const initialAddress = {
+      fullName: "Ana López",
+      phone: "611223344",
+      street: "C/ Colón 10",
+      city: "Valencia",
+      province: "Valencia",
+      postalCode: "46004",
+      country: "ES",
+    };
+    render(<AddressForm initialAddress={initialAddress} onSubmit={onSubmit} />);
+
+    expect(screen.getByLabelText("Nombre completo")).toHaveValue(initialAddress.fullName);
+    expect(screen.getByLabelText("Teléfono")).toHaveValue(initialAddress.phone);
+    expect(screen.getByLabelText("Calle y número")).toHaveValue(initialAddress.street);
+    expect(screen.getByLabelText("Ciudad")).toHaveValue(initialAddress.city);
+    expect(screen.getByLabelText("Provincia (opcional)")).toHaveValue(initialAddress.province);
+    expect(screen.getByLabelText("Código postal")).toHaveValue(initialAddress.postalCode);
+    expect(screen.getByLabelText("País")).toHaveValue(initialAddress.country);
+
+    const street = screen.getByLabelText("Calle y número");
+    await user.clear(street);
+    await user.type(street, "C/ Colón 20");
+    await user.click(screen.getByRole("button", { name: "Continuar" }));
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      { ...initialAddress, street: "C/ Colón 20" },
+      expect.anything(),
+    );
+  });
+
   it("sends a correct address", async () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
