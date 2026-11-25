@@ -1,10 +1,21 @@
-// Placeholder page. Card(s): T9, T10
-// Replace this content with your card. Keep the name of the component.
+import { useState } from "react";
+import { AddressForm } from "./AddressForm";
+import type { Address } from "./addressSchema";
+
 export function CheckoutPage() {
+  // The address only lives here, in memory: it is personal data, never in localStorage
+  const [address, setAddress] = useState<Address | null>(null);
+
   return (
     <section>
       <h1>Dirección de entrega</h1>
-      <p className="placeholder">Pendiente (tarjeta T9, T10).</p>
+      <AddressForm onSubmit={setAddress} />
+      {address && (
+        <p role="status">
+          Dirección guardada. Envío a {address.fullName}, {address.street}, {address.postalCode}{" "}
+          {address.city}.
+        </p>
+      )}
     </section>
   );
 }
