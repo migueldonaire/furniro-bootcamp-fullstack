@@ -15,11 +15,12 @@ type JwtServiceMock = {
 
 const usersService = {
   findByEmail: jest.fn(),
-} as unknown as UsersServiceMock;
+};
+
 
 const jwtService = {
   sign: jest.fn().mockReturnValue("fake-token"),
-} as unknown as JwtServiceMock;
+};
 
 const service = new AuthService(
   usersService as unknown as ConstructorParameters<typeof AuthService>[0],
