@@ -5,18 +5,9 @@ jest.mock("argon2", () => ({
   verify: jest.fn(),
 }));
 
-type UsersServiceMock = {
-  findByEmail: jest.Mock;
-};
-
-type JwtServiceMock = {
-  sign: jest.Mock;
-};
-
 const usersService = {
   findByEmail: jest.fn(),
 };
-
 
 const jwtService = {
   sign: jest.fn().mockReturnValue("fake-token"),
