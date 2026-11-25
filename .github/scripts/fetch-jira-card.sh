@@ -10,12 +10,12 @@ OUTPUT_FILE="$2"
 # feature/FUR-30 or feature/FUR-30-api -> FUR-30 (the card of the branch)
 CARD_KEY=$(echo "$BRANCH" | grep -oE 'FUR-[0-9]+' | head -n 1 || true)
 
-if [ -z "$CARD_KEY" ]; then
+if [[ -z "$CARD_KEY" ]]; then
   echo "La rama \`$BRANCH\` no lleva el número de una tarjeta (FUR-n): no se ha podido leer Jira." > "$OUTPUT_FILE"
   exit 0
 fi
 
-if [ -z "${JIRA_BASE_URL:-}" ] || [ -z "${JIRA_EMAIL:-}" ] || [ -z "${JIRA_API_TOKEN:-}" ]; then
+if [[ -z "${JIRA_BASE_URL:-}" ]] || [[ -z "${JIRA_EMAIL:-}" ]] || [[ -z "${JIRA_API_TOKEN:-}" ]]; then
   echo "No se ha podido leer la tarjeta $CARD_KEY: falta configurar JIRA_BASE_URL, JIRA_EMAIL o JIRA_API_TOKEN en el repo." > "$OUTPUT_FILE"
   exit 0
 fi
