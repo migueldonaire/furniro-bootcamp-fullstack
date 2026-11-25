@@ -1,6 +1,5 @@
 # Claude answers the questions of the students in their PRs.
-# Write a comment in the PR that starts with @claude, for example:
-#   "@claude no sé por dónde empezar el test del escenario «Código postal incorrecto»"
+# Write a comment in the PR with @claude, e.g. "@claude ¿cómo hago el test del escenario X?"
 # Claude answers in the same PR, following CLAUDE.md, docs/review-guide.md and
 # the Jira card of the branch. It only reads and comments: it never pushes code.
 #

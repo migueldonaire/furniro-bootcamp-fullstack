@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # Writes the Jira card of a branch to a Markdown file, for the Claude reviewer.
-# Usage: fetch-jira-card.sh <branch> <output file>
 # Needs JIRA_BASE_URL, JIRA_EMAIL and JIRA_API_TOKEN (see docs/setup-guide.md).
 # It never fails: if the card cannot be read, the file says why.
 set -u
@@ -38,5 +37,3 @@ jq -r '
   "\n\n## Descripción (historia, reglas y escenarios)\n\n" +
   (.fields.description // "(sin descripción)")
 ' "$CARD_JSON" > "$OUTPUT_FILE"
-
-echo "Tarjeta $CARD_KEY leída de Jira."

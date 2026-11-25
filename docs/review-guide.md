@@ -47,14 +47,12 @@ export interface ProductRow {
   base_price: string; // NUMERIC llega como texto desde pg
   created_at: Date;
 }
-
 export interface Product {
   id: string;
   name: string;
   basePrice: number;
   createdAt: Date;
 }
-
 export function toProduct(productRow: ProductRow): Product {
   return {
     id: productRow.id,
@@ -166,8 +164,6 @@ Un nombre tiene que decir **qué es** o **qué hace** sin tener que leer el cód
 - Funciones y métodos: verbo + qué (`calculateCartTotalWithTax`).
 - Booleanos: `is`, `has`, `can`.
 - Todo en inglés y en `camelCase`; `snake_case` solo en los campos de un `Row`.
-
-Un nombre mejorable no bloquea una PR: el revisor lo sugiere.
 
 ---
 
