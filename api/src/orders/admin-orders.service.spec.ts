@@ -1,14 +1,29 @@
-// api/src/orders/admin-orders.service.spec.ts
 import { Pool } from "pg";
 import { AdminOrdersService } from "./admin-orders.service";
 
-// A row as pg returns it: snake_case and the total as text
 const lauraRow = {
   id: "f0000000-0000-4000-8000-000000000012",
   order_date: new Date("2026-11-17T20:00:00Z"),
   status: "SHIPPED",
   customer_name: "Laura Romero",
   total: "425.45",
+};
+
+const orderWithProductsRow = {
+  id: "f0000000-0000-4000-8000-000000000002",
+  order_date: new Date("2026-11-15T10:05:00Z"),
+  status: "PENDING",
+  customer_name: "Ana López",
+  customer_email: "ana@mail.com",
+  total: "269.36",
+  products: [
+    {
+      id: "f1000000-0000-4000-8000-000000000003",
+      name: "Lámpara Luna",
+      quantity: 1,
+      imageUrl: "https://example.com/lampara-luna-1.jpg",
+    },
+  ],
 };
 
 describe("AdminOrdersService", () => {
@@ -52,5 +67,47 @@ describe("AdminOrdersService", () => {
     const orders = await service.findAll();
 
     expect(orders).toEqual([]);
+  });
+
+  it("orders the list from newest to oldest", async () => {
+    fakePool.query.mockResolvedValue({ rows: [] });
+
+    await service.findAll();
+
+    expect(fakePool.query).toHaveBeenCalledWith(
+      expect.stringContaining("ORDER BY o.order_date DESC"),
+      [],
+    );
+  });
+
+  it("includes customerEmail and products when they come from the database", async () => {
+    fakePool.query.mockResolvedValue({ rows: [orderWithProductsRow] });
+
+    const orders = await service.findAll();
+
+    expect(orders[0]).toMatchObject({
+      id: "f0000000-0000-4000-8000-000000000002",
+      customerName: "Ana López",
+      customerEmail: "ana@mail.com",
+      total: 269.36,
+      products: [
+        {
+          id: "f1000000-0000-4000-8000-000000000003",
+          name: "Lámpara Luna",
+          quantity: 1,
+          imageUrl: "https://example.com/lampara-luna-1.jpg",
+        },
+      ],
+    });
+  });
+
+  it("returns an empty products array if products is null", async () => {
+    fakePool.query.mockResolvedValue({
+      rows: [{ ...orderWithProductsRow, products: null }],
+    });
+
+    const orders = await service.findAll();
+
+    expect(orders[0].products).toEqual([]);
   });
 });
