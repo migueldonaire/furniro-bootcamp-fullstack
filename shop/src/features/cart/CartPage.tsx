@@ -1,9 +1,14 @@
-import trashCan from "../../assets/icons/trash-can.svg";
 import styles from "./CartPage.module.css";
-import { useState } from "react";
+import { useAppSelector } from "../../app/hooks";
+import { formatEuro, priceWithTax } from "../../lib/money";
 
 export function CartPage() {
-  const [quantity, setQuantity] = useState(1);
+  const items = useAppSelector((state) => state.cart.items);
+  const subtotal = items.reduce((sum, line) => sum + line.basePrice * line.quantity, 0); // without VAT
+  const total = items.reduce(
+    (sum, line) => sum + priceWithTax(line.basePrice, line.taxRate) * line.quantity,
+    0,
+  );
   return (
     <>
       <section>
@@ -18,36 +23,31 @@ export function CartPage() {
               <span />
             </div>
             <div>
-              //Aqui van las sections es decir las order line
-              <section className={styles.cartLine}>
-                <img className={styles.productImage} src={trashCan}></img>
-                <h4 className={styles.mutedText}>Asgaard sofa</h4>
-                <h4 className={styles.mutedText}>Precio Euros</h4>
-                <input
-                  className={styles.quantity}
-                  type="number"
-                  min={1}
-                  value={quantity}
-                  onChange={(e) => setQuantity(Number(e.target.value))} // the input gives a string
-                />
-                <h4>250$</h4>
-                <button className={styles.removeButton}>
-                  <img src={trashCan} alt="trash-can" />
-                </button>
-              </section>
+              {items.map((line) => (
+                <section key={line.productId} className={styles.cartLine}>
+                  <span />
+                  <h4 className={styles.mutedText}>{line.name}</h4>
+                  <h4 className={styles.mutedText}>
+                    {formatEuro(priceWithTax(line.basePrice, line.taxRate))}
+                  </h4>
+                  <span>{line.quantity}</span>
+                  <h4>{formatEuro(priceWithTax(line.basePrice, line.taxRate) * line.quantity)}</h4>
+                  <span />
+                </section>
+              ))}
             </div>
           </aside>
           <aside className={styles.cartTotal}>
-            <h1>Cart Totals</h1>
+            <h1>Total del carrito</h1>
             <div className={styles.totalRow}>
               <h4>Subtotal</h4>
-              <h4 className={styles.mutedText}>25$</h4>
+              <h4 className={styles.mutedText}>{formatEuro(subtotal)}</h4>
             </div>
             <div className={styles.totalRow}>
               <h4>Total</h4>
-              <h4 className={styles.totalAmount}>25$</h4>
+              <h4 className={styles.totalAmount}>{formatEuro(total)}</h4>
             </div>
-            <button className={styles.checkoutButton}>Check Out</button>
+            <button className={styles.checkoutButton}>Finalizar compra</button>
           </aside>
         </div>
       </section>

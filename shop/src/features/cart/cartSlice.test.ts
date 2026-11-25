@@ -33,7 +33,9 @@ describe("cartSlice", () => {
 
   it("counts the units already in the cart", () => {
     const before = { items: [{ ...nora, quantity: 4 }] };
-    expect(getAddToCartError(before.items, { ...nora, quantity: 2 })).toBe("Solo quedan 5 unidades");
+    expect(getAddToCartError(before.items, { ...nora, quantity: 2 })).toBe(
+      "Solo quedan 5 unidades",
+    );
   });
 
   it("does not add 0 units or negative units", () => {
