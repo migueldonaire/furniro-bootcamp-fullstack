@@ -1,4 +1,5 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "../../app/store";
 
 export type CartItem = {
   productId: string;
@@ -58,3 +59,7 @@ export const cartSlice = createSlice({
 export const { itemAdded } = cartSlice.actions;
 
 export default cartSlice.reducer;
+
+// Total units in the cart (for the cart icon)
+export const selectCartCount = (state: RootState) =>
+  state.cart.items.reduce((total, line) => total + line.quantity, 0);
