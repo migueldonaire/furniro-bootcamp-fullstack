@@ -1,9 +1,14 @@
-import { useGetAdminProductsQuery } from "./productsApi";
+import { useGetAdminProductsQuery, type ProductStatus } from "./productsApi";
 import { formatEuro } from "../../lib/money";
+import { useState } from "react";
 
 export function ProductsPage() {
-  const { data: products, isLoading, isError } = useGetAdminProductsQuery({});
-
+  const [status, setStatus] = useState<ProductStatus | "">("");
+  const {
+    data: products,
+    isLoading,
+    isError,
+  } = useGetAdminProductsQuery({ status: status || undefined });
   return (
     <section>
       <div>
@@ -17,7 +22,16 @@ export function ProductsPage() {
           <p>Buscar productos por nombres</p>
         </div>
         <div>
-          <button>estado</button>
+          <label htmlFor="status-filter">Estado:</label>
+          <select
+            id="status-filter"
+            value={status}
+            onChange={(e) => setStatus(e.target.value as "" | ProductStatus)}
+          >
+            <option value={""}>Todos</option>
+            <option value="ACTIVE">Activos</option>
+            <option value="INACTIVE">Desactivados</option>
+          </select>
         </div>
       </div>
       {isLoading && <p>Cargando productos...</p>}
