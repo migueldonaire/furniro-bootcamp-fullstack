@@ -13,10 +13,10 @@ export function ProductsPage() {
         </div>
       </div>
       <div>
-        <div className="">
+        <div>
           <p>Buscar productos por nombres</p>
         </div>
-        <div className="">
+        <div>
           <button>estado</button>
         </div>
       </div>
