@@ -26,7 +26,9 @@ describe("CartPage", () => {
       );
     });
     expect(screen.getByText("Silla Nora")).toBeInTheDocument();
-    expect(screen.getByText(euro(121))).toBeInTheDocument();
-    expect(screen.getAllByText(euro(242))).not.toHaveLength(0);
+    // Each line shows the price without VAT; VAT is only added in the totals box.
+    expect(screen.getByText(euro(100))).toBeInTheDocument();
+    expect(screen.getAllByText(euro(200))).toHaveLength(2); // line subtotal and cart subtotal
+    expect(screen.getByText(euro(242))).toBeInTheDocument();
   });
 });
