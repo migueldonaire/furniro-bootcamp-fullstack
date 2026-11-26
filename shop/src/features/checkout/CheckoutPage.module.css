@@ -1,0 +1,71 @@
+.banner {
+  display: grid;
+  min-height: 315px;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 24px;
+  background:
+    linear-gradient(rgb(255 255 255 / 45%), rgb(255 255 255 / 45%)),
+    url("../../assets/images/page-banner.jpg") center / cover no-repeat;
+  text-align: center;
+}
+
+.bannerLogo {
+  display: block;
+  width: 48px;
+}
+
+.banner h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr);
+  gap: clamp(40px, 9vw, 144px);
+  width: min(100% - 48px, 1128px);
+  margin-inline: auto;
+  padding-block: clamp(48px, 8vw, 112px);
+}
+
+.delivery h2 {
+  margin: 0 0 32px;
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.totals {
+  width: 100%;
+}
+
+.totals th,
+.totals td {
+  padding-block: 10px;
+}
+
+.totals tr > :last-child {
+  text-align: right;
+}
+
+.total {
+  color: var(--color-primary);
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 700;
+}
+
+.payment {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+
+@media (max-width: 760px) {
+  .banner {
+    min-height: 200px;
+  }
+
+  .columns {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
