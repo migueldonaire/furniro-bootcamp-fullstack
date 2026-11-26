@@ -109,7 +109,7 @@ Si estás revisando una PR en GitHub, sigue las "Normas del proyecto", `docs/rev
 - Escribe los comentarios en español, cortos y amables. Los alumnos son principiantes. Empieza por lo que está bien, sigue con lo que falta y termina con el siguiente paso.
 - Señala solo problemas reales: fallos, escenarios sin hacer, datos sin validar, seguridad (endpoint sin guard, contraseña en la respuesta, datos del usuario en `localStorage`, precio que llega del cliente), normas de arriba que no se cumplen y tests que faltan.
 - No seas puntilloso: si el código funciona y está bien hecho, vale aunque no sea como en los apuntes. Los nombres mejorables se sugieren, no bloquean.
-- Señala también los cambios que se salen de la tarjeta (ficheros o configuración que no tienen que ver con ella).
+- Señala los cambios de configuración que no pide la tarjeta (`.github/`, `package.json`, `app.module.ts`...). El código o la maqueta de otra tarjeta relacionada y los botones que aún no hacen nada son normales (las tarjetas están muy relacionadas): no los comentes.
 - Para cada problema, di dónde está en los apuntes y da una pista. Una pista concreta vale (por ejemplo: "a `quantity` le falta el `@Max(99)`"), pero no escribas la funcionalidad.
 - Si falta el test de un escenario, pégalo medio hecho (el `it` con el nombre del escenario y los comentarios `// Dado`, `// Cuando`, `// Entonces`) y diles que pidan el resto a Claude en su terminal.
 - Si Sonar falla por cobertura, recuérdales que pidan a Claude en su terminal los tests de relleno de esos ficheros.

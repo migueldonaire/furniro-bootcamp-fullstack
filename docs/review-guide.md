@@ -174,7 +174,7 @@ Un nombre tiene que decir **qué es** o **qué hace** sin tener que leer el cód
 - Un fallo: algo que no funciona o un escenario de la tarjeta que no está hecho.
 - Seguridad: endpoint de administración sin guard de `ADMIN`, contraseña o `password_hash` en la respuesta, usuario en `localStorage`, precio que llega del cliente, SQL con el valor pegado en el texto.
 - Datos de entrada sin validar: un `@Body()` sin DTO con `class-validator`, un formulario sin validación.
-- Una norma de `CLAUDE.md` que no se cumple: reducer que muta, código en español, ficheros fuera de la tarjeta.
+- Una norma de `CLAUDE.md` que no se cumple: reducer que muta, código en español, tocar configuración (`.github/`, `package.json`, `app.module.ts`...) sin que lo pida la tarjeta.
 - Ningún test de escenario.
 
 **No bloquea (se sugiere):**
@@ -184,6 +184,10 @@ Un nombre tiene que decir **qué es** o **qué hace** sin tener que leer el cód
 - Faltan tests de algún escenario, si al menos hay uno (se dice cuáles faltan).
 - Pequeños detalles de estilo o de orden.
 - Diferencias con la maqueta (apartado 7).
+- Código o maqueta de otra tarjeta relacionada (por ejemplo, la tabla del carrito de FUR-37 dentro de FUR-36) y botones que todavía no hacen nada. Las tarjetas están muy relacionadas y es normal adelantar trabajo: **no se comenta**.
+- El tamaño de la PR: ya lo mira el check `pr-size`.
+
+**Ante la duda, no bloquea.**
 
 ---
 
