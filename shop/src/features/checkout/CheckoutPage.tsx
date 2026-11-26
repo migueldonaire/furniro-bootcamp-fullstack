@@ -1,25 +1,18 @@
 import { useState } from "react";
-import checkoutLogo from "../../assets/images/logo.png";
+import { PageBanner } from "../../components/layout/PageBanner";
 import { AddressForm } from "./AddressForm";
 import type { Address } from "./addressSchema";
 import styles from "./CheckoutPage.module.css";
 
 const examplePrice = "250,00 €";
+const breadcrumbs = [{ label: "Inicio", to: "/" }, { label: "Finalizar compra" }];
 
 export function CheckoutPage() {
   const [address, setAddress] = useState<Address | null>(null);
 
   return (
-    <section>
-      <div className={styles.banner}>
-        <img className={styles.bannerLogo} src={checkoutLogo} alt="" />
-        <h1>Finalizar compra</h1>
-        <nav aria-label="Ruta de navegación">
-          <a href="/">Inicio</a>
-          <span aria-hidden="true"> › </span>
-          <span aria-current="page">Finalizar compra</span>
-        </nav>
-      </div>
+    <section className={styles.checkout}>
+      <PageBanner title="Finalizar compra" breadcrumbs={breadcrumbs} />
 
       <div className={styles.columns}>
         <div className={styles.delivery}>
