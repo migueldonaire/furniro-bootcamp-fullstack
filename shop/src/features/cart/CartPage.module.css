@@ -25,8 +25,8 @@
 
 .productImage {
   width: 108px;
-  height: 108px; /* same as width: a square */
-  object-fit: cover; /* crops the photo instead of stretching it */
+  height: 108px;
+  object-fit: cover;
   background-color: #f9f1e7;
   border-radius: 20%;
 }

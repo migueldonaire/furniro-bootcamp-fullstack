@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import cartReducer, { itemAdded, getAddToCartError } from "./cartSlice";
+import type { RootState } from "../../app/store";
+import cartReducer, { itemAdded, getAddToCartError, selectCartTotals } from "./cartSlice";
 
 const nora = {
   productId: "nora",
@@ -49,5 +50,9 @@ describe("cartSlice", () => {
     const after = cartReducer(before, itemAdded({ ...nora, quantity: 1 }));
     expect(before.items[0].quantity).toBe(2);
     expect(after).not.toBe(before);
+  });
+  it("calcula subtotal, IVA y total de dos sillas", () => {
+    const state = { cart: { items: [nora] } } as RootState;
+    expect(selectCartTotals(state)).toEqual({ subtotal: 200, vat: 42, total: 242 });
   });
 });

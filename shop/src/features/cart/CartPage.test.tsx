@@ -5,6 +5,10 @@ import { formatEuro } from "../../lib/money";
 import { CartPage } from "./CartPage";
 import { itemAdded } from "./cartSlice";
 
+// The page prints a regular space before €, but formatEuro uses a non-breaking one,
+// and Testing Library normalizes the DOM text only. Compare with the same space.
+const euro = (amount: number) => formatEuro(amount).replace(/\u00a0/g, " ");
+
 describe("CartPage", () => {
   it("shows the lines of the cart with prices with VAT", () => {
     const { store } = renderWithProviders(<CartPage />);
@@ -22,7 +26,7 @@ describe("CartPage", () => {
       );
     });
     expect(screen.getByText("Silla Nora")).toBeInTheDocument();
-    expect(screen.getByText(formatEuro(121))).toBeInTheDocument();
-    expect(screen.getAllByText(formatEuro(242))).not.toHaveLength(0);
+    expect(screen.getByText(euro(121))).toBeInTheDocument();
+    expect(screen.getAllByText(euro(242))).not.toHaveLength(0);
   });
 });
