@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { getAddToCartError, itemAdded, type CartItem } from "./cartSlice";
 
-// The product of the page, without the quantity (the visitor chooses it)
 type Props = { product: Omit<CartItem, "quantity"> };
 
 const quantitySchema = z.object({
