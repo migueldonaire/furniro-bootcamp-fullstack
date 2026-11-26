@@ -36,4 +36,12 @@ describe("AdminProductsService", () => {
     await service.findAll("FUR-SIL-001", "ACTIVE");
     expect(query).toHaveBeenCalledWith(expect.any(String), ["FUR-SIL-001", "ACTIVE", undefined]);
   });
+  it("filters by category", async () => {
+    await service.findAll(undefined, undefined, "11111111-1111-1111-1111-111111111111");
+    expect(query).toHaveBeenCalledWith(expect.any(String), [
+      undefined,
+      undefined,
+      "11111111-1111-1111-1111-111111111111",
+    ]);
+  });
 });
