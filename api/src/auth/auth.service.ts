@@ -23,7 +23,7 @@ export class AuthService {
         "Tu cuenta está desactivada. Escríbenos a furnirobootcampfullstack@gmail.com",
       );
     }
-    const payload = { sub: user.id, email: user.email, role: user.role, status: user.status };
+    const payload = { sub: user.id };
     const accessToken = this.jwtService.sign(payload);
     return { accessToken };
   }
