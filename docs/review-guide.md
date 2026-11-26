@@ -184,7 +184,7 @@ Un nombre tiene que decir **qué es** o **qué hace** sin tener que leer el cód
 - Faltan tests de algún escenario, si al menos hay uno (se dice cuáles faltan).
 - Pequeños detalles de estilo o de orden.
 - Diferencias con la maqueta (apartado 7).
-- Código o maqueta de una tarjeta cercana (por ejemplo, la tabla del carrito de FUR-37 dentro de FUR-36) y botones que todavía no hacen nada. Las tarjetas están muy relacionadas: como mucho, una nota corta.
+- Código o maqueta de otra tarjeta relacionada (por ejemplo, la tabla del carrito de FUR-37 dentro de FUR-36) y botones que todavía no hacen nada. Las tarjetas están muy relacionadas y es normal adelantar trabajo: **no se comenta**.
 - El tamaño de la PR: ya lo mira el check `pr-size`.
 
 **Ante la duda, no bloquea.**
