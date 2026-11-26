@@ -1,7 +1,8 @@
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { renderWithProviders } from "../../test/renderWithProviders";
 import { Header } from "./Header";
+import { itemAdded } from "../../features/cart/cartSlice";
 
 describe("Header", () => {
   it("shows the name of the app and the menu", () => {
@@ -16,5 +17,22 @@ describe("Header", () => {
     expect(screen.getByRole("banner")).toHaveClass("header");
     expect(screen.getByRole("link", { name: "Carrito" })).toHaveClass("active");
     expect(screen.getByRole("link", { name: "Entrar" })).not.toHaveClass("active");
+  });
+  it("shows the units of the cart next to the cart link", () => {
+    const { store } = renderWithProviders(<Header />);
+    act(() => {
+      store.dispatch(
+        itemAdded({
+          productId: "nora",
+          name: "Silla Nora",
+          basePrice: 100,
+          taxRate: 21,
+          stock: 5,
+          imageUrl: "/silla-nora.jpg",
+          quantity: 2,
+        }),
+      );
+    });
+    expect(screen.getByRole("link", { name: "Carrito (2)" })).toBeInTheDocument();
   });
 });
