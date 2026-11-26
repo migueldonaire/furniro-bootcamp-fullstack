@@ -1,10 +1,59 @@
-// Placeholder page. Card(s): T5, T6, T7, T8
-// Replace this content with your card. Keep the name of the component.
+import styles from "./CartPage.module.css";
+import trashCan from "../../assets/icons/trash-can.svg";
+import { useAppSelector } from "../../app/hooks";
+import { formatEuro } from "../../lib/money";
+import { selectCartTotals } from "./cartSlice";
+
 export function CartPage() {
+  const items = useAppSelector((state) => state.cart.items);
+  const totals = useAppSelector(selectCartTotals);
   return (
-    <section>
-      <h1>Carrito</h1>
-      <p className="placeholder">Pendiente (tarjeta T5, T6, T7, T8).</p>
-    </section>
+    <>
+      <section>
+        <div className={styles.layout}>
+          <aside className={styles.cart}>
+            <div className={styles.specsProduct}>
+              <span />
+              <h4>Producto</h4>
+              <h4>Precio</h4>
+              <h4>Cantidad</h4>
+              <h4>Subtotal</h4>
+              <span />
+            </div>
+            <div>
+              {items.map((line) => (
+                <section key={line.productId} className={styles.cartLine}>
+                  <img className={styles.productImage} src={line.imageUrl} alt={line.name} />
+                  <h4 className={styles.mutedText}>{line.name}</h4>
+                  <h4 className={styles.mutedText}>{formatEuro(line.basePrice)}</h4>
+                  <span>{line.quantity}</span>
+                  <h4>{formatEuro(line.basePrice * line.quantity)}</h4>
+                  <button className={styles.removeButton}>
+                    <img src={trashCan} alt="Quitar del carrito" />
+                  </button>
+                </section>
+              ))}
+              {items.length === 0 && <p className={styles.mutedText}>Tu carrito está vacío</p>}
+            </div>
+          </aside>
+          <aside className={styles.cartTotal}>
+            <h1>Total del carrito</h1>
+            <div className={styles.totalRow}>
+              <span>Subtotal</span>
+              <span>{formatEuro(totals.subtotal)}</span>
+            </div>
+            <div className={styles.totalRow}>
+              <span>IVA (21 %)</span>
+              <span>{formatEuro(totals.vat)}</span>
+            </div>
+            <div className={styles.totalRow}>
+              <span>Total</span>
+              <span>{formatEuro(totals.total)}</span>
+            </div>
+            <button className={styles.checkoutButton}>Finalizar compra</button>
+          </aside>
+        </div>
+      </section>
+    </>
   );
 }
