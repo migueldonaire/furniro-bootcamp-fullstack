@@ -20,7 +20,17 @@ export class AdminProductsService {
     search?: string,
     status?: ProductStatus,
     category?: string,
+    sort?: string,
   ): Promise<AdminProduct[]> {
+    const sortList: Record<string, string> = {
+      newest: "p.created_at DESC",
+      oldest: "p.created_at ASC",
+      priceAsc: "p.base_price ASC",
+      priceDesc: "p.base_price DESC",
+    };
+
+    const sortQuery = sortList[sort ?? "newest"];
+
     const result = await this.pool.query<AdminProduct>(
       `
             SELECT p.id, p.name, p.sku, p.base_price AS "basePrice", p.stock, p.status, c.name AS "categoryName", pi.url AS "imageUrl"
@@ -30,7 +40,7 @@ export class AdminProductsService {
             WHERE ($1::text IS NULL OR p.name ILIKE '%' || $1 || '%' OR p.sku ILIKE '%' || $1 || '%')
             AND ($2::text IS NULL OR p.status = $2) 
             AND ($3::uuid IS NULL OR p.category_id = $3)
-            ORDER BY p.name
+            ORDER BY ${sortQuery}, p.name
         `,
       [search, status, category],
     );

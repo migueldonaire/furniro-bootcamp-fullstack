@@ -12,10 +12,16 @@ export class AdminProductsController {
     @Query("search") search?: string,
     @Query("status") status?: ProductStatus,
     @Query("category") category?: string,
+    @Query("sort") sort?: string,
   ) {
     if (status && !["ACTIVE", "INACTIVE"].includes(status)) {
       throw new BadRequestException("Estado no válido. Debe ser 'ACTIVE' o 'INACTIVE'.");
     }
-    return this.adminProductsService.findAll(search, status, category);
+    if (sort && !["newest", "oldest", "priceDesc", "priceAsc"].includes(sort)) {
+      throw new BadRequestException(
+        "Parámetro de ordenación inválido. Debe ser 'newest', 'oldest', 'priceDesc' o 'priceAsc'",
+      );
+    }
+    return this.adminProductsService.findAll(search, status, category, sort);
   }
 }
