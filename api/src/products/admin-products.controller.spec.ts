@@ -23,4 +23,10 @@ describe("AdminProductsController", () => {
     );
     expect(findAll).not.toHaveBeenCalled();
   });
+  it("unvalid sort param throws 400", async () => {
+    await expect(controller.findAll(undefined, undefined, undefined, "hola")).rejects.toThrow(
+      BadRequestException,
+    );
+    expect(findAll).not.toHaveBeenCalled();
+  });
 });

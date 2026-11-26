@@ -44,4 +44,20 @@ describe("AdminProductsService", () => {
       "11111111-1111-1111-1111-111111111111",
     ]);
   });
+  it("sorts by priceAsc", async () => {
+    await service.findAll(undefined, undefined, undefined, "priceAsc");
+    expect(query).toHaveBeenLastCalledWith(expect.stringContaining("p.base_price ASC"), [
+      undefined,
+      undefined,
+      undefined,
+    ]);
+  });
+  it("without sort param it sorts by created_at DESC by default", async () => {
+    await service.findAll();
+    expect(query).toHaveBeenLastCalledWith(expect.stringContaining("p.created_at DESC"), [
+      undefined,
+      undefined,
+      undefined,
+    ]);
+  });
 });
