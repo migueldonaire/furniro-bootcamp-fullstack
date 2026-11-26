@@ -8,7 +8,7 @@ import {
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
 import { UsersService } from "../users/users.service";
-import { User } from "src/users/user";
+import { User } from "../users/user";
 
 declare module "express" {
   interface Request {
