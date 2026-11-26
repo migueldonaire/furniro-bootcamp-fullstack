@@ -4,7 +4,14 @@ import { describe, expect, it } from "vitest";
 import { renderWithProviders } from "../../test/renderWithProviders";
 import { AddToCartButton } from "./AddToCartButton";
 
-const nora = { productId: "nora", name: "Silla Nora", basePrice: 100, taxRate: 21, stock: 5 };
+const nora = {
+  productId: "nora",
+  name: "Silla Nora",
+  basePrice: 100,
+  taxRate: 21,
+  stock: 5,
+  imageUrl: "/silla-nora.jpg",
+};
 
 describe("AddToCartButton", () => {
   it("adds the chosen units to the cart", async () => {

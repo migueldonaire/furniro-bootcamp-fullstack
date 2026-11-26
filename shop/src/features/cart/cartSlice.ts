@@ -8,6 +8,7 @@ export type CartItem = {
   taxRate: number; // 21 = 21 %
   quantity: number;
   stock: number;
+  imageUrl: string; // main photo of the product, shown in the cart line
 };
 
 type CartState = { items: CartItem[] };

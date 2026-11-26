@@ -1,4 +1,5 @@
 import styles from "./CartPage.module.css";
+import trashCan from "../../assets/icons/trash-can.svg";
 import { useAppSelector } from "../../app/hooks";
 import { formatEuro, priceWithTax } from "../../lib/money";
 
@@ -25,14 +26,16 @@ export function CartPage() {
             <div>
               {items.map((line) => (
                 <section key={line.productId} className={styles.cartLine}>
-                  <span />
+                  <img className={styles.productImage} src={line.imageUrl} alt={line.name} />
                   <h4 className={styles.mutedText}>{line.name}</h4>
                   <h4 className={styles.mutedText}>
                     {formatEuro(priceWithTax(line.basePrice, line.taxRate))}
                   </h4>
                   <span>{line.quantity}</span>
                   <h4>{formatEuro(priceWithTax(line.basePrice, line.taxRate) * line.quantity)}</h4>
-                  <span />
+                  <button className={styles.removeButton}>
+                    <img src={trashCan} alt="Quitar del carrito" />
+                  </button>
                 </section>
               ))}
             </div>

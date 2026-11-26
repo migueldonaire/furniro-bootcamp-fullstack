@@ -7,6 +7,7 @@ const nora = {
   basePrice: 100,
   taxRate: 21,
   stock: 5,
+  imageUrl: "/silla-nora.jpg",
   quantity: 2,
 };
 
