@@ -36,9 +36,9 @@ export function CartPage() {
           <aside className={styles.cart}>
             <div className={styles.specsProduct}>
               <span />
-              <h4>Product</h4>
-              <h4>Price</h4>
-              <h4>Quantity</h4>
+              <h4>Producto</h4>
+              <h4>Precio</h4>
+              <h4>Cantidad</h4>
               <h4>Subtotal</h4>
               <span />
             </div>
@@ -55,6 +55,7 @@ export function CartPage() {
                   </button>
                 </section>
               ))}
+              {items.length === 0 && <p className={styles.mutedText}>Tu carrito está vacío</p>}
             </div>
           </aside>
           <aside className={styles.cartTotal}>

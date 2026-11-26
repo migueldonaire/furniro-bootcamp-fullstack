@@ -10,6 +10,11 @@ import { itemAdded } from "./cartSlice";
 const euro = (amount: number) => formatEuro(amount).replace(/\u00a0/g, " ");
 
 describe("CartPage", () => {
+  it("shows a message when the cart is empty", () => {
+    renderWithProviders(<CartPage />);
+    expect(screen.getByText("Tu carrito está vacío")).toBeInTheDocument();
+  });
+
   it("shows the lines of the cart with prices with VAT", () => {
     const { store } = renderWithProviders(<CartPage />);
     act(() => {
