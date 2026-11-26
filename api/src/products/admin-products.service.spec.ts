@@ -30,10 +30,10 @@ describe("AdminProductsService", () => {
   });
   it("sin filtro pasa los parametros vacios", async () => {
     await service.findAll();
-    expect(query).toHaveBeenCalledWith(expect.any(String), [undefined, undefined]);
+    expect(query).toHaveBeenCalledWith(expect.any(String), [undefined, undefined, undefined]);
   });
   it("con filtro pasa los parametros correctamente", async () => {
     await service.findAll("FUR-SIL-001", "ACTIVE");
-    expect(query).toHaveBeenCalledWith(expect.any(String), ["FUR-SIL-001", "ACTIVE"]);
+    expect(query).toHaveBeenCalledWith(expect.any(String), ["FUR-SIL-001", "ACTIVE", undefined]);
   });
 });

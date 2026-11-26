@@ -16,7 +16,11 @@ export type ProductStatus = "ACTIVE" | "INACTIVE";
 export class AdminProductsService {
   constructor(private readonly pool: Pool) {}
 
-  async findAll(search?: string, status?: ProductStatus): Promise<AdminProduct[]> {
+  async findAll(
+    search?: string,
+    status?: ProductStatus,
+    category?: string,
+  ): Promise<AdminProduct[]> {
     const result = await this.pool.query<AdminProduct>(
       `
             SELECT p.id, p.name, p.sku, p.base_price AS "basePrice", p.stock, p.status, c.name AS "categoryName", pi.url AS "imageUrl"
@@ -25,9 +29,10 @@ export class AdminProductsService {
             LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_primary 
             WHERE ($1::text IS NULL OR p.name ILIKE '%' || $1 || '%' OR p.sku ILIKE '%' || $1 || '%')
             AND ($2::text IS NULL OR p.status = $2) 
+            AND ($3::uuid IS NULL OR p.category_id = $3)
             ORDER BY p.name
         `,
-      [search, status],
+      [search, status, category],
     );
     return result.rows;
   }

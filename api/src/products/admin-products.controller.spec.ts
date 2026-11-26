@@ -15,7 +15,7 @@ describe("AdminProductsController", () => {
 
   it("un estado válido llama al servicio", async () => {
     await controller.findAll("silla", "ACTIVE");
-    expect(findAll).toHaveBeenCalledWith("silla", "ACTIVE");
+    expect(findAll).toHaveBeenCalledWith("silla", "ACTIVE", undefined);
   });
   it("estado no valido lanza 400", async () => {
     await expect(controller.findAll(undefined, "HOLA" as ProductStatus)).rejects.toThrow(
