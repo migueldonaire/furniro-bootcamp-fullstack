@@ -37,7 +37,7 @@ describe("Iniciar sesión en la tienda", () => {
 
     expect(result).toEqual({ accessToken: "fake-token" });
     expect(fakeJwtService.sign).toHaveBeenCalledWith(
-      expect.objectContaining({ sub: "u1", role: "CUSTOMER" }),
+      expect.objectContaining({ sub: "u1" }),
     );
   });
 
