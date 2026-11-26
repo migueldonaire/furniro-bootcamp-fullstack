@@ -1,9 +1,13 @@
-import { Controller, Get, Query } from "@nestjs/common";
-import { ApiTags } from "@nestjs/swagger";
+import { Controller, Get, Query, UseGuards } from "@nestjs/common";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { AdminGuard } from "../auth/admin.guard";
+import { AuthGuard } from "../auth/auth.guard";
 import { AdminOrdersService } from "./admin-orders.service";
 import { ListAdminOrdersQueryDto } from "./dto/list-admin-orders-query.dto";
 
-// TODO (FUR-27): add @UseGuards(AuthGuard, AdminGuard) and @ApiBearerAuth()
+// Only a logged-in ADMIN: AuthGuard checks the token (401), AdminGuard checks the role (403)
+@UseGuards(AuthGuard, AdminGuard)
+@ApiBearerAuth()
 @ApiTags("admin-orders")
 @Controller("admin/orders")
 export class AdminOrdersController {
