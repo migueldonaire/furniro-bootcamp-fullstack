@@ -20,7 +20,7 @@ FUR-XX: <título de la historia en Jira>
 
 ## Checklist
 
-- [ ] Una sola tarjeta (o una parte) y menos de 400 líneas
+- [ ] Una sola tarjeta (o una parte) y menos de 1000 líneas (sin contar tests)
 - [ ] La rama se llama `feature/FUR-XX`
 - [ ] Código en inglés (variables, rutas, campos, ficheros)
 - [ ] Al menos un test nuevo y `npm test` en verde

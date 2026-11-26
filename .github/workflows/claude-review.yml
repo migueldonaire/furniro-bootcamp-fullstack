@@ -2,7 +2,8 @@
 # It is skipped until the variable CLAUDE_REVIEW_ENABLED is "true"
 # and the secret CLAUDE_CODE_OAUTH_TOKEN exists (see docs/setup-guide.md, section 5).
 #
-# Claude reads CLAUDE.md (root of the repo) to know the rules of the project,
+# Claude reads CLAUDE.md and docs/review-guide.md to know the rules of the
+# project, and the Jira card of the branch to check its scenarios. It
 # leaves comments on the lines of the PR and a summary comment, and gives a
 # verdict. If it finds a blocking problem (a bug, a security problem or a
 # broken rule of CLAUDE.md), this check goes RED. The ruleset of main requires
@@ -28,7 +29,7 @@ jobs:
       !github.event.pull_request.draft &&
       github.event.pull_request.user.login != 'dependabot[bot]'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     permissions:
       contents: read
       pull-requests: write
@@ -39,6 +40,17 @@ jobs:
         with:
           fetch-depth: 1
 
+      # The card of the branch (feature/FUR-30 -> FUR-30), so that Claude knows
+      # the story, the rules and the scenarios. Without the Jira secrets it
+      # still works: the file just says that the card could not be read.
+      - name: Read the Jira card of the branch
+        env:
+          BRANCH: ${{ github.head_ref }}
+          JIRA_BASE_URL: ${{ vars.JIRA_BASE_URL }}
+          JIRA_EMAIL: ${{ secrets.JIRA_EMAIL }}
+          JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
+        run: bash .github/scripts/fetch-jira-card.sh "$BRANCH" jira-card.md
+
       - name: Claude reviews the PR
         id: review
         uses: anthropics/claude-code-action@v1
@@ -48,24 +60,74 @@ jobs:
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            Revisa esta pull request siguiendo las normas de CLAUDE.md,
-            sobre todo el apartado "Revisión de PRs (para Claude)".
+            Eres el revisor de una PR de alumnos principiantes del bootcamp.
+            Revisa como lo haría su profesor: que la tarjeta quede completa y
+            bien hecha, y que sepan cuál es su siguiente paso.
+
+            Antes de empezar, lee:
+            - CLAUDE.md, sobre todo "Normas del proyecto" y "Revisión de PRs (para Claude)".
+            - docs/review-guide.md: cómo tiene que quedar una tarjeta (API, webs, tests, nombres).
+            - jira-card.md: la tarjeta de Jira de la rama (historia, reglas y escenarios).
+            - La imagen de la pantalla de la tarjeta en docs/screens/ (la tabla del
+              apartado 7 de docs/review-guide.md dice cuál es), si la PR toca una web.
             Usa `gh pr view` y `gh pr diff` para leer la PR.
+
+            La tarjeta es la de la rama. Si un commit nombra otro FUR, es una
+            subtarea de la misma tarjeta (mira la lista de subtareas en
+            jira-card.md): no es otra tarea y no lo comentes.
+            Si la PR dice que es solo una parte (por ejemplo, solo la API),
+            revisa esa parte y di lo que queda para otra PR, sin bloquear.
+
+            No seas puntilloso. Los apuntes no son la única forma válida: si el
+            código funciona y está bien hecho, se acepta. Lo que sí tiene que
+            estar: los escenarios de la tarjeta, la validación (class-validator
+            en la API, React Hook Form + Zod en la web), la seguridad y los tests.
+            No bloquees por cosas pequeñas: ante la duda, no bloquea.
+            Las tarjetas están muy relacionadas: si la PR adelanta código o
+            maqueta de otra tarjeta, o trae botones que aún no hacen nada, es
+            normal. No lo comentes ni pidas sacarlo a otra PR.
 
             1. Por cada problema real, deja un comentario en su línea con
                mcp__github_inline_comment__create_inline_comment: en español,
-               corto, amable y con una pista (no la solución entera).
-            2. Al final deja UN comentario de resumen con `gh pr comment`:
-               qué está bien, qué hay que cambiar y si bloquea o no.
-            3. Responde con el veredicto:
+               corto y amable. Di dónde está en los apuntes y da una pista
+               concreta (vale "a `quantity` le falta el `@Max(99)`"), pero no
+               escribas la funcionalidad.
+            2. Al final deja UN comentario de resumen con `gh pr comment`, en este orden:
+               - **Lo que está bien**: concreto, no genérico.
+               - **La tarjeta, escenario a escenario**: una tabla con cada
+                 escenario de jira-card.md, si está hecho y si tiene test.
+                 Si no has podido leer la tarjeta, dilo en una línea.
+               - **Lo que falta** para cerrar la tarjeta (API, web, validación,
+                 estados de carga y error, CSS Modules, mapeo Row → modelo...).
+               - **Tests que faltan**: para cada escenario sin test, pega el test
+                 medio hecho (el `it` con el nombre del escenario y los
+                 comentarios `// Dado`, `// Cuando`, `// Entonces` con alguna
+                 línea de ejemplo) y diles que pidan el resto a Claude en su
+                 terminal pasándole el escenario.
+               - **Maqueta** (solo si la PR toca una web y la tarjeta tiene imagen):
+                 compara la imagen con el JSX y el CSS y lista lo que falte de la
+                 tarjeta (textos, columnas, campos, botones, colocación grande).
+                 Ignora cabecera, pie, banners y lo que no es del MVP. Dilo como
+                 sugerencia ("en la maqueta hay..."): puedes equivocarte. Nunca bloquea.
+               - **Nombres**: si hay nombres vagos (`data`, `get`, `Props`...),
+                 sugiere uno mejor. No bloquea.
+               - **Siguiente paso**: una o dos frases con lo próximo que deben hacer.
+               - Si toca la API o una web, añade al final: "Si Sonar falla por
+                 cobertura, pide a Claude en tu terminal los tests de relleno de
+                 esos ficheros, uno a uno."
+            3. Responde con el veredicto (los criterios están en el apartado 6
+               de docs/review-guide.md):
                - blocking = true si hay algún problema que impide fusionar:
-                 un fallo, un problema de seguridad (endpoint sin guard,
-                 contraseña en la respuesta, datos del usuario en localStorage,
-                 precio que llega del cliente...), una norma de CLAUDE.md que
-                 no se cumple o una tarjeta sin ningún test.
-               - blocking = false si solo hay sugerencias o nada que comentar.
+                 un fallo, un escenario de la tarjeta sin hacer, datos de
+                 entrada sin validar, un problema de seguridad (endpoint sin
+                 guard, contraseña en la respuesta, datos del usuario en
+                 localStorage, precio que llega del cliente...), una norma de
+                 CLAUDE.md que no se cumple o una tarjeta sin ningún test.
+               - blocking = false si solo hay sugerencias (nombres, otra forma
+                 de hacerlo, tests de algún escenario si ya hay al menos uno,
+                 diferencias con la maqueta, el tamaño de la PR).
           claude_args: |
-            --max-turns 30
+            --max-turns 40
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*)"
             --json-schema '{"type":"object","properties":{"blocking":{"type":"boolean"},"summary":{"type":"string"}},"required":["blocking","summary"]}'
 

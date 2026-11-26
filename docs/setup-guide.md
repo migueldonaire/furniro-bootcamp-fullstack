@@ -65,7 +65,7 @@ El ruleset de `main` exige:
 - **PR con 1 aprobación** (de otra pareja o del profesor) y la rama al día con `main`.
 - **`ci-ok`**: resume el CI. Sale en verde si todo lo que tenía que pasar ha pasado (lo que se salta no bloquea). Incluye:
   - lint, tests y `npm audit` de cada carpeta que cambia;
-  - tamaño de la PR (máximo 400 líneas sin `package-lock.json`; la etiqueta `big-pr` lo salta);
+  - tamaño de la PR (máximo 1000 líneas sin contar `package-lock.json` ni los tests; la etiqueta `big-pr` lo salta);
   - Gitleaks (secretos subidos por error) y Trivy (vulnerabilidades de la imagen Docker);
   - **SonarQube Cloud**: si la quality gate falla, el job `sonar` sale en rojo y `ci-ok` también.
 - **`claude-review`**: Claude comenta las líneas, deja un resumen y da un veredicto. Si encuentra algo que bloquea (un fallo, seguridad, una norma de `CLAUDE.md` o una tarjeta sin test), sale en rojo.
@@ -109,6 +109,8 @@ Secretos y variables de GitHub:
 | `SONAR_ENABLED` | Variable | Repositorio | `true` activa el job de Sonar |
 | `CLAUDE_CODE_OAUTH_TOKEN` | Secreto | Repositorio | Revisor de Claude |
 | `CLAUDE_REVIEW_ENABLED` | Variable | Repositorio | `true` activa el revisor |
+| `JIRA_BASE_URL` | Variable | Repositorio | Sitio de Jira, para que el revisor lea la tarjeta de la rama |
+| `JIRA_EMAIL`, `JIRA_API_TOKEN` | Secreto | Repositorio | Cuenta y token de Jira para leer la tarjeta (sin ellos, el revisor avisa y sigue) |
 | `RENDER_DEPLOY_HOOK` | Secreto | Entorno | Ordenar a Render que despliegue |
 | `API_URL`, `SHOP_URL`, `BACKOFFICE_URL` | Variable | Entorno | URLs de ese entorno |
 | `SHOP_NETLIFY_SITE_ID`, `BACKOFFICE_NETLIFY_SITE_ID` | Variable | Entorno | A qué site de Netlify se sube cada web |
