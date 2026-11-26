@@ -20,7 +20,7 @@ export class AuthService {
     }
     if (user.status === "INACTIVE") {
       throw new ForbiddenException(
-        "Tu cuenta está desactivada. Escríbenos a furnirobootcampfullstack@gmail.com»",
+        "Tu cuenta está desactivada. Escríbenos a furnirobootcampfullstack@gmail.com",
       );
     }
     const payload = { sub: user.id, email: user.email, role: user.role, status: user.status };
