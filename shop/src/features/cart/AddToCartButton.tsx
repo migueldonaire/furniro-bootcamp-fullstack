@@ -1,35 +1,50 @@
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { getAddToCartError, itemAdded, type CartItem } from "./cartSlice";
 
 // The product of the page, without the quantity (the visitor chooses it)
 type Props = { product: Omit<CartItem, "quantity"> };
 
+const quantitySchema = z.object({
+  quantity: z.number({ error: "La cantidad mínima es 1" }).int().min(1, "La cantidad mínima es 1"),
+});
+
+type QuantityForm = z.infer<typeof quantitySchema>;
+
 export function AddToCartButton({ product }: Props) {
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.cart.items);
-  const [quantity, setQuantity] = useState(1);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors },
+  } = useForm<QuantityForm>({
+    resolver: zodResolver(quantitySchema),
+    defaultValues: { quantity: 1 },
+  });
 
-  function handleAdd() {
+  function onSubmit({ quantity }: QuantityForm) {
     const newItem = { ...product, quantity };
     const message = getAddToCartError(items, newItem);
-    setError(message);
-    if (message === null) {
-      dispatch(itemAdded(newItem));
+    if (message !== null) {
+      setError("quantity", { type: "stock", message });
+      return;
     }
+    dispatch(itemAdded(newItem));
   }
+
   return (
-    <div>
+    <form noValidate onSubmit={handleSubmit(onSubmit)}>
       <input
         type="number"
         aria-label="Cantidad"
-        min={1}
-        value={quantity}
-        onChange={(e) => setQuantity(Number(e.target.value))}
+        {...register("quantity", { valueAsNumber: true })}
       />
-      <button onClick={handleAdd}>Añadir al carrito</button>
-      {error && <p role="alert">{error}</p>}
-    </div>
+      <button type="submit">Añadir al carrito</button>
+      {errors.quantity && <p role="alert">{errors.quantity.message}</p>}
+    </form>
   );
 }
