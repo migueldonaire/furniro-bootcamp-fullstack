@@ -36,9 +36,7 @@ describe("Iniciar sesión en la tienda", () => {
     const result = await authService.login("ana@mail.com", "Secreta123");
 
     expect(result).toEqual({ accessToken: "fake-token" });
-    expect(fakeJwtService.sign).toHaveBeenCalledWith(
-      expect.objectContaining({ sub: "u1" }),
-    );
+    expect(fakeJwtService.sign).toHaveBeenCalledWith(expect.objectContaining({ sub: "u1" }));
   });
 
   it("Escenario: Contraseña incorrecta o email que no existe", async () => {
