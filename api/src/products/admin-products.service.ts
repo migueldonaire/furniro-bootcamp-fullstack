@@ -11,12 +11,25 @@ export type AdminProduct = {
   imageUrl: string | null;
 };
 
+export type Pagination = {
+  page: number;
+  limit: number;
+  total: number;
+};
+
+export type AdminProductResponse = {
+  data: AdminProduct[];
+  pagination: Pagination;
+};
+
 export type ProductStatus = "ACTIVE" | "INACTIVE";
 @Injectable()
 export class AdminProductsService {
   constructor(private readonly pool: Pool) {}
 
   async findAll(
+    page: number,
+    limit: number,
     search?: string,
     status?: ProductStatus,
     category?: string,
@@ -28,6 +41,8 @@ export class AdminProductsService {
       priceAsc: "p.base_price ASC",
       priceDesc: "p.base_price DESC",
     };
+
+    const offset = (page - 1) * limit;
 
     const sortQuery = sortList[sort ?? "newest"];
 
@@ -41,8 +56,10 @@ export class AdminProductsService {
             AND ($2::text IS NULL OR p.status = $2) 
             AND ($3::uuid IS NULL OR p.category_id = $3)
             ORDER BY ${sortQuery}, p.name
+            LIMIT $5 
+            OFFSET $4
         `,
-      [search, status, category],
+      [search, status, category, offset, limit],
     );
     return result.rows;
   }

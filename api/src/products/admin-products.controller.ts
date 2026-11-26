@@ -1,4 +1,11 @@
-import { BadRequestException, Controller, Get, Query } from "@nestjs/common";
+import {
+  BadRequestException,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  ParseIntPipe,
+  Query,
+} from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AdminProductsService, type ProductStatus } from "./admin-products.service";
 
@@ -9,6 +16,8 @@ export class AdminProductsController {
 
   @Get()
   async findAll(
+    @Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number,
+    @Query("limit", new DefaultValuePipe(6), ParseIntPipe) limit: number,
     @Query("search") search?: string,
     @Query("status") status?: ProductStatus,
     @Query("category") category?: string,
@@ -22,6 +31,9 @@ export class AdminProductsController {
         "Parámetro de ordenación inválido. Debe ser 'newest', 'oldest', 'priceDesc' o 'priceAsc'",
       );
     }
-    return this.adminProductsService.findAll(search, status, category, sort);
+    if (page <= 0 || limit <= 0) {
+      throw new BadRequestException("La página y el límite deben ser mayor que 0");
+    }
+    return this.adminProductsService.findAll(page, limit, search, status, category, sort);
   }
 }
