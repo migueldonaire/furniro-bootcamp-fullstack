@@ -82,6 +82,7 @@ jobs:
             código funciona y está bien hecho, se acepta. Lo que sí tiene que
             estar: los escenarios de la tarjeta, la validación (class-validator
             en la API, React Hook Form + Zod en la web), la seguridad y los tests.
+            No bloquees por cosas pequeñas: ante la duda, no bloquea.
 
             1. Por cada problema real, deja un comentario en su línea con
                mcp__github_inline_comment__create_inline_comment: en español,
@@ -121,7 +122,8 @@ jobs:
                  CLAUDE.md que no se cumple o una tarjeta sin ningún test.
                - blocking = false si solo hay sugerencias (nombres, otra forma
                  de hacerlo, tests de algún escenario si ya hay al menos uno,
-                 diferencias con la maqueta).
+                 diferencias con la maqueta, código o maqueta de una tarjeta
+                 cercana, botones que aún no hacen nada, el tamaño de la PR).
           claude_args: |
             --max-turns 40
             --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh pr comment:*)"
