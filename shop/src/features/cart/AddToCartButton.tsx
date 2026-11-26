@@ -12,11 +12,11 @@ export function AddToCartButton({ product }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   function handleAdd() {
-    const newItem = { ...product, quantity }; 
-    const message = getAddToCartError(items, newItem); 
-    setError(message); 
+    const newItem = { ...product, quantity };
+    const message = getAddToCartError(items, newItem);
+    setError(message);
     if (message === null) {
-      dispatch(itemAdded(newItem)); 
+      dispatch(itemAdded(newItem));
     }
   }
   return (
