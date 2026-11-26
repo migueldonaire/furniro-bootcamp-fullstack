@@ -1,0 +1,37 @@
+.banner {
+  display: grid;
+  min-height: 315px;
+  place-content: center;
+  justify-items: center;
+  gap: 8px;
+  padding: 24px;
+  background:
+    linear-gradient(rgb(255 255 255 / 45%), rgb(255 255 255 / 45%)),
+    url("../../assets/images/page-banner.jpg") center / cover no-repeat;
+  text-align: center;
+}
+
+.logo {
+  display: block;
+  width: 48px;
+}
+
+.banner h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.breadcrumbs {
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumbs li {
+  display: inline;
+}
+
+@media (max-width: 760px) {
+  .banner {
+    min-height: 200px;
+  }
+}

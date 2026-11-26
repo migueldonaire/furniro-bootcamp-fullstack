@@ -43,7 +43,7 @@ Usuarios de prueba (contraseña `Furniro123`): `luis@furniro.com` (administrador
 2. Crea tu rama: `git switch -c feature/FUR-35` (el código de tu tarjeta de Jira).
 3. Programa dentro de tu carpeta (mira tu carril en [Confluence](https://bootcamp-fullstack-valencia-2026.atlassian.net/wiki/spaces/DDS/pages/753665)).
 4. Antes de subir: `npm run format`, `npm run lint` y `npm test` en la carpeta que hayas tocado.
-5. Abre una PR pequeña (menos de 400 líneas). Rellena la plantilla.
+5. Abre una PR pequeña (menos de 1000 líneas sin contar tests). Rellena la plantilla.
 6. Espera a que los checks salgan en verde y a la revisión. Corrige y vuelve a subir.
 7. Cuando se fusione, tu cambio sale solo en staging.
 
