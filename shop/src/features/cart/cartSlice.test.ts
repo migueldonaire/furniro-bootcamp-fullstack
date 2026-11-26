@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import type { RootState } from "../../app/store";
-import cartReducer, { itemAdded, getAddToCartError, selectCartTotals } from "./cartSlice";
+import cartReducer, {
+  itemAdded,
+  getAddToCartError,
+  quantityChanged,
+  selectCartTotals,
+} from "./cartSlice";
 
 const nora = {
   productId: "nora",
@@ -10,6 +15,16 @@ const nora = {
   stock: 5,
   imageUrl: "/silla-nora.jpg",
   quantity: 2,
+};
+
+const asgaard = {
+  productId: "asgaard",
+  name: "Mesa Asgaard",
+  basePrice: 250,
+  taxRate: 21,
+  stock: 3,
+  imageUrl: "/mesa-asgaard.jpg",
+  quantity: 1,
 };
 
 describe("cartSlice", () => {
@@ -54,5 +69,41 @@ describe("cartSlice", () => {
   it("calculates subtotal, VAT and total of two chairs", () => {
     const state = { cart: { items: [nora] } } as RootState;
     expect(selectCartTotals(state)).toEqual({ subtotal: 200, vat: 42, total: 242 });
+  });
+});
+
+describe("changing the quantity in the cart (FUR-37)", () => {
+  it("changes the quantity of a product to 4", () => {
+    // Dado: el carrito tiene 2 "Silla Nora"
+    const before = { items: [nora] };
+    // Cuando: el visitante cambia la cantidad a 4
+    const state = cartReducer(before, quantityChanged({ productId: "nora", quantity: 4 }));
+    // Entonces: el carrito tiene 4 "Silla Nora"
+    expect(state.items[0].quantity).toBe(4);
+  });
+
+  it("removes the line when the quantity is 0", () => {
+    // Dado: el carrito tiene 2 "Silla Nora" y 1 "Mesa Asgaard"
+    const before = { items: [nora, asgaard] };
+    // Cuando: el visitante cambia la cantidad de "Silla Nora" a 0
+    const state = cartReducer(before, quantityChanged({ productId: "nora", quantity: 0 }));
+    // Entonces: el carrito solo tiene 1 "Mesa Asgaard"
+    expect(state.items).toEqual([asgaard]);
+  });
+
+  it("does not change the cart when the quantity is more than the stock", () => {
+    // Dado: el carrito tiene 2 "Silla Nora" (stock 5)
+    const before = { items: [nora] };
+    // Cuando: el visitante cambia la cantidad a 6
+    const state = cartReducer(before, quantityChanged({ productId: "nora", quantity: 6 }));
+    // Entonces: el carrito sigue con 2 "Silla Nora" (el aviso «Solo quedan 5 unidades» va en la página)
+    expect(state.items[0].quantity).toBe(2);
+  });
+
+  it("returns a new array and does not change the old one", () => {
+    const before = { items: [nora] };
+    const state = cartReducer(before, quantityChanged({ productId: "nora", quantity: 4 }));
+    expect(state.items).not.toBe(before.items);
+    expect(before.items[0].quantity).toBe(2);
   });
 });

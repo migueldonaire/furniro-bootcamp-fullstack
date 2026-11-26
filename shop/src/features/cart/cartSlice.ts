@@ -51,10 +51,29 @@ export const cartSlice = createSlice({
       }
       return { ...state, items: [...state.items, newItem] };
     },
+    quantityChanged: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
+      const { productId, quantity } = action.payload;
+      const line = state.items.find((cartLine) => cartLine.productId === productId);
+      if (!line || quantity > line.stock) {
+        return state;
+      }
+      if (quantity === 0) {
+        return {
+          ...state,
+          items: state.items.filter((cartLine) => cartLine.productId !== productId),
+        };
+      }
+      return {
+        ...state,
+        items: state.items.map((cartLine) =>
+          cartLine.productId === productId ? { ...cartLine, quantity } : cartLine,
+        ),
+      };
+    },
   },
 });
 
-export const { itemAdded } = cartSlice.actions;
+export const { itemAdded, quantityChanged } = cartSlice.actions;
 
 export default cartSlice.reducer;
 

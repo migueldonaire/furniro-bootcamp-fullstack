@@ -1,8 +1,9 @@
+import { useState, type ChangeEvent } from "react";
 import styles from "./CartPage.module.css";
 import trashCan from "../../assets/icons/trash-can.svg";
-import { useAppSelector } from "../../app/hooks";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { formatEuro } from "../../lib/money";
-import { selectCartTotals } from "./cartSlice";
+import { quantityChanged, selectCartTotals, type CartItem } from "./cartSlice";
 
 export function CartPage() {
   const items = useAppSelector((state) => state.cart.items);
@@ -26,7 +27,7 @@ export function CartPage() {
                   <img className={styles.productImage} src={line.imageUrl} alt={line.name} />
                   <h4 className={styles.mutedText}>{line.name}</h4>
                   <h4 className={styles.mutedText}>{formatEuro(line.basePrice)}</h4>
-                  <span>{line.quantity}</span>
+                  <QuantityInput line={line} />
                   <h4>{formatEuro(line.basePrice * line.quantity)}</h4>
                   <button className={styles.removeButton}>
                     <img src={trashCan} alt="Quitar del carrito" />
@@ -55,5 +56,33 @@ export function CartPage() {
         </div>
       </section>
     </>
+  );
+}
+function QuantityInput({ line }: { line: CartItem }) {
+  const dispatch = useAppDispatch();
+  const [error, setError] = useState<string | null>(null);
+  function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    if (event.target.value === "") return;
+    const value = Number(event.target.value);
+    if (!Number.isInteger(value) || value < 0) return;
+
+    if (value > line.stock) {
+      setError(`Solo quedan ${line.stock} unidades`);
+      return;
+    }
+    setError(null);
+    dispatch(quantityChanged({ productId: line.productId, quantity: value }));
+  }
+  return (
+    <div>
+      <input
+        type="number"
+        aria-label="Cantidad"
+        className={styles.quantity}
+        value={line.quantity}
+        onChange={handleChange}
+      />
+      {error && <p role="alert">{error}</p>}
+    </div>
   );
 }
