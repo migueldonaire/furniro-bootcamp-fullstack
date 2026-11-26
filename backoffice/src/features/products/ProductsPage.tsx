@@ -1,6 +1,7 @@
 import { useGetAdminProductsQuery, type ProductStatus } from "./productsApi";
 import { formatEuro } from "../../lib/money";
 import { useEffect, useState } from "react";
+import styles from "./ProductsPage.module.css";
 
 export function ProductsPage() {
   const [status, setStatus] = useState<ProductStatus | "">("");
@@ -28,15 +29,26 @@ export function ProductsPage() {
   return (
     <section>
       <div>
-        <div>
-          <h1>Productos</h1>
-          <p>Administra tus productos, edita información y controla el stock.</p>
+        <div className={styles.header}>
+          <div>
+            <h1 className={styles.title}>Productos</h1>
+            <p className={styles.subtitle}>
+              Administra tus productos, edita información y controla el stock.
+            </p>
+          </div>
+
+          <button type="button" className={styles.addButton}>
+            + Agregar producto
+          </button>
         </div>
       </div>
-      <div>
-        <div>
-          <label htmlFor="product-search">Buscar:</label>
+      <div className={styles.filtersSearch}>
+        <div className={styles.searchBox}>
+          <label className={styles.visuallyHidden} htmlFor="product-search">
+            Buscar:
+          </label>
           <input
+            className={styles.fieldSearch}
             type="search"
             id="product-search"
             placeholder="Buscar productos por nombres o por SKU"
@@ -45,8 +57,19 @@ export function ProductsPage() {
           />
         </div>
         <div>
-          <label htmlFor="status-filter">Estado:</label>
+          <label className={styles.visuallyHidden} htmlFor="category-filter">
+            Categoría:
+          </label>
+          <select className={styles.field} id="category-filter">
+            <option value="">Todas las categorías</option>
+          </select>
+        </div>
+        <div>
+          <label className={styles.visuallyHidden} htmlFor="status-filter">
+            Estado:
+          </label>
           <select
+            className={styles.field}
             id="status-filter"
             value={status}
             onChange={(e) => setStatus(e.target.value as "" | ProductStatus)}
@@ -56,12 +79,21 @@ export function ProductsPage() {
             <option value="INACTIVE">Desactivados</option>
           </select>
         </div>
+        <div>
+          <label className={styles.visuallyHidden} htmlFor="sort-filter">
+            Ordenar por:
+          </label>
+          <select className={styles.field} id="sort-filter">
+            <option value="newest">Más recientes</option>
+            <option value="oldest">Más antiguos</option>
+          </select>
+        </div>
       </div>
       {isLoading && <p>Cargando productos...</p>}
       {products?.length === 0 && <p>No hay productos disponibles.</p>}
       {isError && <p>Error al cargar los productos.</p>}
       {products && products.length > 0 && (
-        <table>
+        <table className={styles.productsTable}>
           <thead>
             <tr>
               <th>Imagen</th>
