@@ -6,6 +6,7 @@ export function CatalogPage() {
   const { data, isLoading, error } = useGetProductsQuery();
   if (isLoading) return <p>Cargando productos...</p>;
   if (error) return <p>No se han podido cargar los productos.</p>;
+  if (data?.length === 0) return <p>Todavía no hay productos</p>;
 
   return (
     <section className={styles.cardContainer}>
