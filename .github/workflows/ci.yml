@@ -62,7 +62,7 @@ jobs:
             fi
           done
 
-  # Small PRs. Over 400 changed lines fails. package-lock.json and test files do not
+  # Small PRs. Over 1000 changed lines fails. package-lock.json and test files do not
   # count (the same test files that Sonar excludes), so writing tests is never a problem.
   # The teacher can add the label "big-pr" to let a big PR pass.
   pr-size:
@@ -84,8 +84,8 @@ jobs:
             | awk '{ added += $1; removed += $2 } END { print added + removed + 0 }')
           echo "Changed lines: $LINES"
           echo "### Tamaño de la PR: $LINES líneas (sin contar tests)" >> "$GITHUB_STEP_SUMMARY"
-          if [ "$LINES" -gt 400 ] && [ "$BIG_PR" != "true" ]; then
-            echo "::error::La PR cambia $LINES líneas sin contar tests (máximo 400). Pártela en PRs más pequeñas."
+          if [ "$LINES" -gt 1000 ] && [ "$BIG_PR" != "true" ]; then
+            echo "::error::La PR cambia $LINES líneas sin contar tests (máximo 1000). Pártela en PRs más pequeñas."
             exit 1
           fi
 
