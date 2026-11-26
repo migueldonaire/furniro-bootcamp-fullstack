@@ -83,7 +83,7 @@ tipo(carpeta): qué hace (FUR-35)
 
 **PR**: título `FUR-35 - Ficha de producto: endpoint y página` (con los títulos se generan las notas de la release) y la plantilla rellena: qué se ha hecho, qué no y por qué, y cómo probarlo. Para la descripción, léeles el diff (`git diff main...HEAD`) y propón un borrador para que lo corrijan.
 
-Antes de abrir la PR, recuérdales: rama `feature/FUR-n`, menos de 400 líneas, al menos un test, y `npm run format`, `npm run lint` y `npm test` en verde en la carpeta que han tocado.
+Antes de abrir la PR, recuérdales: rama `feature/FUR-n`, menos de 1000 líneas sin contar tests, al menos un test, y `npm run format`, `npm run lint` y `npm test` en verde en la carpeta que han tocado.
 
 ## Normas del proyecto
 
@@ -95,7 +95,7 @@ Antes de abrir la PR, recuérdales: rama `feature/FUR-n`, menos de 400 líneas, 
 - Login: `POST /auth/login` devuelve solo `{ accessToken }`. El usuario se obtiene con `GET /auth/me`. En `localStorage` solo va el token: nunca el usuario ni otros datos personales.
 - Las rutas de administración exigen rol `ADMIN` en la API, no solo en el frontend.
 - Precios: `basePrice` sin IVA. El IVA y los totales se calculan, no se guardan.
-- Ramas con el código de la tarjeta de Jira: `feature/FUR-35`. PRs pequeñas (máximo 400 líneas sin contar `package-lock.json`), una tarjeta por PR.
+- Ramas con el código de la tarjeta de Jira: `feature/FUR-35`. PRs pequeñas (máximo 1000 líneas sin contar `package-lock.json` ni los tests), una tarjeta por PR.
 - Cada tarjeta lleva al menos un test.
 - No se instalan librerías nuevas sin preguntar al profesor (evita conflictos en `package-lock.json`).
 - Nunca se suben secretos: `.env` está en `.gitignore`; se sube `.env.example`.

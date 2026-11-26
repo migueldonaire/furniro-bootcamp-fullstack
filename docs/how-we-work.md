@@ -172,7 +172,7 @@ Puedes pedir a la IA que te ayude a redactar la descripción a partir de tus com
 
 ### Las PRs, pequeñas
 
-- **Máximo 400 líneas** cambiadas (sin contar `package-lock.json` ni los ficheros de test). Si te pasas, el check `pr-size` sale en rojo.
+- **Máximo 1000 líneas** cambiadas (sin contar `package-lock.json` ni los ficheros de test). Si te pasas, el check `pr-size` sale en rojo.
 - **Una tarjeta, o una subtarea, por PR.**
 - Una PR pequeña se revisa en 10 minutos. Una grande no la revisa nadie de verdad.
 
@@ -253,6 +253,6 @@ El resto de días trabajamos con Kanban.
 - Trabajamos en **parejas**, con un tablero **Kanban** y **una tarjeta en curso** por pareja.
 - Una tarjeta está lista cuando tiene **historia, escenarios, subtareas y dudas resueltas**.
 - **Teclea quien menos experiencia tiene.**
-- **PRs pequeñas** (menos de 400 líneas), con **`ci-ok` en verde** y revisión de otra pareja.
+- **PRs pequeñas** (menos de 1000 líneas sin contar tests), con **`ci-ok` en verde** y revisión de otra pareja.
 - La IA, en **modo plan**: para preguntar y entender. El código lo escribís vosotros.
 - Una tarjeta está **hecha** cuando funciona en staging y sabes explicarla.
