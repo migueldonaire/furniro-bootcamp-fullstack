@@ -79,7 +79,7 @@ export class OrdersService {
         const product = productsById.get(item.productId);
 
         if (!product || product.status !== "ACTIVE") {
-          throw new ConflictException(`${product?.name ?? "El producto"} ya no estÃ¡ disponible`);
+          throw new ConflictException(`${product?.name ?? "El producto"} ya no está disponible`);
         }
 
         if (product.stock < item.quantity) {
