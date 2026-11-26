@@ -62,7 +62,8 @@ jobs:
             fi
           done
 
-  # Small PRs. Over 400 changed lines (without package-lock.json) fails.
+  # Small PRs. Over 400 changed lines fails. package-lock.json and test files do not
+  # count (the same test files that Sonar excludes), so writing tests is never a problem.
   # The teacher can add the label "big-pr" to let a big PR pass.
   pr-size:
     if: github.event_name == 'pull_request'
@@ -78,11 +79,13 @@ jobs:
           BIG_PR: ${{ contains(github.event.pull_request.labels.*.name, 'big-pr') }}
         run: |
           LINES=$(git diff --numstat "$BASE" "$HEAD" -- . ':(exclude)**/package-lock.json' \
+            ':(exclude)**/*.spec.ts' ':(exclude)**/*.e2e-spec.ts' ':(exclude)**/*.test.ts' ':(exclude)**/*.test.tsx' \
+            ':(exclude)**/src/test/**' \
             | awk '{ added += $1; removed += $2 } END { print added + removed + 0 }')
           echo "Changed lines: $LINES"
-          echo "### Tamaño de la PR: $LINES líneas" >> "$GITHUB_STEP_SUMMARY"
+          echo "### Tamaño de la PR: $LINES líneas (sin contar tests)" >> "$GITHUB_STEP_SUMMARY"
           if [ "$LINES" -gt 400 ] && [ "$BIG_PR" != "true" ]; then
-            echo "::error::La PR cambia $LINES líneas (máximo 400). Pártela en PRs más pequeñas."
+            echo "::error::La PR cambia $LINES líneas sin contar tests (máximo 400). Pártela en PRs más pequeñas."
             exit 1
           fi
 
