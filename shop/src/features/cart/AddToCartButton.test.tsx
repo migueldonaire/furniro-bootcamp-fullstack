@@ -18,7 +18,7 @@ describe("AddToCartButton", () => {
     const { store } = renderWithProviders(<AddToCartButton product={nora} />);
     const input = screen.getByLabelText("Cantidad");
     await userEvent.clear(input);
-    await userEvent.type(input, "2"); // the visitor writes 2
+    await userEvent.type(input, "2");
     await userEvent.click(screen.getByRole("button", { name: "Añadir al carrito" }));
     expect(store.getState().cart.items[0].quantity).toBe(2);
   });
