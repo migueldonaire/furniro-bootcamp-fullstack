@@ -1,39 +1,50 @@
-import { Injectable, ExecutionContext, UnauthorizedException, CanActivate } from "@nestjs/common";
+import {
+  Injectable,
+  ExecutionContext,
+  UnauthorizedException,
+  CanActivate,
+  ForbiddenException,
+} from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { Request } from "express";
+import { UsersService } from "../users/users.service";
+import { User } from "src/users/user";
 
 declare module "express" {
   interface Request {
-    user?: { sub: string; email: string; role: string; status: string };
+    user?: User;
   }
 }
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractToken(request);
+    if (!token) throw new UnauthorizedException("No token");
 
-    if (!token) {
-      throw new UnauthorizedException("No hay token");
-    }
-
+    let payload: { sub: string };
     try {
-      const payload = await this.jwtService.verifyAsync<{
-        sub: string;
-        email: string;
-        role: string;
-        status: string;
-      }>(token);
-      request.user = payload;
-      return true;
+      payload = await this.jwtService.verifyAsync<{ sub: string }>(token);
     } catch {
-      throw new UnauthorizedException("Token inválido o expirado");
+      throw new UnauthorizedException("Invalid or expired token");
     }
-  }
 
+    const user = await this.usersService.getUserById(payload.sub);
+    if (!user) throw new UnauthorizedException("User not found");
+    if (user.status !== "ACTIVE") {
+      throw new ForbiddenException(
+        "YOUR account is not active or is pending confirmation. Please confirm your email before logging in.",
+      );
+    }
+    request.user = user;
+    return true;
+  }
   private extractToken(request: Request): string | undefined {
     const authHeader = request.headers.authorization;
     if (!authHeader?.startsWith("Bearer ")) return undefined;

@@ -1,9 +1,8 @@
-export interface User {
+export type User = {
   id: string;
-  email: string;
-  password_hash: string;
   name: string;
-  last_name: string;
+  lastName: string;
+  email: string;
   role: string;
   status: string;
-}
+};

@@ -3,7 +3,7 @@ import { api } from "../../app/api";
 export type User = {
   id: string;
   name: string;
-  last_name: string;
+  lastName: string;
   email: string;
   role: "CUSTOMER" | "ADMIN";
 };

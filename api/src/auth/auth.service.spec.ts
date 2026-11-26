@@ -1,86 +1,80 @@
-import { AuthService } from "./auth.service";
+/// <reference types="jest" />
+import { JwtService } from "@nestjs/jwt";
 import { verify } from "argon2";
+import { UsersService, UserWithPassword } from "../users/users.service";
+import { AuthService } from "./auth.service";
 
-jest.mock("argon2", () => ({
-  verify: jest.fn(),
-}));
+jest.mock("argon2", () => ({ verify: jest.fn() }));
 
-const usersService = {
-  findByEmail: jest.fn(),
-};
+describe("Iniciar sesión en la tienda", () => {
+  const fakeUsersService = { findByEmail: jest.fn() };
+  const fakeJwtService = { sign: jest.fn().mockReturnValue("fake-token") };
+  const authService = new AuthService(
+    fakeUsersService as unknown as UsersService,
+    fakeJwtService as unknown as JwtService,
+  );
 
-const jwtService = {
-  sign: jest.fn().mockReturnValue("fake-token"),
-};
-
-const service = new AuthService(
-  usersService as unknown as ConstructorParameters<typeof AuthService>[0],
-  jwtService as unknown as ConstructorParameters<typeof AuthService>[1],
-);
-
-describe("AuthService", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it("devuelve accessToken si credenciales correctas y cuenta ACTIVE", async () => {
-    usersService.findByEmail.mockResolvedValue({
+  function fakeUser(overrides: Partial<UserWithPassword> = {}): UserWithPassword {
+    return {
       id: "u1",
+      name: "Ana",
+      lastName: "García",
       email: "ana@mail.com",
-      password_hash: "$argon2id$hash",
+      passwordHash: "$argon2id$hash",
       role: "CUSTOMER",
       status: "ACTIVE",
-    });
-    (verify as jest.Mock).mockResolvedValue(true);
+      ...overrides,
+    };
+  }
 
-    const result = await service.login("ana@mail.com", "Secreta123");
+  beforeEach(() => jest.clearAllMocks());
+
+  it("Escenario: Login correcto", async () => {
+    fakeUsersService.findByEmail.mockResolvedValue(fakeUser());
+    jest.mocked(verify).mockResolvedValue(true);
+
+    const result = await authService.login("ana@mail.com", "Secreta123");
+
     expect(result).toEqual({ accessToken: "fake-token" });
+    expect(fakeJwtService.sign).toHaveBeenCalledWith(
+      expect.objectContaining({ sub: "u1", role: "CUSTOMER" }),
+    );
   });
 
-  it("mismo error si email no existe", async () => {
-    usersService.findByEmail.mockResolvedValue(undefined);
-    await expect(service.login("noexiste@mail.com", "Secreta123")).rejects.toThrow(
+  it("Escenario: Contraseña incorrecta o email que no existe", async () => {
+    // Dado: Ana existe, pero la contraseña "otra" no coincide
+    fakeUsersService.findByEmail.mockResolvedValue(fakeUser());
+    jest.mocked(verify).mockResolvedValue(false);
+
+    await expect(authService.login("ana@mail.com", "otra")).rejects.toThrow(
+      "Credenciales no válidas",
+    );
+
+    fakeUsersService.findByEmail.mockResolvedValue(undefined);
+    await expect(authService.login("nadie@mail.com", "Secreta123")).rejects.toThrow(
       "Credenciales no válidas",
     );
   });
 
-  it("mismo error si contraseña incorrecta", async () => {
-    usersService.findByEmail.mockResolvedValue({
-      id: "u1",
-      email: "ana@mail.com",
-      password_hash: "$argon2id$hash",
-      role: "CUSTOMER",
-      status: "ACTIVE",
-    });
-    (verify as jest.Mock).mockResolvedValue(false);
-    await expect(service.login("ana@mail.com", "otra")).rejects.toThrow("Credenciales no válidas");
-  });
+  it("Escenario: Cuenta sin activar", async () => {
+    fakeUsersService.findByEmail.mockResolvedValue(
+      fakeUser({ name: "Diego", email: "diego@mail.com", status: "PENDING" }),
+    );
+    jest.mocked(verify).mockResolvedValue(true);
 
-  it("error si cuenta PENDING", async () => {
-    usersService.findByEmail.mockResolvedValue({
-      id: "u1",
-      email: "diego@mail.com",
-      password_hash: "$argon2id$hash",
-      role: "CUSTOMER",
-      status: "PENDING",
-    });
-    (verify as jest.Mock).mockResolvedValue(true);
-    await expect(service.login("diego@mail.com", "clave")).rejects.toThrow(
+    await expect(authService.login("diego@mail.com", "Secreta123")).rejects.toThrow(
       "Confirma tu email antes de entrar",
     );
   });
 
-  it("error si cuenta INACTIVE", async () => {
-    usersService.findByEmail.mockResolvedValue({
-      id: "u1",
-      email: "pablo@mail.com",
-      password_hash: "$argon2id$hash",
-      role: "CUSTOMER",
-      status: "INACTIVE",
-    });
-    (verify as jest.Mock).mockResolvedValue(true);
-    await expect(service.login("pablo@mail.com", "clave")).rejects.toThrow(
-      "Tu cuenta está desactivada",
+  it("Escenario: Cuenta desactivada", async () => {
+    fakeUsersService.findByEmail.mockResolvedValue(
+      fakeUser({ name: "Pablo", email: "pablo@mail.com", status: "INACTIVE" }),
+    );
+    jest.mocked(verify).mockResolvedValue(true);
+
+    await expect(authService.login("pablo@mail.com", "Secreta123")).rejects.toThrow(
+      "Tu cuenta está desactivada. Escríbenos a furnirobootcampfullstack@gmail.com",
     );
   });
 });

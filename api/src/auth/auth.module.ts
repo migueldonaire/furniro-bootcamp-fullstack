@@ -9,13 +9,16 @@ import { UsersModule } from "../users/users.module";
 @Module({
   imports: [
     UsersModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET ?? "local-dev-secret",
-      signOptions: { expiresIn: "15m" },
+    JwtModule.registerAsync({
+      global: true,
+      useFactory: () => ({
+        secret: process.env.JWT_SECRET,
+        signOptions: { expiresIn: "15m" },
+      }),
     }),
   ],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard, AdminGuard],
-  exports: [AuthService, AuthGuard, AdminGuard],
+  exports: [AuthService, AuthGuard, AdminGuard, UsersModule],
 })
 export class AuthModule {}
