@@ -43,7 +43,9 @@ export function CheckoutPage() {
             </thead>
             <tbody>
               <tr>
-                <td>Sofá Asgaard × 1</td>
+                <td>
+                  <span>Sofá Asgaard</span> × 1
+                </td>
                 <td>{examplePrice}</td>
               </tr>
             </tbody>
@@ -60,11 +62,31 @@ export function CheckoutPage() {
           </table>
 
           <div className={styles.payment}>
-            <p>Métodos de pago de ejemplo</p>
-            <ul>
-              <li>Transferencia bancaria</li>
-              <li>Pago contra reembolso</li>
-            </ul>
+            <p>
+              <input
+                type="radio"
+                defaultChecked
+                disabled
+                aria-label="Transferencia bancaria seleccionada"
+              />{" "}
+              Transferencia bancaria
+            </p>
+            <p className={styles.paymentNote}>
+              Realiza el pago en nuestra cuenta bancaria. Usa el número del pedido como referencia.
+              Enviaremos el pedido cuando recibamos el pago.
+            </p>
+            <p className={styles.paymentNote}>
+              <input type="radio" disabled aria-label="Transferencia bancaria" /> Transferencia
+              bancaria
+            </p>
+            <p className={styles.paymentNote}>
+              <input type="radio" disabled aria-label="Pago contra reembolso" /> Pago contra
+              reembolso
+            </p>
+            <p>
+              Utilizaremos tus datos personales para gestionar tu cuenta y mejorar tu experiencia en
+              la tienda, tal como se explica en nuestra <strong>política de privacidad</strong>.
+            </p>
 
             <button type="button" disabled>
               Realizar pedido

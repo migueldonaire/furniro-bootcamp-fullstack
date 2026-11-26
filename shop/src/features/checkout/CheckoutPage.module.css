@@ -42,6 +42,7 @@
 .totals th,
 .totals td {
   padding-block: 10px;
+  text-align: left;
 }
 
 .totals tr > :last-child {
@@ -58,6 +59,32 @@
   margin-top: 24px;
   padding-top: 20px;
   border-top: 1px solid #ddd;
+}
+
+.totals td span,
+.paymentNote {
+  color: #666;
+}
+
+.payment p {
+  margin-block: 0 8px;
+}
+
+.payment input {
+  margin: 0 8px 0 0;
+  accent-color: #000;
+}
+
+.payment button {
+  display: block;
+  width: min(100%, 318px);
+  margin: 32px auto 0;
+  padding: 14px;
+  border: 1px solid #000;
+  border-radius: 12px;
+  background: transparent;
+  color: #000;
+  font: inherit;
 }
 
 @media (max-width: 760px) {
