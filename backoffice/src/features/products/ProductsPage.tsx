@@ -1,4 +1,4 @@
-import { useGetAdminProductsQuery, type ProductStatus } from "./productsApi";
+import { productCategories, useGetAdminProductsQuery, type ProductStatus } from "./productsApi";
 import { formatEuro } from "../../lib/money";
 import { useEffect, useState } from "react";
 import styles from "./ProductsPage.module.css";
@@ -61,7 +61,9 @@ export function ProductsPage() {
             Categoría:
           </label>
           <select className={styles.field} id="category-filter">
-            <option value="">Todas las categorías</option>
+            {productCategories.map((category) => (
+              <option key={category.id}>{category.name}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -86,6 +88,8 @@ export function ProductsPage() {
           <select className={styles.field} id="sort-filter">
             <option value="newest">Más recientes</option>
             <option value="oldest">Más antiguos</option>
+            <option value="oldest">Precio Acendente</option>
+            <option value="oldest">Precio Decentente</option>
           </select>
         </div>
       </div>
