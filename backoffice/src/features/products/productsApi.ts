@@ -13,7 +13,14 @@ export type AdminProduct = {
 
 export type ProductStatus = "ACTIVE" | "INACTIVE";
 
-export type SearchFilters = { search?: string; status?: ProductStatus };
+export type SortOption = "newest" | "oldest" | "priceDesc" | "priceAsc";
+
+export type SearchFilters = {
+  search?: string;
+  status?: ProductStatus;
+  category?: string;
+  sort?: SortOption;
+};
 
 const productsApi = api.injectEndpoints({
   endpoints: (builder) => ({
