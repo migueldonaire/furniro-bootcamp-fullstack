@@ -1,8 +1,9 @@
-import { screen } from "@testing-library/react";
+import { act, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
 import { renderWithProviders } from "../../test/renderWithProviders";
 import { AddToCartButton } from "./AddToCartButton";
+import { itemAdded } from "./cartSlice";
 
 const nora = {
   productId: "nora",
@@ -32,6 +33,20 @@ describe("AddToCartButton", () => {
     await userEvent.click(screen.getByRole("button", { name: "Añadir al carrito" }));
     expect(screen.getByRole("alert")).toHaveTextContent("Solo quedan 5 unidades");
   });
+
+  it("counts the units already in the cart", async () => {
+    const { store } = renderWithProviders(<AddToCartButton product={nora} />);
+    act(() => {
+      store.dispatch(itemAdded({ ...nora, quantity: 4 }));
+    });
+    const input = screen.getByLabelText("Cantidad");
+    await userEvent.clear(input);
+    await userEvent.type(input, "2");
+    await userEvent.click(screen.getByRole("button", { name: "Añadir al carrito" }));
+    expect(screen.getByRole("alert")).toHaveTextContent("Solo quedan 5 unidades");
+    expect(store.getState().cart.items[0].quantity).toBe(4);
+  });
+
   it("shows a message when the quantity is 0", async () => {
     const { store } = renderWithProviders(<AddToCartButton product={nora} />);
     const input = screen.getByLabelText("Cantidad");

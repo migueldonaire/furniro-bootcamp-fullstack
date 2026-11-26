@@ -15,7 +15,7 @@ describe("CartPage", () => {
     expect(screen.getByText("Tu carrito está vacío")).toBeInTheDocument();
   });
 
-  it("shows the lines of the cart with prices with VAT", () => {
+  it("shows the lines without VAT and the totals with VAT", () => {
     const { store } = renderWithProviders(<CartPage />);
     act(() => {
       store.dispatch(
@@ -31,9 +31,8 @@ describe("CartPage", () => {
       );
     });
     expect(screen.getByText("Silla Nora")).toBeInTheDocument();
-    // Each line shows the price without VAT; VAT is only added in the totals box.
     expect(screen.getByText(euro(100))).toBeInTheDocument();
-    expect(screen.getAllByText(euro(200))).toHaveLength(2); // line subtotal and cart subtotal
+    expect(screen.getAllByText(euro(200))).toHaveLength(2);
     expect(screen.getByText(euro(242))).toBeInTheDocument();
   });
 });

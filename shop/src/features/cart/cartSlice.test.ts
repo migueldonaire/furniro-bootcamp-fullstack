@@ -51,7 +51,7 @@ describe("cartSlice", () => {
     expect(before.items[0].quantity).toBe(2);
     expect(after).not.toBe(before);
   });
-  it("calcula subtotal, IVA y total de dos sillas", () => {
+  it("calculates subtotal, VAT and total of two chairs", () => {
     const state = { cart: { items: [nora] } } as RootState;
     expect(selectCartTotals(state)).toEqual({ subtotal: 200, vat: 42, total: 242 });
   });
