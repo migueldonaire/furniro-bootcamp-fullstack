@@ -2,7 +2,8 @@ import { z } from "zod";
 
 // Rules of a delivery address. The messages are the ones the user sees.
 export const addressSchema = z.object({
-  fullName: z.string().trim().min(1, "El nombre completo es obligatorio"),
+  firstName: z.string().trim().min(1, "El nombre es obligatorio"),
+  lastName: z.string().trim().min(1, "Los apellidos son obligatorios"),
   phone: z.string().trim().min(1, "El teléfono es obligatorio"),
   street: z.string().trim().min(1, "La calle es obligatoria"),
   city: z.string().trim().min(1, "La ciudad es obligatoria"),

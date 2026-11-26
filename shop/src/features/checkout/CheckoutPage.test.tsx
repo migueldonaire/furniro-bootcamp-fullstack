@@ -9,7 +9,8 @@ it("shows the saved delivery address after submitting the form", async () => {
 
   expect(screen.queryByRole("status")).not.toBeInTheDocument();
 
-  await user.type(screen.getByLabelText("Nombre completo"), "Ana López");
+  await user.type(screen.getByLabelText("Nombre", { exact: true }), "Ana");
+  await user.type(screen.getByLabelText("Apellidos"), "López");
   await user.type(screen.getByLabelText("Teléfono"), "611223344");
   await user.type(screen.getByLabelText("Calle y número"), "C/ Colón 10");
   await user.type(screen.getByLabelText("Ciudad"), "Valencia");

@@ -20,20 +20,37 @@ export function AddressForm({ initialAddress, onSubmit }: AddressFormProps) {
 
   return (
     <form className={styles.form} noValidate onSubmit={handleSubmit(onSubmit)}>
-      <div className={styles.field}>
-        <label htmlFor="fullName">Nombre completo</label>
-        <input
-          id="fullName"
-          autoComplete="name"
-          aria-invalid={Boolean(errors.fullName)}
-          aria-describedby={errors.fullName ? "fullName-error" : undefined}
-          {...register("fullName")}
-        />
-        {errors.fullName && (
-          <p id="fullName-error" className="error">
-            {errors.fullName.message}
-          </p>
-        )}
+      <div className={styles.nameFields}>
+        <div className={styles.field}>
+          <label htmlFor="firstName">Nombre</label>
+          <input
+            id="firstName"
+            autoComplete="given-name"
+            aria-invalid={Boolean(errors.firstName)}
+            aria-describedby={errors.firstName ? "firstName-error" : undefined}
+            {...register("firstName")}
+          />
+          {errors.firstName && (
+            <p id="firstName-error" className="error">
+              {errors.firstName.message}
+            </p>
+          )}
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="lastName">Apellidos</label>
+          <input
+            id="lastName"
+            autoComplete="family-name"
+            aria-invalid={Boolean(errors.lastName)}
+            aria-describedby={errors.lastName ? "lastName-error" : undefined}
+            {...register("lastName")}
+          />
+          {errors.lastName && (
+            <p id="lastName-error" className="error">
+              {errors.lastName.message}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className={styles.field}>

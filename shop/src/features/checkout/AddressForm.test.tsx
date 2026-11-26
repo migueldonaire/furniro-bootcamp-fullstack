@@ -4,7 +4,8 @@ import { describe, expect, it, vi } from "vitest";
 import { AddressForm } from "./AddressForm";
 
 async function fillForm(user: ReturnType<typeof userEvent.setup>) {
-  await user.type(screen.getByLabelText("Nombre completo"), "Ana López");
+  await user.type(screen.getByLabelText("Nombre", { exact: true }), "Ana");
+  await user.type(screen.getByLabelText("Apellidos"), "López");
   await user.type(screen.getByLabelText("Teléfono"), "611223344");
   await user.type(screen.getByLabelText("Calle y número"), "C/ Colón 10");
   await user.type(screen.getByLabelText("Ciudad"), "Valencia");
@@ -16,7 +17,8 @@ describe("AddressForm", () => {
     const user = userEvent.setup();
     const onSubmit = vi.fn();
     const initialAddress = {
-      fullName: "Ana López",
+      firstName: "Ana",
+      lastName: "López",
       phone: "611223344",
       street: "C/ Colón 10",
       city: "Valencia",
@@ -26,7 +28,8 @@ describe("AddressForm", () => {
     };
     render(<AddressForm initialAddress={initialAddress} onSubmit={onSubmit} />);
 
-    expect(screen.getByLabelText("Nombre completo")).toHaveValue(initialAddress.fullName);
+    expect(screen.getByLabelText("Nombre", { exact: true })).toHaveValue(initialAddress.firstName);
+    expect(screen.getByLabelText("Apellidos")).toHaveValue(initialAddress.lastName);
     expect(screen.getByLabelText("Teléfono")).toHaveValue(initialAddress.phone);
     expect(screen.getByLabelText("Calle y número")).toHaveValue(initialAddress.street);
     expect(screen.getByLabelText("Ciudad")).toHaveValue(initialAddress.city);
@@ -55,7 +58,8 @@ describe("AddressForm", () => {
 
     expect(onSubmit).toHaveBeenCalledWith(
       {
-        fullName: "Ana López",
+        firstName: "Ana",
+        lastName: "López",
         phone: "611223344",
         street: "C/ Colón 10",
         city: "Valencia",
