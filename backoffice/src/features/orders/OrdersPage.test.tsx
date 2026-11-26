@@ -5,13 +5,18 @@ import { renderWithProviders } from "../../test/renderWithProviders";
 import { OrdersPage } from "./OrdersPage";
 import { type AdminOrder, useGetAdminOrdersQuery } from "./ordersApi";
 
-// Fake hook: the tests decide what the "API" answers
 vi.mock("./ordersApi", () => ({ useGetAdminOrdersQuery: vi.fn() }));
 const mockedQuery = vi.mocked(useGetAdminOrdersQuery);
 
-function answer(orders: AdminOrder[]) {
+function answer(orders: AdminOrder[], total = orders.length, page = 1, totalPages = 1) {
   mockedQuery.mockReturnValue({
-    data: orders,
+    data: {
+      items: orders,
+      total,
+      page,
+      limit: 10,
+      totalPages,
+    },
     isLoading: false,
     isError: false,
   } as unknown as ReturnType<typeof useGetAdminOrdersQuery>);
@@ -56,7 +61,26 @@ describe("OrdersPage", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "Pendiente" }));
 
-    expect(mockedQuery).toHaveBeenLastCalledWith("PENDING");
+    expect(mockedQuery).toHaveBeenLastCalledWith({
+      status: "PENDING",
+      search: undefined,
+      page: 1,
+      limit: 10,
+    });
+  });
+
+  it("asks for the selected page when the admin clicks page 2", async () => {
+    answer([lauraOrder], 25, 1, 3);
+    renderWithProviders(<OrdersPage />);
+
+    await userEvent.click(screen.getByRole("button", { name: "2" }));
+
+    expect(mockedQuery).toHaveBeenLastCalledWith({
+      status: undefined,
+      search: undefined,
+      page: 2,
+      limit: 10,
+    });
   });
 
   it("shows a message when there are no orders", () => {

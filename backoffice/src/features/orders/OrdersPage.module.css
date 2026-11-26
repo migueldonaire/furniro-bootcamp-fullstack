@@ -7,28 +7,28 @@
   box-sizing: border-box;
 }
 
-.orders__header {
+.header {
   display: flex;
   flex-direction: column;
   gap: 12px;
   margin-bottom: 16px;
 }
 
-.orders__title {
+.title {
   margin: 0 0 4px 0;
   font-size: 22px;
   font-weight: 700;
   color: #111827;
 }
 
-.orders__subtitle {
+.subtitle {
   margin: 0;
   font-size: 13px;
   font-weight: 400;
   color: #6b7280;
 }
 
-.orders__search {
+.search {
   display: flex;
   align-items: center;
   width: 100%;
@@ -39,7 +39,7 @@
   box-sizing: border-box;
 }
 
-.orders__search-input {
+.searchInput {
   border: none;
   outline: none;
   width: 100%;
@@ -48,14 +48,14 @@
   color: #1f2937;
 }
 
-.orders__tabs {
+.tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 16px;
 }
 
-.orders__tab {
+.tab {
   padding: 6px 12px;
   border-radius: 8px;
   border: 1px solid transparent;
@@ -68,39 +68,38 @@
   transition: opacity 0.2s ease;
 }
 
-.orders__tab:hover {
+.tab:hover {
   opacity: 0.85;
 }
 
-.orders__tab--pending {
+.tabPending {
   background-color: #fdf6e7;
 }
 
-.orders__tab--shipped {
+.tabShipped {
   background-color: #f3effe;
 }
 
-.orders__tab--delivered {
+.tabDelivered {
   background-color: #eaf8ef;
 }
 
-.orders__tab--cancelled {
+.tabCancelled {
   background-color: #fdeeee;
 }
 
-.orders__tab--active {
+.tabActive {
   background-color: #8a6a1f;
   color: #ffffff;
 }
 
-.orders__table-wrapper {
+.tableWrapper {
   width: 100%;
   overflow-x: auto;
   border-radius: 8px;
 }
 
-/* Mobile: the table is shown as a list of cards (one card per order) */
-.orders__table {
+.table {
   display: block;
   width: 100%;
   border-collapse: collapse;
@@ -108,8 +107,7 @@
   font-size: 13px;
 }
 
-/* Mobile: the header row is hidden on screen but screen readers still read it */
-.orders__table-head {
+.tableHead {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -119,19 +117,18 @@
   background-color: #f9f3eb;
 }
 
-.orders__table-header {
+.tableHeader {
   padding: 12px 10px;
   font-weight: 600;
   color: #1f2937;
   white-space: nowrap;
 }
 
-.orders__table-body {
+.tableBody {
   display: block;
 }
 
-/* Mobile card: order and status on top, customer and total, then date and products */
-.orders__table-row {
+.tableRow {
   display: grid;
   grid-template-columns: 1fr auto;
   grid-template-areas:
@@ -147,32 +144,32 @@
   border-radius: 8px;
 }
 
-.orders__table-cell {
+.tableCell {
   padding: 0;
   vertical-align: middle;
 }
 
-.orders__table-cell--id {
+.cellId {
   grid-area: id;
   font-weight: 600;
   color: #111827;
   white-space: nowrap;
 }
 
-.orders__table-cell--customer {
+.cellCustomer {
   grid-area: customer;
   min-width: 0;
 }
 
-.orders__table-cell--date {
+.cellDate {
   grid-area: date;
 }
 
-.orders__table-cell--products {
+.cellProducts {
   grid-area: products;
 }
 
-.orders__table-cell--total {
+.cellTotal {
   grid-area: total;
   justify-self: end;
   font-weight: 600;
@@ -180,12 +177,12 @@
   white-space: nowrap;
 }
 
-.orders__table-cell--status {
+.cellStatus {
   grid-area: status;
   justify-self: end;
 }
 
-.orders__customer-name {
+.customerName {
   font-weight: 600;
   color: #111827;
   white-space: nowrap;
@@ -193,37 +190,37 @@
   text-overflow: ellipsis;
 }
 
-.orders__customer-email {
+.customerEmail {
   font-size: 12px;
   color: #6b7280;
   margin-top: 2px;
 }
 
-.orders__date {
+.date {
   color: #1f2937;
   white-space: nowrap;
 }
 
-.orders__time {
+.time {
   font-size: 12px;
   color: #6b7280;
   margin-top: 2px;
 }
 
-.orders__products {
+.products {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 6px;
 }
 
-.orders__thumbs {
+.thumbs {
   display: flex;
   gap: 6px;
 }
 
-.orders__thumb {
-  flex-shrink: 0; /* thumbnails never get squeezed */
+.thumb {
+  flex-shrink: 0;
   width: 34px;
   height: 34px;
   object-fit: cover;
@@ -232,13 +229,13 @@
   background-color: #f9fafb;
 }
 
-.orders__products-count {
+.productsCount {
   font-size: 12px;
   color: #6b7280;
   white-space: nowrap;
 }
 
-.orders__badge {
+.badge {
   display: inline-block;
   padding: 4px 10px;
   border-radius: 999px;
@@ -247,37 +244,41 @@
   white-space: nowrap;
 }
 
-.orders__badge--pending {
+.badgePending {
   background-color: #fdf6e7;
   color: #8a6a1f;
 }
 
-.orders__badge--shipped {
+.badgeShipped {
   background-color: #e0efff;
   color: #1d4ed8;
 }
 
-.orders__badge--delivered {
+.badgeDelivered {
   background-color: #e6f6ec;
   color: #166534;
 }
 
-.orders__badge--cancelled {
+.badgeCancelled {
   background-color: #fde8e8;
   color: #b91c1c;
 }
 
-.orders__feedback {
+.feedback {
   text-align: center;
   padding: 24px 16px;
   color: #6b7280;
 }
 
-.orders__feedback--error {
+.feedbackError {
   color: #dc2626;
 }
 
-.orders__footer {
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   margin-top: 16px;
   font-size: 13px;
   color: #6b7280;
@@ -288,7 +289,7 @@
     padding: 20px 24px;
   }
 
-  .orders__header {
+  .header {
     flex-direction: row;
     justify-content: space-between;
     align-items: flex-start;
@@ -296,37 +297,36 @@
     margin-bottom: 24px;
   }
 
-  .orders__title {
+  .title {
     font-size: 26px;
     margin-bottom: 6px;
   }
 
-  .orders__subtitle {
+  .subtitle {
     font-size: 14px;
   }
 
-  .orders__search {
+  .search {
     width: 280px;
     flex-shrink: 0;
   }
 
-  .orders__tabs {
+  .tabs {
     gap: 12px;
     margin-bottom: 20px;
   }
 
-  .orders__tab {
+  .tab {
     padding: 8px 16px;
     font-size: 14px;
   }
 
-  /* From tablet: a normal table again */
-  .orders__table {
+  .table {
     display: table;
     font-size: 14px;
   }
 
-  .orders__table-head {
+  .tableHead {
     display: table-header-group;
     position: static;
     width: auto;
@@ -336,11 +336,11 @@
     white-space: normal;
   }
 
-  .orders__table-body {
+  .tableBody {
     display: table-row-group;
   }
 
-  .orders__table-row {
+  .tableRow {
     display: table-row;
     padding: 0;
     margin: 0;
@@ -348,41 +348,42 @@
     border-radius: 0;
   }
 
-  .orders__table-header {
+  .tableHeader {
     padding: 14px 12px;
   }
 
-  .orders__table-cell {
+  .tableCell {
     display: table-cell;
     padding: 16px 12px;
     border-bottom: 1px solid #f0f0f0;
   }
 
-  .orders__thumb {
+  .thumb {
     width: 40px;
     height: 40px;
   }
 
-  .orders__products-count {
+  .productsCount {
     font-size: 13px;
   }
 
-  .orders__badge {
+  .badge {
     padding: 5px 12px;
   }
 
-  .orders__feedback {
+  .feedback {
     padding: 32px;
   }
 
-  .orders__footer {
+  .footer {
+    flex-direction: row;
+    justify-content: space-between;
     margin-top: 18px;
   }
 }
 
 @media (min-width: 1024px) {
-  /* Only on desktop there is room for thumbnails and text side by side */
-  .orders__products {
+  .products {
     flex-direction: row;
     align-items: center;
     gap: 12px;
@@ -394,11 +395,11 @@
     padding: 24px 32px;
   }
 
-  .orders__title {
+  .title {
     font-size: 28px;
   }
 
-  .orders__search {
+  .search {
     width: 320px;
   }
 }

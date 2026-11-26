@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Pagination } from "../../components/layout/Pagination/Pagination";
 import { formatEuro } from "../../lib/money";
 import { type OrderStatus, useGetAdminOrdersQuery } from "./ordersApi";
-import "./OrdersPage.css";
+import styles from "./OrdersPage.module.css";
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   PENDING: "Pendiente",
@@ -10,47 +11,72 @@ const STATUS_LABELS: Record<OrderStatus, string> = {
   CANCELLED: "Cancelado",
 };
 
+const STATUS_TAB_CLASSES: Record<OrderStatus, string> = {
+  PENDING: styles.tabPending,
+  SHIPPED: styles.tabShipped,
+  DELIVERED: styles.tabDelivered,
+  CANCELLED: styles.tabCancelled,
+};
+
+const STATUS_BADGE_CLASSES: Record<OrderStatus, string> = {
+  PENDING: styles.badgePending,
+  SHIPPED: styles.badgeShipped,
+  DELIVERED: styles.badgeDelivered,
+  CANCELLED: styles.badgeCancelled,
+};
+
 const STATUSES = Object.keys(STATUS_LABELS) as OrderStatus[];
+const ORDERS_PER_PAGE = 10;
 
 export function OrdersPage() {
   const [status, setStatus] = useState<OrderStatus | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
 
-  const { data: orders, isLoading, isError } = useGetAdminOrdersQuery(status);
+  useEffect(() => {
+    const trimmed = searchTerm.trim();
+    if (trimmed === debouncedSearch) return;
 
-  const query = searchTerm.toLowerCase().trim();
-  const filteredOrders = orders
-    ? orders.filter((order) => {
-        if (query === "") {
-          return true;
-        }
+    const timer = setTimeout(() => {
+      setDebouncedSearch(trimmed);
+      setPage(1);
+    }, 300);
 
-        const matchesOrder = order.id.toLowerCase().includes(query);
-        const matchesCustomer =
-          order.customerName.toLowerCase().includes(query) ||
-          order.customerEmail.toLowerCase().includes(query);
-        const matchesProduct = order.products.some((product) =>
-          product.name.toLowerCase().includes(query),
-        );
+    return () => clearTimeout(timer);
+  }, [searchTerm, debouncedSearch]);
 
-        return matchesOrder || matchesCustomer || matchesProduct;
-      })
-    : [];
+  function handleStatusChange(newStatus: OrderStatus | undefined) {
+    setStatus(newStatus);
+    setPage(1);
+  }
 
+  const { data, isLoading, isError } = useGetAdminOrdersQuery({
+    status,
+    search: debouncedSearch || undefined,
+    page,
+    limit: ORDERS_PER_PAGE,
+  });
+
+  const orders = data?.items;
+  const total = data?.total ?? 0;
+  const totalPages = data?.totalPages ?? 1;
+  const hasSearch = debouncedSearch !== "";
+  
   return (
-    <section className="orders">
-      <div className="orders__header">
-        <div className="orders__heading">
-          <h1 className="orders__title">Pedidos</h1>
-          <p className="orders__subtitle">
+    <section className={styles.orders}>
+      <div className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Pedidos</h1>
+          <p className={styles.subtitle}>
             Gestiona los pedidos de los clientes, revisa los productos y consulta su estado.
           </p>
         </div>
 
-        <div className="orders__search">
+        <div className={styles.search}>
           <input
             type="search"
-            className="orders__search-input"
+            className={styles.searchInput}
             aria-label="Buscar por pedido, cliente o producto"
             placeholder="Buscar pedido, cliente o producto..."
             value={searchTerm}
@@ -59,14 +85,12 @@ export function OrdersPage() {
         </div>
       </div>
 
-      <div className="orders__tabs">
+      <div className={styles.tabs}>
         <button
           type="button"
-          className={`orders__tab orders__tab--all ${
-            status === undefined ? "orders__tab--active" : ""
-          }`}
+          className={`${styles.tab} ${status === undefined ? styles.tabActive : ""}`}
           aria-pressed={status === undefined}
-          onClick={() => setStatus(undefined)}
+          onClick={() => handleStatusChange(undefined)}
         >
           Todos
         </button>
@@ -75,126 +99,125 @@ export function OrdersPage() {
           <button
             key={option}
             type="button"
-            className={`orders__tab orders__tab--${option.toLowerCase()} ${
-              status === option ? "orders__tab--active" : ""
+            className={`${styles.tab} ${STATUS_TAB_CLASSES[option]} ${
+              status === option ? styles.tabActive : ""
             }`}
             aria-pressed={status === option}
-            onClick={() => setStatus(option)}
+            onClick={() => handleStatusChange(option)}
           >
             {STATUS_LABELS[option]}
           </button>
         ))}
       </div>
 
-      {isLoading && <p className="orders__feedback">Cargando...</p>}
+      {isLoading && <p className={styles.feedback}>Cargando...</p>}
       {isError && (
-        <p className="orders__feedback orders__feedback--error">
+        <p className={`${styles.feedback} ${styles.feedbackError}`}>
           No se han podido cargar los pedidos.
         </p>
       )}
-      {orders?.length === 0 && <p className="orders__feedback">Todavía no hay pedidos</p>}
+
+      {orders?.length === 0 && (
+        <p className={styles.feedback}>
+          {hasSearch ? "No hay pedidos que coincidan con tu búsqueda." : "Todavía no hay pedidos"}
+        </p>
+      )}
 
       {orders && orders.length > 0 && (
         <>
-          {filteredOrders.length === 0 ? (
-            <p className="orders__feedback">No hay pedidos que coincidan con tu búsqueda.</p>
-          ) : (
-            <div className="orders__table-wrapper">
-              <table className="orders__table">
-                <thead className="orders__table-head">
-                  <tr className="orders__table-row">
-                    <th scope="col" className="orders__table-header">
-                      Pedido
-                    </th>
-                    <th scope="col" className="orders__table-header">
-                      Cliente
-                    </th>
-                    <th scope="col" className="orders__table-header">
-                      Fecha
-                    </th>
-                    <th scope="col" className="orders__table-header">
-                      Productos
-                    </th>
-                    <th scope="col" className="orders__table-header">
-                      Total
-                    </th>
-                    <th scope="col" className="orders__table-header">
-                      Estado
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="orders__table-body">
-                  {filteredOrders.map((order) => {
-                    const orderDate = new Date(order.orderDate);
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead className={styles.tableHead}>
+                <tr className={styles.tableRow}>
+                  <th scope="col" className={styles.tableHeader}>
+                    Pedido
+                  </th>
+                  <th scope="col" className={styles.tableHeader}>
+                    Cliente
+                  </th>
+                  <th scope="col" className={styles.tableHeader}>
+                    Fecha
+                  </th>
+                  <th scope="col" className={styles.tableHeader}>
+                    Productos
+                  </th>
+                  <th scope="col" className={styles.tableHeader}>
+                    Total
+                  </th>
+                  <th scope="col" className={styles.tableHeader}>
+                    Estado
+                  </th>
+                </tr>
+              </thead>
+              <tbody className={styles.tableBody}>
+                {orders.map((order) => {
+                  const orderDate = new Date(order.orderDate);
 
-                    return (
-                      <tr key={order.id} className="orders__table-row">
-                        <td className="orders__table-cell orders__table-cell--id" title={order.id}>
-                          #{order.id.slice(-6)}
-                        </td>
+                  return (
+                    <tr key={order.id} className={styles.tableRow}>
+                      <td className={`${styles.tableCell} ${styles.cellId}`} title={order.id}>
+                        #{order.id.slice(-6)}
+                      </td>
 
-                        <td className="orders__table-cell orders__table-cell--customer">
-                          <div className="orders__customer-name">{order.customerName}</div>
-                          <div className="orders__customer-email">{order.customerEmail}</div>
-                        </td>
+                      <td className={`${styles.tableCell} ${styles.cellCustomer}`}>
+                        <div className={styles.customerName}>{order.customerName}</div>
+                        <div className={styles.customerEmail}>{order.customerEmail}</div>
+                      </td>
 
-                        <td className="orders__table-cell orders__table-cell--date">
-                          <div className="orders__date">
-                            {orderDate.toLocaleDateString("es-ES")}
+                      <td className={`${styles.tableCell} ${styles.cellDate}`}>
+                        <div className={styles.date}>{orderDate.toLocaleDateString("es-ES")}</div>
+                        <div className={styles.time}>
+                          {orderDate.toLocaleTimeString("es-ES", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      </td>
+
+                      <td className={`${styles.tableCell} ${styles.cellProducts}`}>
+                        <div className={styles.products}>
+                          <div className={styles.thumbs}>
+                            {order.products.map((product) =>
+                              product.imageUrl ? (
+                                <img
+                                  key={product.id}
+                                  src={product.imageUrl}
+                                  alt={product.name}
+                                  title={`${product.name} (x${product.quantity})`}
+                                  className={styles.thumb}
+                                />
+                              ) : null,
+                            )}
                           </div>
-                          <div className="orders__time">
-                            {orderDate.toLocaleTimeString("es-ES", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </div>
-                        </td>
-
-                        <td className="orders__table-cell orders__table-cell--products">
-                          <div className="orders__products">
-                            <div className="orders__thumbs">
-                              {order.products.map((product) =>
-                                product.imageUrl ? (
-                                  <img
-                                    key={product.id}
-                                    src={product.imageUrl}
-                                    alt={product.name}
-                                    title={`${product.name} (x${product.quantity})`}
-                                    className="orders__thumb"
-                                  />
-                                ) : null,
-                              )}
-                            </div>
-                            <span className="orders__products-count">
-                              {order.products.length}{" "}
-                              {order.products.length === 1 ? "producto" : "productos"}
-                            </span>
-                          </div>
-                        </td>
-
-                        <td className="orders__table-cell orders__table-cell--total">
-                          {formatEuro(order.total)}
-                        </td>
-
-                        <td className="orders__table-cell orders__table-cell--status">
-                          <span
-                            className={`orders__badge orders__badge--${order.status.toLowerCase()}`}
-                          >
-                            {STATUS_LABELS[order.status]}
+                          <span className={styles.productsCount}>
+                            {order.products.length}{" "}
+                            {order.products.length === 1 ? "producto" : "productos"}
                           </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+                        </div>
+                      </td>
 
-          <div className="orders__footer">
-            <span className="orders__count">
-              Mostrando {filteredOrders.length} de {orders.length} pedidos
+                      <td className={`${styles.tableCell} ${styles.cellTotal}`}>
+                        {formatEuro(order.total)}
+                      </td>
+
+                      <td className={`${styles.tableCell} ${styles.cellStatus}`}>
+                        <span className={`${styles.badge} ${STATUS_BADGE_CLASSES[order.status]}`}>
+                          {STATUS_LABELS[order.status]}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div className={styles.footer}>
+            <span>
+              Mostrando {orders.length} de {total} {total === 1 ? "pedido" : "pedidos"}
             </span>
+
+            <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />
           </div>
         </>
       )}

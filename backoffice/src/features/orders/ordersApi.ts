@@ -2,7 +2,6 @@ import { api } from "../../app/api";
 
 export type OrderStatus = "PENDING" | "SHIPPED" | "DELIVERED" | "CANCELLED";
 
-// Producto que viene dentro de cada pedido desde GET /admin/orders
 export type AdminOrderProduct = {
   id: string;
   name: string;
@@ -10,10 +9,9 @@ export type AdminOrderProduct = {
   imageUrl: string | null;
 };
 
-// Estructura completa de un pedido en el listado de administración
 export type AdminOrder = {
   id: string;
-  orderDate: string; // En JSON las fechas llegan como texto
+  orderDate: string;
   status: OrderStatus;
   customerName: string;
   customerEmail: string;
@@ -21,11 +19,46 @@ export type AdminOrder = {
   products: AdminOrderProduct[];
 };
 
+export type PaginatedAdminOrders = {
+  items: AdminOrder[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+};
+
+export type AdminOrdersFilters = {
+  status?: OrderStatus;
+  search?: string;
+  page?: number;
+  limit?: number;
+};
+
 const ordersApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    // GET /admin/orders, o /admin/orders?status=PENDING si se selecciona un estado
-    getAdminOrders: builder.query<AdminOrder[], OrderStatus | undefined>({
-      query: (status) => (status ? `/admin/orders?status=${status}` : "/admin/orders"),
+    getAdminOrders: builder.query<PaginatedAdminOrders, AdminOrdersFilters>({
+      query: (filters) => {
+        const params = new URLSearchParams();
+
+        if (filters?.status) {
+          params.set("status", filters.status);
+        }
+
+        if (filters?.search) {
+          params.set("search", filters.search);
+        }
+
+        if (filters?.page) {
+          params.set("page", String(filters.page));
+        }
+
+        if (filters?.limit) {
+          params.set("limit", String(filters.limit));
+        }
+
+        const queryString = params.toString();
+        return queryString ? `/admin/orders?${queryString}` : "/admin/orders";
+      },
       providesTags: ["Order"],
     }),
   }),
