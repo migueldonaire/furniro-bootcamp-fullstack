@@ -32,64 +32,121 @@ describe("AdminOrdersService", () => {
   const fakePool = { query: jest.fn() };
   const service = new AdminOrdersService(fakePool as unknown as Pool);
 
+  function mockPaginatedQuery(rows: unknown[], total = rows.length) {
+    fakePool.query.mockResolvedValueOnce({ rows: [{ total }] }).mockResolvedValueOnce({ rows });
+  }
+
   beforeEach(() => {
     fakePool.query.mockReset();
   });
 
   it("without status it lists every order, converted to camelCase", async () => {
-    fakePool.query.mockResolvedValue({ rows: [lauraRow] });
+    mockPaginatedQuery([lauraRow]);
 
-    const orders = await service.findAll();
+    const result = await service.findAll();
 
-    expect(orders).toEqual([
-      {
-        id: "f0000000-0000-4000-8000-000000000012",
-        orderDate: new Date("2026-11-17T20:00:00Z"),
-        status: "SHIPPED",
-        customerName: "Laura Romero",
-        customerEmail: "laura@mail.com",
-        total: 425.45,
-        products: [],
-      },
-    ]);
-    expect(fakePool.query).toHaveBeenCalledWith(expect.not.stringContaining("WHERE"), []);
+    expect(result).toEqual({
+      items: [
+        {
+          id: "f0000000-0000-4000-8000-000000000012",
+          orderDate: new Date("2026-11-17T20:00:00Z"),
+          status: "SHIPPED",
+          customerName: "Laura Romero",
+          customerEmail: "laura@mail.com",
+          total: 425.45,
+          products: [],
+        },
+      ],
+      total: 1,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    });
+    expect(fakePool.query).toHaveBeenNthCalledWith(
+      2,
+      expect.not.stringContaining("WHERE"),
+      [10, 0],
+    );
   });
 
   it("with status it filters by that status", async () => {
-    fakePool.query.mockResolvedValue({ rows: [] });
+    mockPaginatedQuery([]);
 
     await service.findAll("PENDING");
 
-    expect(fakePool.query).toHaveBeenCalledWith(expect.stringContaining("WHERE o.status = $1"), [
-      "PENDING",
+    expect(fakePool.query).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining("WHERE o.status = $1"),
+      ["PENDING", 10, 0],
+    );
+  });
+
+  it("with search it filters by id, customer, email or product name", async () => {
+    mockPaginatedQuery([]);
+
+    await service.findAll(undefined, "ana");
+
+    expect(fakePool.query).toHaveBeenNthCalledWith(1, expect.stringContaining("ILIKE $1"), [
+      "%ana%",
+    ]);
+    expect(fakePool.query).toHaveBeenNthCalledWith(2, expect.stringContaining("EXISTS"), [
+      "%ana%",
+      10,
+      0,
     ]);
   });
 
+  it("applies page and limit and calculates totalPages", async () => {
+    mockPaginatedQuery([], 12);
+
+    const result = await service.findAll(undefined, undefined, 2, 5);
+
+    expect(result).toEqual({
+      items: [],
+      total: 12,
+      page: 2,
+      limit: 5,
+      totalPages: 3,
+    });
+    expect(fakePool.query).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining("LIMIT $1 OFFSET $2"),
+      [5, 5],
+    );
+  });
+
   it("returns an empty list when there are no orders", async () => {
-    fakePool.query.mockResolvedValue({ rows: [] });
+    mockPaginatedQuery([]);
 
-    const orders = await service.findAll();
+    const result = await service.findAll();
 
-    expect(orders).toEqual([]);
+    expect(result).toEqual({
+      items: [],
+      total: 0,
+      page: 1,
+      limit: 10,
+      totalPages: 0,
+    });
   });
 
   it("orders the list from newest to oldest", async () => {
-    fakePool.query.mockResolvedValue({ rows: [] });
+    mockPaginatedQuery([]);
 
     await service.findAll();
 
-    expect(fakePool.query).toHaveBeenCalledWith(
+    expect(fakePool.query).toHaveBeenNthCalledWith(
+      2,
       expect.stringContaining("ORDER BY o.order_date DESC"),
-      [],
+      [10, 0],
     );
   });
 
   it("includes customerEmail and products when they come from the database", async () => {
-    fakePool.query.mockResolvedValue({ rows: [orderWithProductsRow] });
+    mockPaginatedQuery([orderWithProductsRow]);
 
-    const orders = await service.findAll();
+    const result = await service.findAll();
 
-    expect(orders[0]).toMatchObject({
+    expect(result.items[0]).toMatchObject({
       id: "f0000000-0000-4000-8000-000000000002",
       customerName: "Ana López",
       customerEmail: "ana@mail.com",
@@ -106,12 +163,10 @@ describe("AdminOrdersService", () => {
   });
 
   it("returns an empty products array if products is null", async () => {
-    fakePool.query.mockResolvedValue({
-      rows: [{ ...orderWithProductsRow, products: null }],
-    });
+    mockPaginatedQuery([{ ...orderWithProductsRow, products: null }]);
 
-    const orders = await service.findAll();
+    const result = await service.findAll();
 
-    expect(orders[0].products).toEqual([]);
+    expect(result.items[0].products).toEqual([]);
   });
 });
