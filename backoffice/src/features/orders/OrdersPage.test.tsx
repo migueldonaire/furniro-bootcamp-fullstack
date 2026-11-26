@@ -59,9 +59,9 @@ describe("OrdersPage", () => {
     answer([lauraOrder]);
     renderWithProviders(<OrdersPage />);
 
-    await userEvent.click(screen.getByRole("button", { name: "Pendiente" }));
+    await userEvent.click(screen.getByRole("button", { name: /Pendiente/ }));
 
-    expect(mockedQuery).toHaveBeenLastCalledWith({
+    expect(mockedQuery).toHaveBeenCalledWith({
       status: "PENDING",
       search: undefined,
       page: 1,
@@ -75,12 +75,49 @@ describe("OrdersPage", () => {
 
     await userEvent.click(screen.getByRole("button", { name: "2" }));
 
-    expect(mockedQuery).toHaveBeenLastCalledWith({
+    expect(mockedQuery).toHaveBeenCalledWith({
       status: undefined,
       search: undefined,
       page: 2,
       limit: 10,
     });
+  });
+
+  it("asks for the orders between two dates", async () => {
+    // Dado: la página con pedidos
+    answer([lauraOrder]);
+    renderWithProviders(<OrdersPage />);
+
+    // Cuando: el admin elige "desde" y "hasta"
+    await userEvent.type(screen.getByLabelText("Desde"), "2026-11-01");
+    await userEvent.type(screen.getByLabelText("Hasta"), "2026-11-15");
+
+    // Entonces: la tabla pide los pedidos de esas fechas, desde la página 1
+    expect(mockedQuery).toHaveBeenCalledWith({
+      status: undefined,
+      search: undefined,
+      from: "2026-11-01",
+      to: "2026-11-15",
+      page: 1,
+      limit: 10,
+    });
+  });
+
+  it("shows how many orders each status tab has", () => {
+    // Dado: la API responde que hay 4 pedidos (sirve para todas las pestañas)
+    answer([lauraOrder], 4);
+
+    // Cuando: se pinta la página
+    renderWithProviders(<OrdersPage />);
+
+    // Entonces: cada pestaña pide su propio número (limit 1) y lo muestra
+    expect(mockedQuery).toHaveBeenCalledWith({
+      status: "PENDING",
+      search: undefined,
+      page: 1,
+      limit: 1,
+    });
+    expect(screen.getByRole("button", { name: /Pendiente\s*4/ })).toBeInTheDocument();
   });
 
   it("shows a message when there are no orders", () => {

@@ -1,51 +1,80 @@
+/* Mobile first: on phones every order is a card; from 768px it is a table */
+
 .orders {
-  width: 100%;
   padding: 16px;
-  background-color: #ffffff;
-  font-family: "Poppins", sans-serif;
   color: #1f2937;
-  box-sizing: border-box;
 }
 
-.header {
+.header,
+.filters {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.header {
   margin-bottom: 16px;
 }
 
 .title {
-  margin: 0 0 4px 0;
-  font-size: 22px;
-  font-weight: 700;
+  margin: 0 0 4px;
+  font-size: 24px;
   color: #111827;
 }
 
 .subtitle {
   margin: 0;
+}
+
+.subtitle,
+.customerEmail,
+.time,
+.productsCount,
+.feedback,
+.footer {
   font-size: 13px;
-  font-weight: 400;
   color: #6b7280;
 }
 
-.search {
+.search,
+.dates {
   display: flex;
   align-items: center;
-  width: 100%;
+  gap: 10px;
+  padding: 10px 14px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  padding: 8px 12px;
-  background-color: #ffffff;
-  box-sizing: border-box;
+  font-size: 14px;
 }
 
-.searchInput {
+.icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: #4b5563;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.searchInput,
+.dateInput {
+  width: 100%;
+  min-width: 0;
   border: none;
   outline: none;
-  width: 100%;
-  font-family: "Poppins", sans-serif;
-  font-size: 14px;
-  color: #1f2937;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+}
+
+.dateInput {
+  cursor: pointer;
+}
+
+/* The whole input opens the calendar (showPicker), so the browser icon is not needed */
+.dateInput::-webkit-calendar-picker-indicator {
+  display: none;
 }
 
 .tabs {
@@ -56,16 +85,18 @@
 }
 
 .tab {
-  padding: 6px 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: none;
   border-radius: 8px;
-  border: 1px solid transparent;
-  font-family: "Poppins", sans-serif;
-  font-size: 13px;
+  font: inherit;
+  font-size: 14px;
   font-weight: 500;
-  cursor: pointer;
-  background-color: #f3f4f6;
   color: #1f2937;
-  transition: opacity 0.2s ease;
+  background-color: #f3f4f6;
+  cursor: pointer;
 }
 
 .tab:hover {
@@ -75,15 +106,12 @@
 .tabPending {
   background-color: #fdf6e7;
 }
-
 .tabShipped {
   background-color: #f3effe;
 }
-
 .tabDelivered {
   background-color: #eaf8ef;
 }
-
 .tabCancelled {
   background-color: #fdeeee;
 }
@@ -93,10 +121,22 @@
   color: #ffffff;
 }
 
+.tabCount {
+  min-width: 22px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background-color: rgba(0, 0, 0, 0.08);
+  font-size: 12px;
+  text-align: center;
+}
+
+.tabActive .tabCount {
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
 .tableWrapper {
-  width: 100%;
   overflow-x: auto;
-  border-radius: 8px;
 }
 
 .table {
@@ -104,24 +144,23 @@
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 13px;
+  font-size: 14px;
 }
 
+/* Hidden on mobile but still read by screen readers */
 .tableHead {
   position: absolute;
   width: 1px;
   height: 1px;
   overflow: hidden;
   clip: rect(0 0 0 0);
-  white-space: nowrap;
-  background-color: #f9f3eb;
 }
 
 .tableHeader {
-  padding: 12px 10px;
+  padding: 14px 12px;
   font-weight: 600;
-  color: #1f2937;
   white-space: nowrap;
+  background-color: #f9f3eb;
 }
 
 .tableBody {
@@ -144,67 +183,44 @@
   border-radius: 8px;
 }
 
-.tableCell {
-  padding: 0;
-  vertical-align: middle;
-}
-
 .cellId {
   grid-area: id;
-  font-weight: 600;
-  color: #111827;
-  white-space: nowrap;
 }
-
 .cellCustomer {
   grid-area: customer;
   min-width: 0;
 }
-
 .cellDate {
   grid-area: date;
 }
-
 .cellProducts {
   grid-area: products;
 }
-
 .cellTotal {
   grid-area: total;
   justify-self: end;
-  font-weight: 600;
-  color: #111827;
-  white-space: nowrap;
 }
-
 .cellStatus {
   grid-area: status;
   justify-self: end;
 }
 
+.cellId,
+.cellTotal,
 .customerName {
   font-weight: 600;
   color: #111827;
   white-space: nowrap;
+}
+
+.customerName {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.customerEmail {
-  font-size: 12px;
-  color: #6b7280;
-  margin-top: 2px;
-}
-
-.date {
-  color: #1f2937;
-  white-space: nowrap;
-}
-
+.customerEmail,
 .time {
   font-size: 12px;
-  color: #6b7280;
-  margin-top: 2px;
 }
 
 .products {
@@ -221,23 +237,16 @@
 
 .thumb {
   flex-shrink: 0;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   object-fit: cover;
-  border-radius: 6px;
   border: 1px solid #e5e7eb;
-  background-color: #f9fafb;
-}
-
-.productsCount {
-  font-size: 12px;
-  color: #6b7280;
-  white-space: nowrap;
+  border-radius: 6px;
 }
 
 .badge {
   display: inline-block;
-  padding: 4px 10px;
+  padding: 4px 12px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
@@ -248,30 +257,26 @@
   background-color: #fdf6e7;
   color: #8a6a1f;
 }
-
 .badgeShipped {
   background-color: #e0efff;
   color: #1d4ed8;
 }
-
 .badgeDelivered {
   background-color: #e6f6ec;
   color: #166534;
 }
-
 .badgeCancelled {
   background-color: #fde8e8;
   color: #b91c1c;
 }
 
 .feedback {
-  text-align: center;
   padding: 24px 16px;
-  color: #6b7280;
+  text-align: center;
 }
 
 .feedbackError {
-  color: #dc2626;
+  color: #b91c1c;
 }
 
 .footer {
@@ -280,52 +285,26 @@
   align-items: center;
   gap: 12px;
   margin-top: 16px;
-  font-size: 13px;
-  color: #6b7280;
 }
 
 @media (min-width: 768px) {
   .orders {
-    padding: 20px 24px;
+    padding: 24px;
   }
-
-  .header {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 24px;
-  }
-
   .title {
-    font-size: 26px;
-    margin-bottom: 6px;
+    font-size: 28px;
   }
-
-  .subtitle {
-    font-size: 14px;
+  .filters {
+    flex-direction: row;
   }
-
   .search {
-    width: 280px;
-    flex-shrink: 0;
+    flex: 1;
   }
 
-  .tabs {
-    gap: 12px;
-    margin-bottom: 20px;
-  }
-
-  .tab {
-    padding: 8px 16px;
-    font-size: 14px;
-  }
-
+  /* From here on it behaves like a normal table */
   .table {
     display: table;
-    font-size: 14px;
   }
-
   .tableHead {
     display: table-header-group;
     position: static;
@@ -333,73 +312,44 @@
     height: auto;
     overflow: visible;
     clip: auto;
-    white-space: normal;
   }
-
   .tableBody {
     display: table-row-group;
   }
-
   .tableRow {
     display: table-row;
-    padding: 0;
-    margin: 0;
     border: none;
-    border-radius: 0;
   }
-
-  .tableHeader {
-    padding: 14px 12px;
-  }
-
   .tableCell {
     display: table-cell;
     padding: 16px 12px;
     border-bottom: 1px solid #f0f0f0;
   }
 
-  .thumb {
-    width: 40px;
-    height: 40px;
-  }
-
-  .productsCount {
-    font-size: 13px;
-  }
-
-  .badge {
-    padding: 5px 12px;
-  }
-
-  .feedback {
-    padding: 32px;
-  }
-
   .footer {
     flex-direction: row;
     justify-content: space-between;
-    margin-top: 18px;
   }
 }
 
+/* Title on the left, search and dates on the right (like the design) */
 @media (min-width: 1024px) {
+  .orders {
+    max-width: 1120px;
+    margin: 0 auto;
+  }
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+  }
+  .search {
+    width: 300px;
+  }
   .products {
     flex-direction: row;
     align-items: center;
     gap: 12px;
-  }
-
-  .orders {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 24px 32px;
-  }
-
-  .title {
-    font-size: 28px;
-  }
-
-  .search {
-    width: 320px;
   }
 }

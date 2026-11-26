@@ -27,12 +27,30 @@ const STATUS_BADGE_CLASSES: Record<OrderStatus, string> = {
 
 const STATUSES = Object.keys(STATUS_LABELS) as OrderStatus[];
 const ORDERS_PER_PAGE = 10;
+const COLUMNS = ["Pedido", "Cliente", "Fecha", "Productos", "Total", "Estado"];
+
+type StatusCountProps = {
+  status?: OrderStatus;
+  search?: string;
+  from?: string;
+  to?: string;
+};
+
+function StatusCount({ status, search, from, to }: Readonly<StatusCountProps>) {
+  const { data } = useGetAdminOrdersQuery({ status, search, from, to, page: 1, limit: 1 });
+
+  if (data === undefined) return null;
+
+  return <span className={styles.tabCount}>{data.total}</span>;
+}
 
 export function OrdersPage() {
   const [status, setStatus] = useState<OrderStatus | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
 
   useEffect(() => {
     const trimmed = searchTerm.trim();
@@ -51,9 +69,21 @@ export function OrdersPage() {
     setPage(1);
   }
 
-  const { data, isLoading, isError } = useGetAdminOrdersQuery({
-    status,
+  function handleDateChange(setDate: (value: string) => void, value: string) {
+    setDate(value);
+    setPage(1);
+  }
+
+  // Filters shared by the table and the numbers of the tabs ("" becomes undefined)
+  const filters = {
     search: debouncedSearch || undefined,
+    from: from || undefined,
+    to: to || undefined,
+  };
+
+  const { data, isLoading, isError } = useGetAdminOrdersQuery({
+    ...filters,
+    status,
     page,
     limit: ORDERS_PER_PAGE,
   });
@@ -61,8 +91,10 @@ export function OrdersPage() {
   const orders = data?.items;
   const total = data?.total ?? 0;
   const totalPages = data?.totalPages ?? 1;
+  // Position of the first order of this page (page 2 with 10 per page -> 11)
+  const firstShown = (page - 1) * ORDERS_PER_PAGE + 1;
   const hasSearch = debouncedSearch !== "";
-  
+
   return (
     <section className={styles.orders}>
       <div className={styles.header}>
@@ -73,15 +105,47 @@ export function OrdersPage() {
           </p>
         </div>
 
-        <div className={styles.search}>
-          <input
-            type="search"
-            className={styles.searchInput}
-            aria-label="Buscar por pedido, cliente o producto"
-            placeholder="Buscar pedido, cliente o producto..."
-            value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
-          />
+        <div className={styles.filters}>
+          <div className={styles.search}>
+            <svg className={styles.icon} viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7" />
+              <path d="m20 20-4-4" />
+            </svg>
+            <input
+              type="search"
+              className={styles.searchInput}
+              aria-label="Buscar por pedido, cliente o producto"
+              placeholder="Buscar pedido, cliente o producto..."
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+            />
+          </div>
+
+          <div className={styles.dates}>
+            <svg className={styles.icon} viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="5" width="18" height="16" rx="2" />
+              <path d="M3 10h18M8 3v4M16 3v4" />
+            </svg>
+            <input
+              type="date"
+              className={styles.dateInput}
+              aria-label="Desde"
+              value={from}
+              max={to || undefined}
+              onClick={(event) => event.currentTarget.showPicker?.()}
+              onChange={(event) => handleDateChange(setFrom, event.target.value)}
+            />
+            <span aria-hidden="true">-</span>
+            <input
+              type="date"
+              className={styles.dateInput}
+              aria-label="Hasta"
+              value={to}
+              min={from || undefined}
+              onClick={(event) => event.currentTarget.showPicker?.()}
+              onChange={(event) => handleDateChange(setTo, event.target.value)}
+            />
+          </div>
         </div>
       </div>
 
@@ -93,6 +157,7 @@ export function OrdersPage() {
           onClick={() => handleStatusChange(undefined)}
         >
           Todos
+          <StatusCount {...filters} />
         </button>
 
         {STATUSES.map((option) => (
@@ -106,6 +171,7 @@ export function OrdersPage() {
             onClick={() => handleStatusChange(option)}
           >
             {STATUS_LABELS[option]}
+            <StatusCount {...filters} status={option} />
           </button>
         ))}
       </div>
@@ -129,24 +195,11 @@ export function OrdersPage() {
             <table className={styles.table}>
               <thead className={styles.tableHead}>
                 <tr className={styles.tableRow}>
-                  <th scope="col" className={styles.tableHeader}>
-                    Pedido
-                  </th>
-                  <th scope="col" className={styles.tableHeader}>
-                    Cliente
-                  </th>
-                  <th scope="col" className={styles.tableHeader}>
-                    Fecha
-                  </th>
-                  <th scope="col" className={styles.tableHeader}>
-                    Productos
-                  </th>
-                  <th scope="col" className={styles.tableHeader}>
-                    Total
-                  </th>
-                  <th scope="col" className={styles.tableHeader}>
-                    Estado
-                  </th>
+                  {COLUMNS.map((column) => (
+                    <th key={column} scope="col" className={styles.tableHeader}>
+                      {column}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody className={styles.tableBody}>
@@ -214,7 +267,8 @@ export function OrdersPage() {
 
           <div className={styles.footer}>
             <span>
-              Mostrando {orders.length} de {total} {total === 1 ? "pedido" : "pedidos"}
+              Mostrando {firstShown}–{firstShown + orders.length - 1} de {total}{" "}
+              {total === 1 ? "pedido" : "pedidos"}
             </span>
 
             <Pagination currentPage={page} totalPages={totalPages} onPageChange={setPage} />

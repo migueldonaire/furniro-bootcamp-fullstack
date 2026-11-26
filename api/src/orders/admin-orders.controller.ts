@@ -11,6 +11,13 @@ export class AdminOrdersController {
 
   @Get()
   findAll(@Query() query: ListAdminOrdersQueryDto) {
-    return this.adminOrdersService.findAll(query.status, query.search, query.page, query.limit);
+    return this.adminOrdersService.findAll(
+      query.status,
+      query.search,
+      query.page,
+      query.limit,
+      query.from,
+      query.to,
+    );
   }
 }

@@ -19,6 +19,8 @@ export class AdminOrdersService {
     search?: string,
     page = 1,
     limit = 10,
+    from?: string,
+    to?: string,
   ): Promise<PaginatedAdminOrders> {
     const conditions: string[] = [];
     const filterValues: string[] = [];
@@ -46,23 +48,33 @@ export class AdminOrdersService {
       );
     }
 
+    if (from) {
+      filterValues.push(from);
+      conditions.push(`o.order_date >= $${filterValues.length}`);
+    }
+
+    // "< to + 1 day" so the orders of the last day (in the afternoon too) are included
+    if (to) {
+      filterValues.push(to);
+      conditions.push(`o.order_date < $${filterValues.length}::date + 1`);
+    }
+
     const where = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
-    const currentPage = Math.max(1, Number(page) || 1);
-    const currentLimit = Math.min(50, Math.max(1, Number(limit) || 10));
-    const offset = (currentPage - 1) * currentLimit;
+    // page and limit are already validated by the DTO (page >= 1, limit 1-50)
+    const offset = (page - 1) * limit;
 
+    // The product search uses EXISTS, so there is no need to join order_lines here
     const countResult = await this.pool.query<{ total: number }>(
-      `SELECT COUNT(DISTINCT o.id)::int AS total
+      `SELECT COUNT(*)::int AS total
        FROM orders o
        JOIN users u ON u.id = o.user_id
-       JOIN order_lines ol ON ol.order_id = o.id
        ${where}`,
       filterValues,
     );
 
     const total = countResult.rows[0]?.total ?? 0;
-    const totalPages = Math.ceil(total / currentLimit);
+    const totalPages = Math.ceil(total / limit);
 
     const limitParam = `$${filterValues.length + 1}`;
     const offsetParam = `$${filterValues.length + 2}`;
@@ -91,14 +103,14 @@ export class AdminOrdersService {
        GROUP BY o.id, u.id
        ORDER BY o.order_date DESC
        LIMIT ${limitParam} OFFSET ${offsetParam}`,
-      [...filterValues, currentLimit, offset],
+      [...filterValues, limit, offset],
     );
 
     return {
       items: result.rows.map(toAdminOrder),
       total,
-      page: currentPage,
-      limit: currentLimit,
+      page,
+      limit,
       totalPages,
     };
   }

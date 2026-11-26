@@ -32,33 +32,15 @@ export type AdminOrdersFilters = {
   search?: string;
   page?: number;
   limit?: number;
+  from?: string; // YYYY-MM-DD
+  to?: string; // YYYY-MM-DD
 };
 
 const ordersApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getAdminOrders: builder.query<PaginatedAdminOrders, AdminOrdersFilters>({
-      query: (filters) => {
-        const params = new URLSearchParams();
-
-        if (filters?.status) {
-          params.set("status", filters.status);
-        }
-
-        if (filters?.search) {
-          params.set("search", filters.search);
-        }
-
-        if (filters?.page) {
-          params.set("page", String(filters.page));
-        }
-
-        if (filters?.limit) {
-          params.set("limit", String(filters.limit));
-        }
-
-        const queryString = params.toString();
-        return queryString ? `/admin/orders?${queryString}` : "/admin/orders";
-      },
+      // RTK Query builds the ?status=...&page=... and skips the undefined values
+      query: (filters) => ({ url: "/admin/orders", params: filters }),
       providesTags: ["Order"],
     }),
   }),

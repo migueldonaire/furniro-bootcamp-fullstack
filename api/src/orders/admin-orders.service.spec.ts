@@ -96,6 +96,21 @@ describe("AdminOrdersService", () => {
     ]);
   });
 
+  it("with from and to it filters by date, including the whole last day", async () => {
+    // Dado: la base de datos no devuelve pedidos (solo nos interesa la consulta)
+    mockPaginatedQuery([]);
+
+    // Cuando: se piden los pedidos entre el 1 y el 15 de noviembre
+    await service.findAll(undefined, undefined, 1, 10, "2026-11-01", "2026-11-15");
+
+    // Entonces: la consulta filtra por fecha con las dos fechas como parámetros
+    expect(fakePool.query).toHaveBeenNthCalledWith(
+      2,
+      expect.stringContaining("o.order_date >= $1 AND o.order_date < $2::date + 1"),
+      ["2026-11-01", "2026-11-15", 10, 0],
+    );
+  });
+
   it("applies page and limit and calculates totalPages", async () => {
     mockPaginatedQuery([], 12);
 

@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsIn, IsInt, IsOptional, IsString, Max, Min } from "class-validator";
+import { IsDateString, IsIn, IsInt, IsOptional, IsString, Max, Min } from "class-validator";
 import type { OrderStatus } from "../admin-order";
 
 export class ListAdminOrdersQueryDto {
@@ -23,4 +23,13 @@ export class ListAdminOrdersQueryDto {
   @Min(1)
   @Max(50)
   limit?: number;
+
+  // Dates as YYYY-MM-DD (what <input type="date"> sends)
+  @IsOptional()
+  @IsDateString()
+  from?: string;
+
+  @IsOptional()
+  @IsDateString()
+  to?: string;
 }
