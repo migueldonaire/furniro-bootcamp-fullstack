@@ -18,7 +18,7 @@ export class AdminProductsController {
   constructor(private readonly adminProductsService: AdminProductsService) {}
 
   @Get()
-  @UseGuards(AuthGuard, AdminGuard)
+  //@UseGuards(AuthGuard, AdminGuard)
   async findAll(
     @Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query("limit", new DefaultValuePipe(6), ParseIntPipe) limit: number,

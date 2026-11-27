@@ -141,7 +141,10 @@ export function ProductsPage() {
                   )}
                 </td>
                 <td>
-                  <p>{product.name}</p> <small>SKU: {product.sku}</small>
+                  <strong>{product.name}</strong>{" "}
+                  <p>
+                    <small>SKU: {product.sku}</small>
+                  </p>
                 </td>
                 <td>{product.categoryName}</td>
                 <td>{formatEuro(Number(product.basePrice))}</td>
