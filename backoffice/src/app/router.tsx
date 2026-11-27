@@ -19,7 +19,6 @@ export const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      { path: "login", element: <LoginPage /> },
       {
         element: <ProtectedRoute role="ADMIN" />, // only ADMIN users
         children: [
@@ -36,4 +35,5 @@ export const router = createBrowserRouter([
       { path: "*", element: <NotFoundPage /> },
     ],
   },
+  { path: "login", element: <LoginPage /> },
 ]);
