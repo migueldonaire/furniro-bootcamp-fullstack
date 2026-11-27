@@ -149,7 +149,13 @@ export function ProductsPage() {
                 <td>{product.categoryName}</td>
                 <td>{formatEuro(Number(product.basePrice))}</td>
                 <td>{product.stock}</td>
-                <td>{product.status === "ACTIVE" ? "Activo" : "Desactivado"}</td>
+                <td>
+                  <span
+                    className={`${styles.stateBadge} ${product.status === "ACTIVE" ? styles.active : styles.inactive}`}
+                  >
+                    {product.status === "ACTIVE" ? "Activo" : "Desactivado"}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>

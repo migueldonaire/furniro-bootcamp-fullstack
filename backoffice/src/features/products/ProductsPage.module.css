@@ -100,3 +100,15 @@
 .fieldSearch::placeholder {
   color: #9f9f9f;
 }
+.stateBadge {
+  border-radius: 18px;
+  padding: 4px 12px;
+}
+.active {
+  background-color: rgb(220, 252, 220);
+  color: rgb(20, 115, 40);
+}
+.inactive {
+  background-color: rgb(252, 220, 220);
+  color: rgb(190, 30, 30);
+}
