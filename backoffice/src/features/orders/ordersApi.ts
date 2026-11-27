@@ -42,6 +42,7 @@ export type AdminOrderLine = {
   quantity: number;
   unitPrice: number; // sin IVA
   taxRate: number;
+  imageUrl: string | null;
 };
 
 export type AdminOrderDetail = {
@@ -53,6 +54,7 @@ export type AdminOrderDetail = {
   customer: { name: string; email: string; phone: string };
   address: {
     fullName: string;
+    phone: string;
     street: string;
     city: string;
     province: string | null;

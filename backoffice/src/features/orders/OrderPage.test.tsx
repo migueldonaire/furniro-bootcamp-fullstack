@@ -24,6 +24,7 @@ const anaOrder: AdminOrderDetail = {
   customer: { name: "Ana López", email: "ana@mail.com", phone: "611223344" },
   address: {
     fullName: "Ana López",
+    phone: "611223344",
     street: "Calle Mayor 1",
     city: "Madrid",
     province: "Madrid",
@@ -38,6 +39,7 @@ const anaOrder: AdminOrderDetail = {
       quantity: 2,
       unitPrice: 100,
       taxRate: 21,
+      imageUrl: null,
     },
   ],
   total: 250, // la API ya lo manda calculado: 2 x 121 + 8
@@ -55,14 +57,15 @@ describe("OrderPage", () => {
     // Cuando: se pinta la página
     renderWithProviders(<OrderPage />);
 
-    // Entonces: ve sus datos y el total (2 x 121 + 8 = 250)
+    // Entonces: ve sus datos, el envío y el total (2 x 121 + 8 = 250)
+    // (nombre y teléfono salen dos veces: en "Cliente" y en "Dirección de entrega")
     expect(screen.getAllByText("Ana López")).toHaveLength(2);
+    expect(screen.getAllByText("611223344")).toHaveLength(2);
     expect(screen.getByText("ana@mail.com")).toBeInTheDocument();
-    expect(screen.getByText("611223344")).toBeInTheDocument();
     expect(screen.getByText("FUR-SIL-001")).toBeInTheDocument();
     expect(screen.getByText("Calle Mayor 1")).toBeInTheDocument();
-    expect(screen.getByText("Envío: 8,00 €")).toBeInTheDocument();
-    expect(screen.getByText("Total: 250,00 €")).toBeInTheDocument();
+    expect(screen.getByText("8,00 €")).toBeInTheDocument();
+    expect(screen.getByText("250,00 €")).toBeInTheDocument();
   });
 
   it("shows the price of the line as it was when the order was made", () => {

@@ -1,4 +1,302 @@
 .page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+  color: #1f2937;
+}
+
+.feedback {
+  padding: 24px 16px;
+  text-align: center;
+  color: #6b7280;
+}
+
+/* Header: title, status, date, order number and back button */
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.title {
+  margin: 0;
+  font-size: 28px;
+  color: #111827;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  font-size: 14px;
+  color: #4b5563;
+}
+
+.meta strong {
+  font-weight: 500;
+  color: #111827;
+}
+
+.orderNumber {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.orderNumber code {
+  font-size: 13px;
+  color: #111827;
+  word-break: break-all;
+}
+
+.copyButton {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.backButton {
+  align-self: flex-start;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1f2937;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.backButton:hover {
+  background-color: #f9f3eb;
+}
+
+/* Status badge: same colors as the list */
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badgePending {
+  background-color: #fdf6e7;
+  color: #8a6a1f;
+}
+
+.badgeShipped {
+  background-color: #e0efff;
+  color: #1d4ed8;
+}
+
+.badgeDelivered {
+  background-color: #e6f6ec;
+  color: #166534;
+}
+
+.badgeCancelled {
+  background-color: #fde8e8;
+  color: #b91c1c;
+}
+
+/* Cards */
+
+.layout {
   display: grid;
-  gap: 1rem;
+  gap: 24px;
+}
+
+.side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: 19px;
+  color: #111827;
+}
+
+/* Products table: it scrolls sideways on small screens */
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  min-width: 600px;
+  border-collapse: collapse;
+  font-size: 14px;
+  text-align: left;
+}
+
+.table th {
+  padding: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  background-color: #f9f3eb;
+}
+
+.table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #eeeeee;
+}
+
+.alignRight {
+  text-align: right;
+}
+
+.product {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.thumb {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  background-color: #eceae6;
+}
+
+.sku {
+  padding: 3px 8px;
+  border-radius: 4px;
+  background-color: #f3f4f6;
+  font-size: 13px;
+}
+
+.lineTotal {
+  font-weight: 600;
+  color: #111827;
+}
+
+/* Subtotal, VAT, shipping and total */
+
+.summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px 16px;
+  width: 100%;
+  max-width: 380px;
+  margin: 0 0 0 auto;
+  font-size: 14px;
+}
+
+.summary dt {
+  color: #6b7280;
+}
+
+.summary dd {
+  margin: 0;
+  text-align: right;
+}
+
+.summary .total {
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.summary .totalAmount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #8a6a1f;
+}
+
+.notice {
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background-color: #f9f3eb;
+  color: #5c4714;
+  font-size: 13px;
+}
+
+/* Customer and address: label on the left, data on the right */
+
+.details {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 10px 12px;
+  margin: 0;
+  font-size: 14px;
+}
+
+.details dt {
+  color: #6b7280;
+}
+
+.details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 768px) {
+  .page {
+    padding: 24px 32px;
+  }
+
+  .header {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 36px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+    align-items: start;
+  }
 }
