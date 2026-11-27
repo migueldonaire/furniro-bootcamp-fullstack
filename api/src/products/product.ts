@@ -22,7 +22,7 @@ export function toProduct(row: ProductRow): Product {
     imgURL: row.url,
     title: row.name,
     description: row.description,
-    basePrice:Number(row.base_price),
+    basePrice: Number(row.base_price),
     taxRate: Number(row.tax_rate),
   };
 }
