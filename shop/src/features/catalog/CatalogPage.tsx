@@ -1,6 +1,7 @@
 import { ProductCard } from "./ProductCard";
 import styles from "./ProductCard.module.css";
 import { useGetProductsQuery } from "./catalogApi";
+import { formatEuro, priceWithTax } from "../../lib/money";
 
 export function CatalogPage() {
   const { data, isLoading, error } = useGetProductsQuery();
@@ -16,7 +17,7 @@ export function CatalogPage() {
           imgURL={product.imgURL}
           title={product.title}
           description={product.description}
-          price={product.price}
+          price={formatEuro(priceWithTax(Number(product.basePrice), Number(product.taxRate)))}
         ></ProductCard>
       ))}
     </section>

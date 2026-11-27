@@ -3,5 +3,6 @@ export type Product = {
   imgURL: string | null;
   title: string;
   description: string;
-  price: string;
+  basePrice: number;
+  taxRate: number;
 };
