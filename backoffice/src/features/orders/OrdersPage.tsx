@@ -29,6 +29,14 @@ const STATUSES = Object.keys(STATUS_LABELS) as OrderStatus[];
 const ORDERS_PER_PAGE = 10;
 const COLUMNS = ["Pedido", "Cliente", "Fecha", "Productos", "Total", "Estado"];
 
+function formatDate(isoDate: string) {
+  return new Date(isoDate).toLocaleDateString("es-ES");
+}
+
+function formatTime(isoDate: string) {
+  return new Date(isoDate).toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
+}
+
 type StatusCountProps = {
   status?: OrderStatus;
   search?: string;
@@ -74,7 +82,6 @@ export function OrdersPage() {
     setPage(1);
   }
 
-  // Filters shared by the table and the numbers of the tabs ("" becomes undefined)
   const filters = {
     search: debouncedSearch || undefined,
     from: from || undefined,
@@ -91,7 +98,6 @@ export function OrdersPage() {
   const orders = data?.items;
   const total = data?.total ?? 0;
   const totalPages = data?.totalPages ?? 1;
-  // Position of the first order of this page (page 2 with 10 per page -> 11)
   const firstShown = (page - 1) * ORDERS_PER_PAGE + 1;
   const hasSearch = debouncedSearch !== "";
 
@@ -203,64 +209,55 @@ export function OrdersPage() {
                 </tr>
               </thead>
               <tbody className={styles.tableBody}>
-                {orders.map((order) => {
-                  const orderDate = new Date(order.orderDate);
+                {orders.map((order) => (
+                  <tr key={order.id} className={styles.tableRow}>
+                    <td className={`${styles.tableCell} ${styles.cellId}`} title={order.id}>
+                      #{order.id.slice(-6)}
+                    </td>
 
-                  return (
-                    <tr key={order.id} className={styles.tableRow}>
-                      <td className={`${styles.tableCell} ${styles.cellId}`} title={order.id}>
-                        #{order.id.slice(-6)}
-                      </td>
+                    <td className={`${styles.tableCell} ${styles.cellCustomer}`}>
+                      <div className={styles.customerName}>{order.customerName}</div>
+                      <div className={styles.customerEmail}>{order.customerEmail}</div>
+                    </td>
 
-                      <td className={`${styles.tableCell} ${styles.cellCustomer}`}>
-                        <div className={styles.customerName}>{order.customerName}</div>
-                        <div className={styles.customerEmail}>{order.customerEmail}</div>
-                      </td>
+                    <td className={`${styles.tableCell} ${styles.cellDate}`}>
+                      <div className={styles.date}>{formatDate(order.orderDate)}</div>
+                      <div className={styles.time}>{formatTime(order.orderDate)}</div>
+                    </td>
 
-                      <td className={`${styles.tableCell} ${styles.cellDate}`}>
-                        <div className={styles.date}>{orderDate.toLocaleDateString("es-ES")}</div>
-                        <div className={styles.time}>
-                          {orderDate.toLocaleTimeString("es-ES", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
+                    <td className={`${styles.tableCell} ${styles.cellProducts}`}>
+                      <div className={styles.products}>
+                        <div className={styles.thumbs}>
+                          {order.products.map((product) =>
+                            product.imageUrl ? (
+                              <img
+                                key={product.id}
+                                src={product.imageUrl}
+                                alt={product.name}
+                                title={`${product.name} (x${product.quantity})`}
+                                className={styles.thumb}
+                              />
+                            ) : null,
+                          )}
                         </div>
-                      </td>
-
-                      <td className={`${styles.tableCell} ${styles.cellProducts}`}>
-                        <div className={styles.products}>
-                          <div className={styles.thumbs}>
-                            {order.products.map((product) =>
-                              product.imageUrl ? (
-                                <img
-                                  key={product.id}
-                                  src={product.imageUrl}
-                                  alt={product.name}
-                                  title={`${product.name} (x${product.quantity})`}
-                                  className={styles.thumb}
-                                />
-                              ) : null,
-                            )}
-                          </div>
-                          <span className={styles.productsCount}>
-                            {order.products.length}{" "}
-                            {order.products.length === 1 ? "producto" : "productos"}
-                          </span>
-                        </div>
-                      </td>
-
-                      <td className={`${styles.tableCell} ${styles.cellTotal}`}>
-                        {formatEuro(order.total)}
-                      </td>
-
-                      <td className={`${styles.tableCell} ${styles.cellStatus}`}>
-                        <span className={`${styles.badge} ${STATUS_BADGE_CLASSES[order.status]}`}>
-                          {STATUS_LABELS[order.status]}
+                        <span className={styles.productsCount}>
+                          {order.products.length}{" "}
+                          {order.products.length === 1 ? "producto" : "productos"}
                         </span>
-                      </td>
-                    </tr>
-                  );
-                })}
+                      </div>
+                    </td>
+
+                    <td className={`${styles.tableCell} ${styles.cellTotal}`}>
+                      {formatEuro(order.total)}
+                    </td>
+
+                    <td className={`${styles.tableCell} ${styles.cellStatus}`}>
+                      <span className={`${styles.badge} ${STATUS_BADGE_CLASSES[order.status]}`}>
+                        {STATUS_LABELS[order.status]}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
