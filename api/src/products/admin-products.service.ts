@@ -28,8 +28,8 @@ export class AdminProductsService {
   constructor(private readonly pool: Pool) {}
 
   async findAll(
-    page: number,
-    limit: number,
+    page: number = 1,
+    limit: number = 6,
     search?: string,
     status?: ProductStatus,
     category?: string,

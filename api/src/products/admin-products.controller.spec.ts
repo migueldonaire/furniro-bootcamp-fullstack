@@ -1,36 +1,41 @@
-import { BadRequestException } from "@nestjs/common";
+import { GUARDS_METADATA } from "@nestjs/common/constants";
+import { AdminGuard } from "../auth/admin.guard";
+import { AuthGuard } from "../auth/auth.guard";
 import { AdminProductsController } from "./admin-products.controller";
-import { AdminProductsService, type ProductStatus } from "./admin-products.service";
+import { AdminProductsService } from "./admin-products.service";
 
 describe("AdminProductsController", () => {
   let controller: AdminProductsController;
-  let service: AdminProductsService;
   let findAll: jest.Mock;
 
   beforeEach(() => {
-    findAll = jest.fn().mockResolvedValue([]);
-    service = { findAll } as unknown as AdminProductsService;
-    controller = new AdminProductsController(service);
+    // Un servicio falso: no toca la base de datos, solo recuerda con qué le llaman
+    findAll = jest.fn().mockResolvedValue({ data: [] });
+    controller = new AdminProductsController({ findAll } as unknown as AdminProductsService);
   });
 
-  it("un estado válido llama al servicio", async () => {
-    // Cuando: pide la página 1, de 24 en 24, buscando "silla" entre los activos
-    await controller.findAll(1, 6, "silla", "ACTIVE");
-    // Entonces: el servicio recibe los filtros y, al final, la página y el límite
-    expect(findAll).toHaveBeenCalledWith(1, 6, "silla", "ACTIVE", undefined, undefined);
+  it("pasa los filtros de la query al servicio", async () => {
+    // Dado: una query ya validada por el DTO (página 2, buscando "silla" entre los activos)
+    const query = { page: 2, limit: 6, search: "silla", status: "ACTIVE" as const };
+
+    // Cuando: el controlador recibe la petición
+    await controller.findAll(query);
+
+    // Entonces: el servicio recibe cada filtro en su sitio (category y sort no vienen)
+    expect(findAll).toHaveBeenCalledWith(2, 6, "silla", "ACTIVE", undefined, undefined);
   });
-  it("estado no valido lanza 400", async () => {
-    // Cuando: pide un estado que no existe / Entonces: 400 y no se llama al servicio
-    await expect(controller.findAll(1, 6, undefined, "HOLA" as ProductStatus)).rejects.toThrow(
-      BadRequestException,
-    );
-    expect(findAll).not.toHaveBeenCalled();
-  });
-  it("unvalid sort param throws 400", async () => {
-    // Cuando: pide un orden que no existe (ahora sí llega a sort, en la 6.ª posición)
-    await expect(controller.findAll(1, 6, undefined, undefined, undefined, "hola")).rejects.toThrow(
-      BadRequestException,
-    );
-    expect(findAll).not.toHaveBeenCalled();
+
+  it("Escenario: Una clienta no puede", () => {
+    // Dado: el método findAll del controlador (GET /admin/products)
+    const findAllMethod = Object.getOwnPropertyDescriptor(
+      AdminProductsController.prototype,
+      "findAll",
+    )?.value as object;
+
+    // Cuando: leemos qué guards tiene puestos con @UseGuards
+    const guards = Reflect.getMetadata(GUARDS_METADATA, findAllMethod) as unknown[];
+
+    // Entonces: AuthGuard (sin token → 401) y AdminGuard (CUSTOMER → 403), en ese orden
+    expect(guards).toEqual([AuthGuard, AdminGuard]);
   });
 });
