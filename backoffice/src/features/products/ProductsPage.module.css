@@ -1,0 +1,115 @@
+.title {
+  color: black;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+.subtitle {
+  color: rgb(180, 174, 174);
+  font-size: 1rem;
+  margin-top: 4px;
+}
+.field {
+  width: 220px;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 16px;
+  text-align: left;
+  background: white;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.addButton {
+  padding: 12px 20px;
+  border: 0;
+  border-radius: 4px;
+  background: #927126;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.productsTable {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.productsTable thead {
+  background: #f8f3eb;
+}
+
+.productsTable th {
+  padding: 18px 16px;
+  color: #171717;
+  font-weight: 700;
+  text-align: left;
+}
+
+.productsTable td {
+  padding: 16px;
+  border-bottom: 1px solid #e5e7eb;
+  vertical-align: middle;
+}
+
+.productsTable tbody tr {
+  height: 80px;
+}
+
+.productsTable img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.filtersSearch {
+  display: flex;
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 24px;
+}
+.searchBox {
+  flex: 1;
+}
+.fieldSearch {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  font-size: 16px;
+  text-align: left;
+  background: white;
+}
+.fieldSearch::placeholder {
+  color: #9f9f9f;
+}
+.stateBadge {
+  border-radius: 18px;
+  padding: 4px 12px;
+}
+.active {
+  background-color: rgb(220, 252, 220);
+  color: rgb(20, 115, 40);
+}
+.inactive {
+  background-color: rgb(252, 220, 220);
+  color: rgb(190, 30, 30);
+}
