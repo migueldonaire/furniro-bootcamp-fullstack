@@ -3,6 +3,7 @@ import styles from "./CartPage.module.css";
 import trashCan from "../../assets/icons/trash-can.svg";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { formatEuro } from "../../lib/money";
+import { useSendCartUpdateMutation } from "./cartApi";
 import { quantityChanged, selectCartTotals, type CartItem } from "./cartSlice";
 
 export function CartPage() {
@@ -60,11 +61,12 @@ export function CartPage() {
 }
 function QuantityInput({ line }: { line: CartItem }) {
   const dispatch = useAppDispatch();
+  const [sendCartUpdate] = useSendCartUpdateMutation();
   const [error, setError] = useState<string | null>(null);
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.value === "") return;
     const value = Number(event.target.value);
-    if (!Number.isInteger(value) || value < 0) return;
+    if (!Number.isInteger(value) || value < 1) return;
 
     if (value > line.stock) {
       setError(`Solo quedan ${line.stock} unidades`);
@@ -72,6 +74,7 @@ function QuantityInput({ line }: { line: CartItem }) {
     }
     setError(null);
     dispatch(quantityChanged({ productId: line.productId, quantity: value }));
+    sendCartUpdate({ productId: line.productId, quantity: value });
   }
   return (
     <div>
@@ -79,6 +82,8 @@ function QuantityInput({ line }: { line: CartItem }) {
         type="number"
         aria-label="Cantidad"
         className={styles.quantity}
+        min={1}
+        max={line.stock}
         value={line.quantity}
         onChange={handleChange}
       />
