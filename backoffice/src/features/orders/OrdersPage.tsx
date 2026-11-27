@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { ORDERS_PAGE_LIMIT } from "../../app/app";
-import { Pagination } from "../../components/layout/Pagination/Pagination";
+import { Pagination } from "../../components/Pagination/Pagination";
 import { formatEuro } from "../../lib/money";
 import { type OrderStatus, useGetAdminOrdersQuery } from "./ordersApi";
 import styles from "./OrdersPage.module.css";
