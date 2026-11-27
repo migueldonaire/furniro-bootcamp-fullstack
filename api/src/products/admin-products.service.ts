@@ -34,7 +34,7 @@ export class AdminProductsService {
     status?: ProductStatus,
     category?: string,
     sort?: string,
-  ): Promise<AdminProduct[]> {
+  ): Promise<AdminProductResponse> {
     const sortList: Record<string, string> = {
       newest: "p.created_at DESC",
       oldest: "p.created_at ASC",
@@ -61,6 +61,20 @@ export class AdminProductsService {
         `,
       [search, status, category, offset, limit],
     );
-    return result.rows;
+
+    const countResult = await this.pool.query<{ total: string }>(
+      `
+      SELECT COUNT(*) AS total
+      FROM products p
+      JOIN categories c ON p.category_id = c.id
+      LEFT JOIN product_images pi ON pi.product_id = p.id AND pi.is_primary 
+      WHERE ($1::text IS NULL OR p.name ILIKE '%' || $1 || '%' OR p.sku ILIKE '%' || $1 || '%')
+      AND ($2::text IS NULL OR p.status = $2) 
+      AND ($3::uuid IS NULL OR p.category_id = $3)
+      `,
+      [search, status, category],
+    );
+    const total = Number(countResult.rows[0].total);
+    return { data: result.rows, pagination: { page, limit, total } };
   }
 }

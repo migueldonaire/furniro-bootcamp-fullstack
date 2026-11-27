@@ -25,8 +25,15 @@ describe("AdminProductsService", () => {
     service = new AdminProductsService(pool);
   });
 
-  it("devuelve las filas ", async () => {
-    expect(await service.findAll(1, 6)).toEqual(rows);
+  it("devuelve los productos y la paginación con el total", async () => {
+    // Dado: la 1.ª consulta devuelve los productos y la 2.ª el total (pg da COUNT como texto)
+    query.mockResolvedValueOnce({ rows }).mockResolvedValueOnce({ rows: [{ total: "13" }] });
+
+    // Cuando: pide la página 1, de 6 en 6
+    const response = await service.findAll(1, 6);
+
+    // Entonces: llegan los productos y el total ya convertido a número
+    expect(response).toEqual({ data: rows, pagination: { page: 1, limit: 6, total: 13 } });
   });
   it("sin filtro pasa los parametros vacios", async () => {
     await service.findAll(1, 6);
@@ -54,7 +61,7 @@ describe("AdminProductsService", () => {
   });
   it("sorts by priceAsc", async () => {
     await service.findAll(1, 6, undefined, undefined, undefined, "priceAsc");
-    expect(query).toHaveBeenLastCalledWith(expect.stringContaining("p.base_price ASC"), [
+    expect(query).toHaveBeenNthCalledWith(1, expect.stringContaining("p.base_price ASC"), [
       undefined,
       undefined,
       undefined,
@@ -64,7 +71,7 @@ describe("AdminProductsService", () => {
   });
   it("without sort param it sorts by created_at DESC by default", async () => {
     await service.findAll(1, 6);
-    expect(query).toHaveBeenLastCalledWith(expect.stringContaining("p.created_at DESC"), [
+    expect(query).toHaveBeenNthCalledWith(1, expect.stringContaining("p.created_at DESC"), [
       undefined,
       undefined,
       undefined,
@@ -81,7 +88,7 @@ describe("AdminProductsService", () => {
     await service.findAll(page, limit);
 
     // Entonces: la consulta corta 6 productos y se salta los 12 de las páginas 1 y 2
-    expect(query).toHaveBeenLastCalledWith(expect.stringContaining("LIMIT $5"), [
+    expect(query).toHaveBeenNthCalledWith(1, expect.stringContaining("LIMIT $5"), [
       undefined,
       undefined,
       undefined,
