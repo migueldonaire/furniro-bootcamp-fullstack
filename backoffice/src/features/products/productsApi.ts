@@ -11,6 +11,17 @@ export type AdminProduct = {
   imageUrl: string | null;
 };
 
+export type Pagination = {
+  page: number;
+  limit: number;
+  total: number;
+};
+
+export type AdminProductResponse = {
+  data: AdminProduct[];
+  pagination: Pagination;
+};
+
 export type Category = {
   id: string;
   name: string;
@@ -35,11 +46,12 @@ export type SearchFilters = {
   status?: ProductStatus;
   category?: string;
   sort?: SortOption;
+  page?: number;
 };
 
 const productsApi = api.injectEndpoints({
   endpoints: (builder) => ({
-    getAdminProducts: builder.query<AdminProduct[], SearchFilters>({
+    getAdminProducts: builder.query<AdminProductResponse, SearchFilters>({
       query: (searchFilters) => ({ url: "/admin/products", params: searchFilters }),
       providesTags: ["Product"],
     }),
