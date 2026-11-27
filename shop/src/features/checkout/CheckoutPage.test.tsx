@@ -32,11 +32,11 @@ it("redirects a visitor to login and keeps the products in the cart", async () =
   store.dispatch(
     itemAdded({
       productId: "nora",
-      name: "Silla Nora",
-      basePrice: 100,
+      productName: "Silla Nora",
+      unitPrice: 100,
       taxRate: 21,
+      imgURL: "/silla-nora.jpg",
       stock: 5,
-      imageUrl: "/silla-nora.jpg",
       quantity: 2,
     }),
   );
