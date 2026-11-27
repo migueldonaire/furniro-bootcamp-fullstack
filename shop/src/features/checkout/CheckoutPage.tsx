@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PageBanner } from "../../components/layout/PageBanner";
+import { HeaderBreadcrumb } from "../../components/layout/Header-BreadCrumb";
 import { AddressForm } from "./AddressForm";
 import type { Address } from "./addressSchema";
 import styles from "./CheckoutPage.module.css";
@@ -12,7 +12,7 @@ export function CheckoutPage() {
 
   return (
     <section className={styles.checkout}>
-      <PageBanner title="Finalizar compra" breadcrumbs={breadcrumbs} />
+      <HeaderBreadcrumb title="Finalizar compra" breadcrumbs={breadcrumbs} />
 
       <div className={styles.columns}>
         <div className={styles.delivery}>
