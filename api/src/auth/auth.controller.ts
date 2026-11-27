@@ -1,5 +1,6 @@
-import { Body, Controller, Get, Post, Req, UnauthorizedException, UseGuards } from "@nestjs/common";
+import { Controller, Post, Get, Body, Req, UseGuards, UnauthorizedException } from "@nestjs/common";
 import { Throttle } from "@nestjs/throttler";
+import { ApiBearerAuth } from "@nestjs/swagger";
 import type { Request } from "express";
 import { AuthGuard } from "./auth.guard";
 import { AuthService } from "./auth.service";
@@ -17,6 +18,7 @@ export class AuthController {
 
   @Get("me")
   @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   me(@Req() request: Request) {
     if (!request.user) {
       throw new UnauthorizedException("No has iniciado sesión");
