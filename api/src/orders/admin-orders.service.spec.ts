@@ -212,6 +212,7 @@ describe("AdminOrdersService", () => {
       customer_email: "ana@mail.com",
       customer_phone: "611223344",
       full_name: "Ana López",
+      address_phone: "611223344",
       street: "Calle Mayor 1",
       city: "Madrid",
       province: "Madrid",
@@ -226,6 +227,7 @@ describe("AdminOrdersService", () => {
       quantity: 2,
       unit_price: "100.00",
       tax_rate: "21.00",
+      image_url: "https://example.com/silla-nora.jpg",
     };
 
     it("returns the order with customer, address and lines in camelCase", async () => {
@@ -244,6 +246,7 @@ describe("AdminOrdersService", () => {
         customer: { name: "Ana López", email: "ana@mail.com", phone: "611223344" },
         address: {
           fullName: "Ana López",
+          phone: "611223344",
           street: "Calle Mayor 1",
           city: "Madrid",
           province: "Madrid",
@@ -258,6 +261,7 @@ describe("AdminOrdersService", () => {
             quantity: 2,
             unitPrice: 100,
             taxRate: 21,
+            imageUrl: "https://example.com/silla-nora.jpg",
           },
         ],
         total: 250,

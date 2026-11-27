@@ -137,6 +137,7 @@ export class AdminOrdersService {
               u.email AS customer_email,
               u.phone AS customer_phone,
               a.full_name,
+              a.phone AS address_phone,
               a.street,
               a.city,
               a.province,
@@ -154,11 +155,21 @@ export class AdminOrdersService {
       throw new NotFoundException("Pedido no encontrado");
     }
 
+    // 2) Las líneas: precio y SKU copiados al comprar. NO se lee products.base_price.
+    //    LEFT JOIN: la foto principal, si la hay (como en el listado de FUR-50)
     const linesResult = await this.pool.query<AdminOrderLineRow>(
-      `SELECT id, product_name, sku, quantity, unit_price, tax_rate
-         FROM order_lines
-        WHERE order_id = $1
-        ORDER BY product_name`,
+      `SELECT ol.id,
+              ol.product_name,
+              ol.sku,
+              ol.quantity,
+              ol.unit_price,
+              ol.tax_rate,
+              pi.url AS image_url
+         FROM order_lines ol
+         LEFT JOIN product_images pi
+           ON pi.product_id = ol.product_id AND pi.is_primary = true
+        WHERE ol.order_id = $1
+        ORDER BY ol.product_name`,
       [id],
     );
 

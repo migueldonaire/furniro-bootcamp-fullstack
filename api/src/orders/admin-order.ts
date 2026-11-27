@@ -52,6 +52,7 @@ export interface AdminOrderDetailRow {
   customer_email: string;
   customer_phone: string;
   full_name: string;
+  address_phone: string;
   street: string;
   city: string;
   province: string | null;
@@ -66,6 +67,7 @@ export interface AdminOrderLineRow {
   quantity: number;
   unit_price: string;
   tax_rate: string;
+  image_url: string | null;
 }
 
 export interface AdminOrderLine {
@@ -75,6 +77,7 @@ export interface AdminOrderLine {
   quantity: number;
   unitPrice: number;
   taxRate: number;
+  imageUrl: string | null;
 }
 
 export interface AdminOrderDetail {
@@ -86,6 +89,7 @@ export interface AdminOrderDetail {
   customer: { name: string; email: string; phone: string };
   address: {
     fullName: string;
+    phone: string;
     street: string;
     city: string;
     province: string | null;
@@ -107,6 +111,7 @@ export function toAdminOrderDetail(
     quantity: line.quantity,
     unitPrice: Number(line.unit_price),
     taxRate: Number(line.tax_rate),
+    imageUrl: line.image_url,
   }));
 
   const shippingCost = Number(row.shipping_cost);
@@ -129,6 +134,7 @@ export function toAdminOrderDetail(
     },
     address: {
       fullName: row.full_name,
+      phone: row.address_phone,
       street: row.street,
       city: row.city,
       province: row.province,
