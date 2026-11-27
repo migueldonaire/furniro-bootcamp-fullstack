@@ -4,17 +4,18 @@ import { describe, expect, it } from "vitest";
 import { renderWithProviders } from "../../test/renderWithProviders";
 import { ProtectedRoute } from "./ProtectedRoute";
 
-describe("ProtectedRoute", () => {
-  it("sends you to the login if there is no token", () => {
+describe("Iniciar sesión en el backoffice", () => {
+  it("Escenario: Sin sesión", () => {
     renderWithProviders(
       <Routes>
         <Route path="/login" element={<p>Página de login</p>} />
-        <Route element={<ProtectedRoute />}>
-          <Route path="/private" element={<p>Privado</p>} />
+        <Route element={<ProtectedRoute role="ADMIN" />}>
+          <Route path="/products" element={<p>Listado de productos</p>} />
         </Route>
       </Routes>,
-      "/private",
+      "/products",
     );
     expect(screen.getByText("Página de login")).toBeInTheDocument();
+    expect(screen.queryByText("Listado de productos")).not.toBeInTheDocument();
   });
 });
