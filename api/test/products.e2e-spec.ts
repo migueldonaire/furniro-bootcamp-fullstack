@@ -4,7 +4,7 @@ import { Pool } from "pg";
 import request from "supertest";
 import { configureApp } from "../src/app.config";
 import { AppModule } from "../src/app.module";
-import type { ProductRow } from "../src/products/product";
+import type { Product } from "../src/products/product";
 
 // Necesita la base de datos en marcha (docker compose up -d) y el .env de la API
 describe("Catálogo (e2e)", () => {
@@ -35,10 +35,11 @@ describe("Catálogo (e2e)", () => {
 
     // Entonces: la respuesta es correcta y trae productos...
     expect(response.status).toBe(200);
-    const names = (response.body as ProductRow[]).map((product) => product.name);
-    expect(names.length).toBeGreaterThan(0);
+    // La API manda los productos ya preparados para la web: el nombre está en "title"
+    const titles = (response.body as Product[]).map((product) => product.title);
+    expect(titles.length).toBeGreaterThan(0);
 
     // ...pero la lámpara desactivada no está entre ellos
-    expect(names).not.toContain("Lámpara Syltherine");
+    expect(titles).not.toContain("Lámpara Syltherine");
   });
 });
