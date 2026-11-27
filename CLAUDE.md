@@ -83,7 +83,7 @@ tipo(carpeta): qué hace (FUR-35)
 
 **PR**: título `FUR-35 - Ficha de producto: endpoint y página` (con los títulos se generan las notas de la release) y la plantilla rellena: qué se ha hecho, qué no y por qué, y cómo probarlo. Para la descripción, léeles el diff (`git diff main...HEAD`) y propón un borrador para que lo corrijan.
 
-Antes de abrir la PR, recuérdales: rama `feature/FUR-n`, menos de 400 líneas, al menos un test, y `npm run format`, `npm run lint` y `npm test` en verde en la carpeta que han tocado.
+Antes de abrir la PR, recuérdales: rama `feature/FUR-n`, menos de 1000 líneas sin contar tests, al menos un test, y `npm run format`, `npm run lint` y `npm test` en verde en la carpeta que han tocado.
 
 ## Normas del proyecto
 
@@ -95,7 +95,7 @@ Antes de abrir la PR, recuérdales: rama `feature/FUR-n`, menos de 400 líneas, 
 - Login: `POST /auth/login` devuelve solo `{ accessToken }`. El usuario se obtiene con `GET /auth/me`. En `localStorage` solo va el token: nunca el usuario ni otros datos personales.
 - Las rutas de administración exigen rol `ADMIN` en la API, no solo en el frontend.
 - Precios: `basePrice` sin IVA. El IVA y los totales se calculan, no se guardan.
-- Ramas con el código de la tarjeta de Jira: `feature/FUR-35`. PRs pequeñas (máximo 400 líneas sin contar `package-lock.json`), una tarjeta por PR.
+- Ramas con el código de la tarjeta de Jira: `feature/FUR-35`. PRs pequeñas (máximo 1000 líneas sin contar `package-lock.json` ni los tests), una tarjeta por PR.
 - Cada tarjeta lleva al menos un test.
 - No se instalan librerías nuevas sin preguntar al profesor (evita conflictos en `package-lock.json`).
 - Nunca se suben secretos: `.env` está en `.gitignore`; se sube `.env.example`.
@@ -109,7 +109,7 @@ Si estás revisando una PR en GitHub, sigue las "Normas del proyecto", `docs/rev
 - Escribe los comentarios en español, cortos y amables. Los alumnos son principiantes. Empieza por lo que está bien, sigue con lo que falta y termina con el siguiente paso.
 - Señala solo problemas reales: fallos, escenarios sin hacer, datos sin validar, seguridad (endpoint sin guard, contraseña en la respuesta, datos del usuario en `localStorage`, precio que llega del cliente), normas de arriba que no se cumplen y tests que faltan.
 - No seas puntilloso: si el código funciona y está bien hecho, vale aunque no sea como en los apuntes. Los nombres mejorables se sugieren, no bloquean.
-- Señala también los cambios que se salen de la tarjeta (ficheros o configuración que no tienen que ver con ella).
+- Señala los cambios de configuración que no pide la tarjeta (`.github/`, `package.json`, `app.module.ts`...). El código o la maqueta de otra tarjeta relacionada y los botones que aún no hacen nada son normales (las tarjetas están muy relacionadas): no los comentes.
 - Para cada problema, di dónde está en los apuntes y da una pista. Una pista concreta vale (por ejemplo: "a `quantity` le falta el `@Max(99)`"), pero no escribas la funcionalidad.
 - Si falta el test de un escenario, pégalo medio hecho (el `it` con el nombre del escenario y los comentarios `// Dado`, `// Cuando`, `// Entonces`) y diles que pidan el resto a Claude en su terminal.
 - Si Sonar falla por cobertura, recuérdales que pidan a Claude en su terminal los tests de relleno de esos ficheros.
