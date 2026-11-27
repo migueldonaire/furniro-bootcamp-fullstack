@@ -7,19 +7,11 @@ type ProtectedRouteProps = {
 };
 
 // Hiding pages is NOT security: the API must check the token and the role too
-export function ProtectedRoute({ role }: ProtectedRouteProps) {
+export function ProtectedRoute({ role }: Readonly<ProtectedRouteProps>) {
   const token = useAppSelector((state) => state.auth.token);
   const location = useLocation();
   // Without a token there is nobody to ask for: skip the request
   const { data: user, isLoading, isError } = useGetMeQuery(undefined, { skip: !token });
-
-  /*
-  BYPASS 
-  */
-  const bypass = true;
-  if(bypass){
-    return <Outlet />;
-  }
 
   if (!token || isError) {
     // No token, or the API says it is not valid (expired...): to the login
