@@ -5,7 +5,9 @@ import { renderWithProviders } from "../../test/renderWithProviders";
 import { screen, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-vi.mock("./productsApi", () => ({
+// Usa el productsApi real (tipos, productCategories...) y solo cambia el hook por uno falso
+vi.mock("./productsApi", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("./productsApi")>()),
   useGetAdminProductsQuery: vi.fn(),
 }));
 
@@ -15,34 +17,41 @@ describe("ProductsPage", () => {
   });
 
   it("se ven los productos", () => {
+    // Dado: la API devuelve { data, pagination } con 2 productos
     vi.mocked(useGetAdminProductsQuery).mockReturnValue({
-      data: [
-        {
-          id: "1",
-          name: "Producto 1",
-          sku: "SKU1",
-          basePrice: "100.00",
-          stock: 10,
-          status: "ACTIVE",
-          categoryName: "Categoría 1",
-          imageUrl: null,
-        },
-        {
-          id: "2",
-          name: "Producto 2",
-          sku: "SKU2",
-          basePrice: "200.00",
-          stock: 5,
-          status: "INACTIVE",
-          categoryName: "Categoría 2",
-          imageUrl: null,
-        },
-      ],
+      data: {
+        data: [
+          {
+            id: "1",
+            name: "Producto 1",
+            sku: "SKU1",
+            basePrice: "100.00",
+            stock: 10,
+            status: "ACTIVE",
+            categoryName: "Categoría 1",
+            imageUrl: null,
+          },
+          {
+            id: "2",
+            name: "Producto 2",
+            sku: "SKU2",
+            basePrice: "200.00",
+            stock: 5,
+            status: "INACTIVE",
+            categoryName: "Categoría 2",
+            imageUrl: null,
+          },
+        ],
+        pagination: { page: 1, limit: 6, total: 2 },
+      },
       isLoading: false,
       isError: false,
     } as never);
 
+    // Cuando: se pinta la página
     renderWithProviders(<ProductsPage />);
+
+    // Entonces: se ven los datos de los dos productos
 
     expect(screen.getByText("Producto 1")).toBeInTheDocument();
     expect(screen.getByText("Producto 2")).toBeInTheDocument();
