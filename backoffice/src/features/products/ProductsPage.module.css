@@ -50,6 +50,7 @@
   width: 100%;
   table-layout: fixed;
   border-collapse: collapse;
+  margin-bottom: 10px;
 }
 
 .productsTable thead {

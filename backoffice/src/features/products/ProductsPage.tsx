@@ -7,6 +7,7 @@ import {
 import { formatEuro } from "../../lib/money";
 import { useEffect, useState } from "react";
 import styles from "./ProductsPage.module.css";
+import { Pagination } from "../../components/Pagination/Pagination";
 
 export function ProductsPage() {
   const [status, setStatus] = useState<ProductStatus | "">("");
@@ -14,10 +15,12 @@ export function ProductsPage() {
   const [sort, setSort] = useState<SortOption>("newest");
   const [searchText, setSearchText] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
+  const [page, setPage] = useState<number>(1);
 
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(searchText.trim());
+      setPage(1);
     }, 500);
 
     return () => {
@@ -34,6 +37,7 @@ export function ProductsPage() {
     category: category || undefined,
     sort: sort || "newest",
     search: debouncedSearch || undefined,
+    page: page,
   });
   return (
     <section>
@@ -72,7 +76,10 @@ export function ProductsPage() {
           <select
             className={styles.field}
             id="category-filter"
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setPage(1);
+            }}
             value={category}
           >
             <option value={""}>Todas</option>
@@ -91,7 +98,10 @@ export function ProductsPage() {
             className={styles.field}
             id="status-filter"
             value={status}
-            onChange={(e) => setStatus(e.target.value as "" | ProductStatus)}
+            onChange={(e) => {
+              setStatus(e.target.value as "" | ProductStatus);
+              setPage(1);
+            }}
           >
             <option value={""}>Todos</option>
             <option value="ACTIVE">Activos</option>
@@ -103,7 +113,10 @@ export function ProductsPage() {
             Ordenar por:
           </label>
           <select
-            onChange={(e) => setSort(e.target.value as SortOption)}
+            onChange={(e) => {
+              setSort(e.target.value as SortOption);
+              setPage(1);
+            }}
             className={styles.field}
             id="sort-filter"
             value={sort}
@@ -119,47 +132,54 @@ export function ProductsPage() {
       {products?.data.length === 0 && <p>No hay productos disponibles.</p>}
       {isError && <p>Error al cargar los productos.</p>}
       {products && products.data.length > 0 && (
-        <table className={styles.productsTable}>
-          <thead>
-            <tr>
-              <th>Imagen</th>
-              <th>Nombre</th>
-              <th>Categoría</th>
-              <th>Precio sin IVA</th>
-              <th>Stock</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products?.data.map((product) => (
-              <tr key={product.id}>
-                <td>
-                  {product.imageUrl ? (
-                    <img src={product.imageUrl} alt={product.name} width="50" />
-                  ) : (
-                    <span>No hay imagen</span>
-                  )}
-                </td>
-                <td>
-                  <strong>{product.name}</strong>{" "}
-                  <p>
-                    <small>SKU: {product.sku}</small>
-                  </p>
-                </td>
-                <td>{product.categoryName}</td>
-                <td>{formatEuro(Number(product.basePrice))}</td>
-                <td>{product.stock}</td>
-                <td>
-                  <span
-                    className={`${styles.stateBadge} ${product.status === "ACTIVE" ? styles.active : styles.inactive}`}
-                  >
-                    {product.status === "ACTIVE" ? "Activo" : "Desactivado"}
-                  </span>
-                </td>
+        <>
+          <table className={styles.productsTable}>
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio sin IVA</th>
+                <th>Stock</th>
+                <th>Estado</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {products?.data.map((product) => (
+                <tr key={product.id}>
+                  <td>
+                    {product.imageUrl ? (
+                      <img src={product.imageUrl} alt={product.name} width="50" />
+                    ) : (
+                      <span>No hay imagen</span>
+                    )}
+                  </td>
+                  <td>
+                    <strong>{product.name}</strong>{" "}
+                    <p>
+                      <small>SKU: {product.sku}</small>
+                    </p>
+                  </td>
+                  <td>{product.categoryName}</td>
+                  <td>{formatEuro(Number(product.basePrice))}</td>
+                  <td>{product.stock}</td>
+                  <td>
+                    <span
+                      className={`${styles.stateBadge} ${product.status === "ACTIVE" ? styles.active : styles.inactive}`}
+                    >
+                      {product.status === "ACTIVE" ? "Activo" : "Desactivado"}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Pagination
+            currentPage={page}
+            totalPages={Math.ceil(products.pagination.total / products.pagination.limit)}
+            onPageChange={(p) => setPage(p)}
+          />
+        </>
       )}
     </section>
   );
