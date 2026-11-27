@@ -94,9 +94,9 @@ export function ProductsPage() {
         </div>
       </div>
       {isLoading && <p>Cargando productos...</p>}
-      {products?.length === 0 && <p>No hay productos disponibles.</p>}
+      {products?.data.length === 0 && <p>No hay productos disponibles.</p>}
       {isError && <p>Error al cargar los productos.</p>}
-      {products && products.length > 0 && (
+      {products && products.data.length > 0 && (
         <table className={styles.productsTable}>
           <thead>
             <tr>
@@ -109,7 +109,7 @@ export function ProductsPage() {
             </tr>
           </thead>
           <tbody>
-            {products?.map((product) => (
+            {products?.data.map((product) => (
               <tr key={product.id}>
                 <td>
                   {product.imageUrl ? (
