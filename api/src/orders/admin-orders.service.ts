@@ -18,7 +18,7 @@ export class AdminOrdersService {
     status?: OrderStatus,
     search?: string,
     page = 1,
-    limit = 10,
+    limit = 20,
     from?: string,
     to?: string,
   ): Promise<PaginatedAdminOrders> {

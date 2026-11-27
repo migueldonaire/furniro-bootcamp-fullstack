@@ -59,13 +59,13 @@ describe("AdminOrdersService", () => {
       ],
       total: 1,
       page: 1,
-      limit: 10,
+      limit: 20,
       totalPages: 1,
     });
     expect(fakePool.query).toHaveBeenNthCalledWith(
       2,
       expect.not.stringContaining("WHERE o."),
-      [10, 0],
+      [20, 0],
     );
   });
 
@@ -77,7 +77,7 @@ describe("AdminOrdersService", () => {
     expect(fakePool.query).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining("WHERE o.status = $1"),
-      ["PENDING", 10, 0],
+      ["PENDING", 20, 0],
     );
   });
 
@@ -91,7 +91,7 @@ describe("AdminOrdersService", () => {
     ]);
     expect(fakePool.query).toHaveBeenNthCalledWith(2, expect.stringContaining("EXISTS"), [
       "%ana%",
-      10,
+      20,
       0,
     ]);
   });
@@ -153,7 +153,7 @@ describe("AdminOrdersService", () => {
       items: [],
       total: 0,
       page: 1,
-      limit: 10,
+      limit: 20,
       totalPages: 0,
     });
   });
@@ -166,7 +166,7 @@ describe("AdminOrdersService", () => {
     expect(fakePool.query).toHaveBeenNthCalledWith(
       2,
       expect.stringContaining("ORDER BY o.order_date DESC"),
-      [10, 0],
+      [20, 0],
     );
   });
 
