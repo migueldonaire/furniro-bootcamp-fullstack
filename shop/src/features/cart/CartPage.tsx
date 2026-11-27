@@ -62,12 +62,14 @@ export function CartPage() {
 function QuantityInput({ line }: { line: CartItem }) {
   const dispatch = useAppDispatch();
   const [error, setError] = useState<string | null>(null);
+  const [quantityText, setQuantityText] = useState(String(line.quantity));
   useEffect(() => {
     if (error === null) return;
     const timer = setTimeout(() => setError(null), 3000);
     return () => clearTimeout(timer);
   }, [error]);
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
+    setQuantityText(event.target.value);
     if (event.target.value === "") return;
     const value = Number(event.target.value);
     if (!Number.isInteger(value) || value < 1) return;
@@ -86,9 +88,12 @@ function QuantityInput({ line }: { line: CartItem }) {
         aria-label="Cantidad"
         className={styles.quantity}
         min={1}
-        value={line.quantity}
+        value={quantityText}
         onChange={handleChange}
-        onBlur={() => setError(null)}
+        onBlur={() => {
+          setError(null);
+          setQuantityText(String(line.quantity));
+        }}
       />
       {error && (
         <p role="alert" className={styles.error}>
