@@ -5,9 +5,12 @@ import {
   Get,
   ParseIntPipe,
   Query,
+  UseGuards,
 } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AdminProductsService, type ProductStatus } from "./admin-products.service";
+import { AuthGuard } from "../auth/auth.guard";
+import { AdminGuard } from "../auth/admin.guard";
 
 @ApiTags("Admin Products")
 @Controller("admin/products")
@@ -15,6 +18,7 @@ export class AdminProductsController {
   constructor(private readonly adminProductsService: AdminProductsService) {}
 
   @Get()
+  @UseGuards(AuthGuard, AdminGuard)
   async findAll(
     @Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number,
     @Query("limit", new DefaultValuePipe(6), ParseIntPipe) limit: number,
