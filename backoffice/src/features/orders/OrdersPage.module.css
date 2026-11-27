@@ -173,8 +173,8 @@
   grid-template-areas:
     "id status"
     "customer total"
-    "date date"
-    "products products";
+    "products products"
+    "date actions";
   align-items: center;
   gap: 8px 12px;
   padding: 12px;
@@ -192,6 +192,8 @@
 }
 .cellDate {
   grid-area: date;
+  display: flex; /* date and time on one line in the card */
+  gap: 6px;
 }
 .cellProducts {
   grid-area: products;
@@ -225,9 +227,8 @@
 
 .products {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 6px;
+  align-items: center; /* photos and "N productos" side by side */
+  gap: 12px;
 }
 
 .thumbs {
@@ -237,11 +238,21 @@
 
 .thumb {
   flex-shrink: 0;
-  width: 40px;
-  height: 40px;
+  width: 64px;
+  height: 64px;
   object-fit: cover;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
+}
+
+.thumbMore {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f3f4f6;
+  font-size: 14px;
+  font-weight: 600;
+  color: #4b5563;
 }
 
 .badge {
@@ -330,6 +341,15 @@
     flex-direction: row;
     justify-content: space-between;
   }
+  .thumb {
+    width: 48px;
+    height: 48px;
+  }
+  .products {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
 }
 
 /* Title on the left, search and dates on the right (like the design) */
@@ -352,4 +372,24 @@
     align-items: center;
     gap: 12px;
   }
+}
+
+.cellActions {
+  grid-area: actions;
+  justify-self: end; /* the button on the right of the date */
+}
+
+.detailsButton {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #1f2937;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.detailsButton:hover {
+  background-color: #f9f3eb;
 }

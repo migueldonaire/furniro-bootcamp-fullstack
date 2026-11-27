@@ -45,6 +45,54 @@ describe("OrdersPage", () => {
     mockedQuery.mockReset();
   });
 
+  it("shows at most 2 photos and +N for the rest of the products", () => {
+    // Dado: un pedido con 3 productos, todos con foto
+    answer([
+      {
+        ...lauraOrder,
+        products: [
+          {
+            id: "p1",
+            name: "Estantería Lira",
+            quantity: 1,
+            imageUrl: "https://example.com/lira.jpg",
+          },
+          { id: "p2", name: "Espejo Sol", quantity: 1, imageUrl: "https://example.com/espejo.jpg" },
+          {
+            id: "p3",
+            name: "Jarrón Brisa",
+            quantity: 3,
+            imageUrl: "https://example.com/jarron.jpg",
+          },
+        ],
+      },
+    ]);
+
+    // Cuando: se pinta el listado
+    renderWithProviders(<OrdersPage />);
+
+    // Entonces: se ven las 2 primeras fotos, la tercera no, "+1" y "3 productos"
+    expect(screen.getByAltText("Estantería Lira")).toBeInTheDocument();
+    expect(screen.getByAltText("Espejo Sol")).toBeInTheDocument();
+    expect(screen.queryByAltText("Jarrón Brisa")).not.toBeInTheDocument();
+    expect(screen.getByText("+1")).toBeInTheDocument();
+    expect(screen.getByText("3 productos")).toBeInTheDocument();
+  });
+
+  it("links each order to its detail page", () => {
+    // Dado: el pedido de Laura
+    answer([lauraOrder]);
+
+    // Cuando: se pinta el listado
+    renderWithProviders(<OrdersPage />);
+
+    // Entonces: "Ver detalles" lleva a /orders/<id>
+    expect(screen.getByRole("link", { name: "Ver detalles" })).toHaveAttribute(
+      "href",
+      "/orders/f0000000-0000-4000-8000-000000000012",
+    );
+  });
+
   it("shows each order with date, customer, status and total", () => {
     answer([lauraOrder]);
 

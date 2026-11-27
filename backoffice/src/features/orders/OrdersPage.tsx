@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import { ORDERS_PAGE_LIMIT } from "../../app/app";
 import { Pagination } from "../../components/Pagination/Pagination";
@@ -27,7 +28,8 @@ const STATUS_BADGE_CLASSES: Record<OrderStatus, string> = {
 };
 
 const STATUSES = Object.keys(STATUS_LABELS) as OrderStatus[];
-const COLUMNS = ["Pedido", "Cliente", "Fecha", "Productos", "Total", "Estado"];
+const COLUMNS = ["Pedido", "Cliente", "Fecha", "Productos", "Total", "Estado", "Acciones"];
+const MAX_THUMBS = 2;
 
 function formatDate(isoDate: string) {
   return new Date(isoDate).toLocaleDateString("es-ES");
@@ -228,16 +230,23 @@ export function OrdersPage() {
                     <td className={`${styles.tableCell} ${styles.cellProducts}`}>
                       <div className={styles.products}>
                         <div className={styles.thumbs}>
-                          {order.products.map((product) =>
-                            product.imageUrl ? (
-                              <img
-                                key={product.id}
-                                src={product.imageUrl}
-                                alt={product.name}
-                                title={`${product.name} (x${product.quantity})`}
-                                className={styles.thumb}
-                              />
-                            ) : null,
+                          {order.products
+                            .slice(0, MAX_THUMBS)
+                            .map((product) =>
+                              product.imageUrl ? (
+                                <img
+                                  key={product.id}
+                                  src={product.imageUrl}
+                                  alt={product.name}
+                                  title={`${product.name} (x${product.quantity})`}
+                                  className={styles.thumb}
+                                />
+                              ) : null,
+                            )}
+                          {order.products.length > MAX_THUMBS && (
+                            <span className={`${styles.thumb} ${styles.thumbMore}`}>
+                              +{order.products.length - MAX_THUMBS}
+                            </span>
                           )}
                         </div>
                         <span className={styles.productsCount}>
@@ -255,6 +264,11 @@ export function OrdersPage() {
                       <span className={`${styles.badge} ${STATUS_BADGE_CLASSES[order.status]}`}>
                         {STATUS_LABELS[order.status]}
                       </span>
+                    </td>
+                    <td className={`${styles.tableCell} ${styles.cellActions}`}>
+                      <Link to={`/orders/${order.id}`} className={styles.detailsButton}>
+                        Ver detalles
+                      </Link>
                     </td>
                   </tr>
                 ))}
