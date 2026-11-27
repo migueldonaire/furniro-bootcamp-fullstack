@@ -123,8 +123,8 @@ export function ProductsPage() {
           >
             <option value="newest">Más recientes</option>
             <option value="oldest">Más antiguos</option>
-            <option value="priceAsc">Precio Acendente</option>
-            <option value="priceDesc">Precio Decentente</option>
+            <option value="priceAsc">Precio Ascendente</option>
+            <option value="priceDesc">Precio Descendente</option>
           </select>
         </div>
       </div>
@@ -149,7 +149,7 @@ export function ProductsPage() {
                 <tr key={product.id}>
                   <td>
                     {product.imageUrl ? (
-                      <img src={product.imageUrl} alt={product.name} width="50" />
+                      <img src={product.imageUrl} alt={product.name} />
                     ) : (
                       <span>No hay imagen</span>
                     )}
