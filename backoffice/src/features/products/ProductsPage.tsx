@@ -51,7 +51,7 @@ export function ProductsPage() {
             className={styles.fieldSearch}
             type="search"
             id="product-search"
-            placeholder="Buscar productos por nombres o por SKU"
+            placeholder="Buscar productos por nombre o por SKU"
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />

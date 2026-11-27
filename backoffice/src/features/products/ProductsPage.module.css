@@ -96,3 +96,6 @@
   text-align: left;
   background: white;
 }
+.fieldSearch::placeholder {
+  color: #9f9f9f;
+}
