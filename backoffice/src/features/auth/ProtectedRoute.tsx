@@ -7,7 +7,7 @@ type ProtectedRouteProps = {
 };
 
 // Hiding pages is NOT security: the API must check the token and the role too
-export function ProtectedRoute({ role }: ProtectedRouteProps) {
+export function ProtectedRoute({ role }: Readonly<ProtectedRouteProps>) {
   const token = useAppSelector((state) => state.auth.token);
   const location = useLocation();
   // Without a token there is nobody to ask for: skip the request
