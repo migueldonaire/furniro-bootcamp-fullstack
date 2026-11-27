@@ -1,4 +1,4 @@
-import { Controller, Get, Query, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, ParseUUIDPipe, Query, UseGuards } from "@nestjs/common";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 import { AdminGuard } from "../auth/admin.guard";
 import { AuthGuard } from "../auth/auth.guard";
@@ -23,5 +23,9 @@ export class AdminOrdersController {
       query.from,
       query.to,
     );
+  }
+  @Get(":id")
+  findOne(@Param("id", ParseUUIDPipe) id: string) {
+    return this.adminOrdersService.findOne(id);
   }
 }

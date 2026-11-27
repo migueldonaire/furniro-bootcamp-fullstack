@@ -35,6 +35,33 @@ export type AdminOrdersFilters = {
   from?: string; // YYYY-MM-DD
   to?: string; // YYYY-MM-DD
 };
+export type AdminOrderLine = {
+  id: string;
+  productName: string;
+  sku: string;
+  quantity: number;
+  unitPrice: number; // sin IVA
+  taxRate: number;
+};
+
+export type AdminOrderDetail = {
+  id: string;
+  orderDate: string;
+  status: OrderStatus;
+  shippingCost: number;
+  currency: string;
+  customer: { name: string; email: string; phone: string };
+  address: {
+    fullName: string;
+    street: string;
+    city: string;
+    province: string | null;
+    postalCode: string;
+    country: string;
+  };
+  lines: AdminOrderLine[];
+  total: number;
+};
 
 const ordersApi = api.injectEndpoints({
   endpoints: (builder) => ({
@@ -43,7 +70,11 @@ const ordersApi = api.injectEndpoints({
       query: (filters) => ({ url: "/admin/orders", params: filters }),
       providesTags: ["Order"],
     }),
+    getAdminOrder: builder.query<AdminOrderDetail, string>({
+      query: (orderId) => `/admin/orders/${orderId}`,
+      providesTags: ["Order"],
+    }),
   }),
 });
 
-export const { useGetAdminOrdersQuery } = ordersApi;
+export const { useGetAdminOrdersQuery, useGetAdminOrderQuery } = ordersApi;

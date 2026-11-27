@@ -1,3 +1,4 @@
+import { NotFoundException } from "@nestjs/common";
 import { Pool } from "pg";
 import { AdminOrdersService } from "./admin-orders.service";
 
@@ -197,5 +198,95 @@ describe("AdminOrdersService", () => {
     const result = await service.findAll();
 
     expect(result.items[0].products).toEqual([]);
+  });
+  describe("findOne", () => {
+    const id = "f0000000-0000-4000-8000-000000000001";
+
+    const anaDetailRow = {
+      id,
+      order_date: new Date("2026-11-10T10:00:00Z"),
+      status: "PENDING",
+      shipping_cost: "8.00",
+      currency: "EUR",
+      customer_name: "Ana López",
+      customer_email: "ana@mail.com",
+      customer_phone: "611223344",
+      full_name: "Ana López",
+      street: "Calle Mayor 1",
+      city: "Madrid",
+      province: "Madrid",
+      postal_code: "28001",
+      country: "ES",
+    };
+
+    const chairLineRow = {
+      id: "f2000000-0000-4000-8000-000000000001",
+      product_name: "Silla Nora",
+      sku: "FUR-SIL-001",
+      quantity: 2,
+      unit_price: "100.00",
+      tax_rate: "21.00",
+    };
+
+    it("returns the order with customer, address and lines in camelCase", async () => {
+      fakePool.query
+        .mockResolvedValueOnce({ rows: [anaDetailRow] })
+        .mockResolvedValueOnce({ rows: [chairLineRow] });
+
+      const result = await service.findOne(id);
+
+      expect(result).toEqual({
+        id,
+        orderDate: new Date("2026-11-10T10:00:00Z"),
+        status: "PENDING",
+        shippingCost: 8,
+        currency: "EUR",
+        customer: { name: "Ana López", email: "ana@mail.com", phone: "611223344" },
+        address: {
+          fullName: "Ana López",
+          street: "Calle Mayor 1",
+          city: "Madrid",
+          province: "Madrid",
+          postalCode: "28001",
+          country: "ES",
+        },
+        lines: [
+          {
+            id: "f2000000-0000-4000-8000-000000000001",
+            productName: "Silla Nora",
+            sku: "FUR-SIL-001",
+            quantity: 2,
+            unitPrice: 100,
+            taxRate: 21,
+          },
+        ],
+        total: 250,
+      });
+    });
+
+    it("uses the price saved in the line, not the current product price", async () => {
+      // Dado: las mismas filas
+      fakePool.query
+        .mockResolvedValueOnce({ rows: [anaDetailRow] })
+        .mockResolvedValueOnce({ rows: [chairLineRow] });
+
+      const result = await service.findOne(id);
+
+      expect(result.lines[0].unitPrice).toBe(100);
+      expect(fakePool.query).toHaveBeenNthCalledWith(
+        2,
+        expect.stringContaining("FROM order_lines"),
+        [id],
+      );
+      expect(fakePool.query).toHaveBeenNthCalledWith(2, expect.not.stringContaining("base_price"), [
+        id,
+      ]);
+    });
+
+    it("throws NotFoundException when the order does not exist", async () => {
+      fakePool.query.mockResolvedValueOnce({ rows: [] });
+      await expect(service.findOne(id)).rejects.toThrow(NotFoundException);
+      expect(fakePool.query).toHaveBeenCalledTimes(1);
+    });
   });
 });

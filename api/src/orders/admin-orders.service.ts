@@ -1,6 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { Pool } from "pg";
-import { AdminOrder, AdminOrderRow, OrderStatus, toAdminOrder } from "./admin-order";
+import {
+  AdminOrder,
+  AdminOrderDetail,
+  AdminOrderDetailRow,
+  AdminOrderLineRow,
+  AdminOrderRow,
+  OrderStatus,
+  toAdminOrder,
+  toAdminOrderDetail,
+} from "./admin-order";
 
 export type PaginatedAdminOrders = {
   items: AdminOrder[];
@@ -114,5 +123,45 @@ export class AdminOrdersService {
       limit,
       totalPages,
     };
+  }
+
+  async findOne(id: string): Promise<AdminOrderDetail> {
+    // 1) El pedido, con su cliente y su dirección de entrega
+    const orderResult = await this.pool.query<AdminOrderDetailRow>(
+      `SELECT o.id,
+              o.order_date,
+              o.status,
+              o.shipping_cost,
+              o.currency,
+              u.name || ' ' || u.last_name AS customer_name,
+              u.email AS customer_email,
+              u.phone AS customer_phone,
+              a.full_name,
+              a.street,
+              a.city,
+              a.province,
+              a.postal_code,
+              a.country
+         FROM orders o
+         JOIN users u ON u.id = o.user_id
+         JOIN order_addresses a ON a.order_id = o.id
+        WHERE o.id = $1`,
+      [id],
+    );
+
+    const row = orderResult.rows[0];
+    if (!row) {
+      throw new NotFoundException("Pedido no encontrado");
+    }
+
+    const linesResult = await this.pool.query<AdminOrderLineRow>(
+      `SELECT id, product_name, sku, quantity, unit_price, tax_rate
+         FROM order_lines
+        WHERE order_id = $1
+        ORDER BY product_name`,
+      [id],
+    );
+
+    return toAdminOrderDetail(row, linesResult.rows);
   }
 }
