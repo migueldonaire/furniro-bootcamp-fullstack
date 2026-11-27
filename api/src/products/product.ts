@@ -1,17 +1,10 @@
-export function formatEuro(amount: number): string {
-  return new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" }).format(amount);
-}
-
-export function priceWithTax(basePrice: number, taxRate: number): number {
-  return Math.round(basePrice * (1 + taxRate / 100) * 100) / 100;
-}
-
 export type Product = {
   id: string;
   imgURL: string | null;
   title: string;
   description: string;
-  price: string;
+  basePrice: number;
+  taxRate: number;
 };
 
 export type ProductRow = {
@@ -29,6 +22,7 @@ export function toProduct(row: ProductRow): Product {
     imgURL: row.url,
     title: row.name,
     description: row.description,
-    price: formatEuro(priceWithTax(Number(row.base_price), Number(row.tax_rate))),
+    basePrice: row.base_price ? Number(row.base_price) : null,
+    taxRate: row.tax_rate ? Number(row.tax_rate) : null,
   };
 }
