@@ -29,4 +29,11 @@ describe("Furniro API (e2e)", () => {
     expect(response.status).toBe(200);
     expect(response.body).toMatchObject({ status: "ok", database: "furniro" });
   });
+
+  it("GET /api/v1/orders/usual-address responds 401 without a token", async () => {
+    const server = app.getHttpServer() as Parameters<typeof request>[0];
+    const response = await request(server).get("/api/v1/orders/usual-address");
+
+    expect(response.status).toBe(401);
+  });
 });
