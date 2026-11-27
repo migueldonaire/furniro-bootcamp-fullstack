@@ -14,6 +14,29 @@ export type CartItem = {
 
 type CartState = { items: CartItem[] };
 
+// ---- TESTING ONLY: products to try the cart by hand ----
+// Until the product page (FUR-35) can add products, uncomment this block and
+// change initialState below to `{ items: testingItems }`. Do not commit it uncommented.
+// Data from the seed (database/seed.sql). Stocks go from 1 to 40 to try the limits.
+//
+// const IMAGES =
+//   "https://raw.githubusercontent.com/migueldonaire/furniro-bootcamp-fullstack/main/database/images";
+// const item = (id: string, name: string, basePrice: number, quantity: number, stock: number, image: string): CartItem =>
+//   ({ productId: `d0000000-0000-4000-8000-0000000000${id}`, name, basePrice, taxRate: 21, quantity, stock, imageUrl: `${IMAGES}/${image}` });
+// const testingItems: CartItem[] = [
+//   item("01", "Silla Nora", 100, 2, 5, "silla-nora-1.jpg"),
+//   item("06", "Mesa Asgaard", 250, 1, 3, "mesa-asgaard-1.jpg"),
+//   item("11", "Sofá Asgaard", 890, 1, 2, "sofa-asgaard-1.jpg"),
+//   item("16", "Lámpara Luna", 89, 3, 15, "lampara-luna-1.jpg"),
+//   item("09", "Mesa Potty", 310, 1, 1, "mesa-potty-1.jpg"),
+//   item("02", "Silla Leviosa", 65, 4, 12, "silla-leviosa-1.jpg"),
+//   item("05", "Sillón Grifo", 190, 2, 2, "sillon-grifo-1.jpg"),
+//   item("10", "Escritorio Bolt", 160, 1, 7, "escritorio-bolt-1.jpg"),
+//   item("25", "Cojín Coral", 18, 6, 40, "cojin-coral-1.jpg"),
+//   item("19", "Cama Ottawa", 450, 1, 3, "cama-ottawa-1.jpg"),
+// ];
+// ---- END TESTING ONLY ----
+
 const initialState: CartState = { items: [] };
 
 export function getAddToCartError(items: CartItem[], item: CartItem): string | null {
