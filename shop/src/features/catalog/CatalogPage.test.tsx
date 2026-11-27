@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../test/renderWithProviders";
 import { CatalogPage } from "./CatalogPage";
 import { useGetProductsQuery } from "./catalogApi";
-import { toProduct, type Product, type ProductRow } from "./product";
+import { type Product } from "./product";
 
 // Sustituimos el hook de RTK Query por uno falso: el test no llama a la API
 vi.mock("./catalogApi", () => ({ useGetProductsQuery: vi.fn() }));
@@ -40,18 +40,16 @@ describe("Catálogo", () => {
     expect(screen.getByText("7,00 €")).toBeInTheDocument();
   });
   it("Escenario: Precio con IVA", () => {
-    // Dado: la Silla Nora cuesta 100 € sin IVA, con IVA 21 % (así la manda la API)
-    const row: ProductRow = {
+    // Dado: la API manda la Silla Nora con el precio ya calculado con IVA (100 € + 21 %)
+    const product: Product = {
       id: "silla-nora",
-      name: "Silla Nora",
+      imgURL: "https://example.com/silla-nora.jpg",
+      title: "Silla Nora",
       description: "Silla de diseño",
-      base_price: "100.00", // sin IVA (pg manda los NUMERIC como texto)
-      tax_rate: "21.00",
-      url: "https://example.com/silla-nora.jpg",
+      price: "121,00 €", // el IVA lo calcula la API; aquí ya llega hecho
     };
-    // Usamos vuestro toProduct de verdad: es quien calcula el IVA
     vi.mocked(useGetProductsQuery).mockReturnValue({
-      data: [toProduct(row)],
+      data: [product],
       isLoading: false,
       error: undefined,
     } as never);
@@ -59,47 +57,22 @@ describe("Catálogo", () => {
     // Cuando: un visitante abre la tienda
     renderWithProviders(<CatalogPage />);
 
-    // Entonces: ve la Silla Nora a 121,00 €
+    // Entonces: ve la Silla Nora con el precio tal cual lo manda la API
     expect(screen.getByRole("heading", { name: "Silla Nora" })).toBeInTheDocument();
     expect(screen.getByText("121,00 €")).toBeInTheDocument();
   });
 
-  it("Escenario: Precio con céntimos", () => {
-    // Dado: un producto cuesta 19,99 € sin IVA, con IVA 21 %
-    const row: ProductRow = {
-      id: "producto-centimos",
-      name: "Cojín Coral",
-      description: "Cojín de prueba",
-      base_price: "19.99", // sin IVA: 19,99 × 1,21 = 24,1879 (más de 2 decimales)
-      tax_rate: "21.00",
-      url: "https://example.com/cojin-coral.jpg",
-    };
-    // Usamos vuestro toProduct de verdad: calcula el IVA y redondea
-    vi.mocked(useGetProductsQuery).mockReturnValue({
-      data: [toProduct(row)],
-      isLoading: false,
-      error: undefined,
-    } as never);
-
-    // Cuando: un visitante abre la tienda
-    renderWithProviders(<CatalogPage />);
-
-    // Entonces: lo ve a 24,19 € (redondeado a céntimos)
-    expect(screen.getByText("24,19 €")).toBeInTheDocument();
-  });
-
   it("Escenario: Producto sin foto", () => {
-    // Dado: un producto no tiene imágenes (la API manda url: null por el LEFT JOIN)
-    const row: ProductRow = {
+    // Dado: un producto sin imágenes (la API manda imgURL: null)
+    const product: Product = {
       id: "producto-sin-foto",
-      name: "Mesa Sin Foto",
+      imgURL: null,
+      title: "Mesa Sin Foto",
       description: "Producto de prueba sin imágenes",
-      base_price: "50.00",
-      tax_rate: "21.00",
-      url: null,
+      price: "60,50 €",
     };
     vi.mocked(useGetProductsQuery).mockReturnValue({
-      data: [toProduct(row)],
+      data: [product],
       isLoading: false,
       error: undefined,
     } as never);
