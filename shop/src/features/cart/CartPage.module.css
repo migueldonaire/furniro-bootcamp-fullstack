@@ -1,7 +1,7 @@
 .layout {
   display: flex;
   gap: 30px;
-  align-items: center;
+  align-items: flex-start;
   justify-items: center;
 }
 
@@ -32,6 +32,8 @@
 }
 
 .cartTotal {
+  position: sticky;
+  top: 20px;
   background-color: #f9f1e7;
   flex: 1;
   display: flex;
