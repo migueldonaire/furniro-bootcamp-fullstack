@@ -18,7 +18,7 @@ describe("Catálogo", () => {
       description: "Descripción de prueba",
       price: `${i + 1},00 €`,
     }));
-    
+
     // El hook falso devuelve esos productos, ya cargados y sin error
     vi.mocked(useGetProductsQuery).mockReturnValue({
       data: products,
@@ -113,9 +113,9 @@ describe("Catálogo", () => {
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
     // ...y con el sustituto genérico en su lugar
     expect(screen.getByText("No existe imagen")).toBeInTheDocument();
-    });
+  });
 
-    it("Escenario: Tienda sin productos", () => {
+  it("Escenario: Tienda sin productos", () => {
     // Dado: no hay ningún producto activo (la API devuelve una lista vacía)
     vi.mocked(useGetProductsQuery).mockReturnValue({
       data: [],

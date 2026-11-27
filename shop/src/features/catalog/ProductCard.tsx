@@ -10,13 +10,11 @@ type ProductCardProps = {
 export function ProductCard({ imgURL, title, description, price }: ProductCardProps) {
   return (
     <article className={styles.card}>
-      <div className="image-container">
-        {imgURL ? (
-          <img className={styles.image} src={imgURL} alt={title} />
-        ) : (
-          <div className={styles.imageEmpty}>No existe imagen</div>
-        )}
-      </div>
+      {imgURL ? (
+        <img className={styles.image} src={imgURL} alt={title} />
+      ) : (
+        <div className={styles.imageEmpty}>No existe imagen</div>
+      )}
       <div className={styles.cardText}>
         <h2 className={styles.title}>{title}</h2>
         <p className={styles.description}>{description}</p>
