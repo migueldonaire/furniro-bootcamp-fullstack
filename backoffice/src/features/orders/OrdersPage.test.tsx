@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { renderWithProviders } from "../../test/renderWithProviders";
 import { OrdersPage } from "./OrdersPage";
 import { type AdminOrder, useGetAdminOrdersQuery } from "./ordersApi";
+import { ORDERS_PAGE_LIMIT } from "../../app/app";
 
 vi.mock("./ordersApi", () => ({ useGetAdminOrdersQuery: vi.fn() }));
 const mockedQuery = vi.mocked(useGetAdminOrdersQuery);
@@ -14,7 +15,7 @@ function answer(orders: AdminOrder[], total = orders.length, page = 1, totalPage
       items: orders,
       total,
       page,
-      limit: 10,
+      limit: ORDERS_PAGE_LIMIT,
       totalPages,
     },
     isLoading: false,
@@ -65,7 +66,7 @@ describe("OrdersPage", () => {
       status: "PENDING",
       search: undefined,
       page: 1,
-      limit: 10,
+      limit: ORDERS_PAGE_LIMIT,
     });
   });
 
@@ -79,7 +80,7 @@ describe("OrdersPage", () => {
       status: undefined,
       search: undefined,
       page: 2,
-      limit: 10,
+      limit: ORDERS_PAGE_LIMIT,
     });
   });
 
@@ -99,7 +100,7 @@ describe("OrdersPage", () => {
       from: "2026-11-01",
       to: "2026-11-15",
       page: 1,
-      limit: 10,
+      limit: ORDERS_PAGE_LIMIT,
     });
   });
 

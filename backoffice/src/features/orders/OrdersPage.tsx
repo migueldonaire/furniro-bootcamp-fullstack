@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ORDERS_PAGE_LIMIT } from "../../app/app";
 import { Pagination } from "../../components/layout/Pagination/Pagination";
 import { formatEuro } from "../../lib/money";
 import { type OrderStatus, useGetAdminOrdersQuery } from "./ordersApi";
@@ -26,7 +27,6 @@ const STATUS_BADGE_CLASSES: Record<OrderStatus, string> = {
 };
 
 const STATUSES = Object.keys(STATUS_LABELS) as OrderStatus[];
-const ORDERS_PER_PAGE = 10;
 const COLUMNS = ["Pedido", "Cliente", "Fecha", "Productos", "Total", "Estado"];
 
 function formatDate(isoDate: string) {
@@ -89,16 +89,16 @@ export function OrdersPage() {
   };
 
   const { data, isLoading, isError } = useGetAdminOrdersQuery({
-    ...filters,
     status,
+    ...filters,
     page,
-    limit: ORDERS_PER_PAGE,
+    limit: ORDERS_PAGE_LIMIT,
   });
 
   const orders = data?.items;
   const total = data?.total ?? 0;
   const totalPages = data?.totalPages ?? 1;
-  const firstShown = (page - 1) * ORDERS_PER_PAGE + 1;
+  const firstShown = (page - 1) * ORDERS_PAGE_LIMIT + 1;
   const hasSearch = debouncedSearch !== "";
 
   return (
