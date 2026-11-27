@@ -1,12 +1,12 @@
 import logo from "../../assets/images/logo.png";
-import styles from "./PageBanner.module.css";
+import styles from "./Header-BreadCrumb.module.css";
 
-type PageBannerProps = {
+type HeaderBreadcrumbProps = {
   title: string;
   breadcrumbs: readonly { label: string; to?: string }[];
 };
 
-export function PageBanner({ title, breadcrumbs }: PageBannerProps) {
+export function HeaderBreadcrumb({ title, breadcrumbs }: HeaderBreadcrumbProps) {
   return (
     <div className={styles.banner}>
       <img className={styles.logo} src={logo} alt="" />

@@ -1,18 +1,57 @@
 import { createSelector, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 import { priceWithTax } from "../../lib/money";
+import type { Product } from "../catalog/product";
 
+// A cart line follows OrderLine in docs/class-diagram.md, so it becomes an order line
+// at checkout. imgURL and stock are only for the cart page (photo and stock limit).
 export type CartItem = {
   productId: string;
-  name: string;
-  basePrice: number;
+  productName: string;
+  unitPrice: number; // without VAT, the basePrice of the product
   taxRate: number;
-  quantity: number;
+  imgURL: string | null;
   stock: number;
-  imageUrl: string;
+  quantity: number;
 };
 
+// The API product (api/src/products/product.ts) has no stock: it is passed apart.
+export function toCartItem(product: Product, quantity: number, stock: number): CartItem {
+  return {
+    productId: product.id,
+    productName: product.title,
+    unitPrice: product.basePrice,
+    taxRate: product.taxRate,
+    imgURL: product.imgURL,
+    stock,
+    quantity,
+  };
+}
+
 type CartState = { items: CartItem[] };
+
+// ---- TESTING ONLY: products to try the cart by hand ----
+// Until the product page (FUR-35) can add products, uncomment this block and
+// change initialState below to `{ items: testingItems }`. Do not commit it uncommented.
+// Data from the seed (database/seed.sql). Stocks go from 1 to 40 to try the limits.
+//
+// const IMAGES =
+//   "https://raw.githubusercontent.com/migueldonaire/furniro-bootcamp-fullstack/main/database/images";
+// const item = (id: string, productName: string, unitPrice: number, quantity: number, stock: number, image: string): CartItem =>
+//   ({ productId: `d0000000-0000-4000-8000-0000000000${id}`, productName, unitPrice, taxRate: 21, imgURL: `${IMAGES}/${image}`, stock, quantity });
+// const testingItems: CartItem[] = [
+//   item("01", "Silla Nora", 100, 2, 5, "silla-nora-1.jpg"),
+//   item("06", "Mesa Asgaard", 250, 1, 3, "mesa-asgaard-1.jpg"),
+//   item("11", "Sofá Asgaard", 890, 1, 2, "sofa-asgaard-1.jpg"),
+//   item("16", "Lámpara Luna", 89, 3, 15, "lampara-luna-1.jpg"),
+//   item("09", "Mesa Potty", 310, 1, 1, "mesa-potty-1.jpg"),
+//   item("02", "Silla Leviosa", 65, 4, 12, "silla-leviosa-1.jpg"),
+//   item("05", "Sillón Grifo", 190, 2, 2, "sillon-grifo-1.jpg"),
+//   item("10", "Escritorio Bolt", 160, 1, 7, "escritorio-bolt-1.jpg"),
+//   item("25", "Cojín Coral", 18, 6, 40, "cojin-coral-1.jpg"),
+//   item("19", "Cama Ottawa", 450, 1, 3, "cama-ottawa-1.jpg"),
+// ];
+// ---- END TESTING ONLY ----
 
 const initialState: CartState = { items: [] };
 
@@ -51,10 +90,29 @@ export const cartSlice = createSlice({
       }
       return { ...state, items: [...state.items, newItem] };
     },
+    quantityChanged: (state, action: PayloadAction<{ productId: string; quantity: number }>) => {
+      const { productId, quantity } = action.payload;
+      const line = state.items.find((cartLine) => cartLine.productId === productId);
+      if (!line || quantity > line.stock) {
+        return state;
+      }
+      if (quantity === 0) {
+        return {
+          ...state,
+          items: state.items.filter((cartLine) => cartLine.productId !== productId),
+        };
+      }
+      return {
+        ...state,
+        items: state.items.map((cartLine) =>
+          cartLine.productId === productId ? { ...cartLine, quantity } : cartLine,
+        ),
+      };
+    },
   },
 });
 
-export const { itemAdded } = cartSlice.actions;
+export const { itemAdded, quantityChanged } = cartSlice.actions;
 
 export default cartSlice.reducer;
 
@@ -64,9 +122,9 @@ export const selectCartCount = (state: RootState) =>
 export const selectCartTotals = createSelector(
   (state: RootState) => state.cart.items,
   (items) => {
-    const subtotal = items.reduce((sum, line) => sum + line.basePrice * line.quantity, 0);
+    const subtotal = items.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
     const total = items.reduce(
-      (sum, line) => sum + priceWithTax(line.basePrice, line.taxRate) * line.quantity,
+      (sum, line) => sum + priceWithTax(line.unitPrice, line.taxRate) * line.quantity,
       0,
     );
     return { subtotal, vat: total - subtotal, total };
