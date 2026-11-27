@@ -1,16 +1,32 @@
 import { createSelector, createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 import { priceWithTax } from "../../lib/money";
+import type { Product } from "../catalog/product";
 
+// A cart line follows OrderLine in docs/class-diagram.md, so it becomes an order line
+// at checkout. imgURL and stock are only for the cart page (photo and stock limit).
 export type CartItem = {
   productId: string;
-  name: string;
-  basePrice: number;
+  productName: string;
+  unitPrice: number; // without VAT, the basePrice of the product
   taxRate: number;
-  quantity: number;
+  imgURL: string | null;
   stock: number;
-  imageUrl: string;
+  quantity: number;
 };
+
+// The API product (api/src/products/product.ts) has no stock: it is passed apart.
+export function toCartItem(product: Product, quantity: number, stock: number): CartItem {
+  return {
+    productId: product.id,
+    productName: product.title,
+    unitPrice: product.basePrice,
+    taxRate: product.taxRate,
+    imgURL: product.imgURL,
+    stock,
+    quantity,
+  };
+}
 
 type CartState = { items: CartItem[] };
 
@@ -21,8 +37,8 @@ type CartState = { items: CartItem[] };
 //
 // const IMAGES =
 //   "https://raw.githubusercontent.com/migueldonaire/furniro-bootcamp-fullstack/main/database/images";
-// const item = (id: string, name: string, basePrice: number, quantity: number, stock: number, image: string): CartItem =>
-//   ({ productId: `d0000000-0000-4000-8000-0000000000${id}`, name, basePrice, taxRate: 21, quantity, stock, imageUrl: `${IMAGES}/${image}` });
+// const item = (id: string, productName: string, unitPrice: number, quantity: number, stock: number, image: string): CartItem =>
+//   ({ productId: `d0000000-0000-4000-8000-0000000000${id}`, productName, unitPrice, taxRate: 21, imgURL: `${IMAGES}/${image}`, stock, quantity });
 // const testingItems: CartItem[] = [
 //   item("01", "Silla Nora", 100, 2, 5, "silla-nora-1.jpg"),
 //   item("06", "Mesa Asgaard", 250, 1, 3, "mesa-asgaard-1.jpg"),
@@ -106,9 +122,9 @@ export const selectCartCount = (state: RootState) =>
 export const selectCartTotals = createSelector(
   (state: RootState) => state.cart.items,
   (items) => {
-    const subtotal = items.reduce((sum, line) => sum + line.basePrice * line.quantity, 0);
+    const subtotal = items.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
     const total = items.reduce(
-      (sum, line) => sum + priceWithTax(line.basePrice, line.taxRate) * line.quantity,
+      (sum, line) => sum + priceWithTax(line.unitPrice, line.taxRate) * line.quantity,
       0,
     );
     return { subtotal, vat: total - subtotal, total };

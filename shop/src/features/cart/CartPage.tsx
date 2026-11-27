@@ -25,11 +25,15 @@ export function CartPage() {
             <div>
               {items.map((line) => (
                 <section key={line.productId} className={styles.cartLine}>
-                  <img className={styles.productImage} src={line.imageUrl} alt={line.name} />
-                  <h4 className={styles.mutedText}>{line.name}</h4>
-                  <h4 className={styles.mutedText}>{formatEuro(line.basePrice)}</h4>
+                  {line.imgURL ? (
+                    <img className={styles.productImage} src={line.imgURL} alt={line.productName} />
+                  ) : (
+                    <span className={styles.productImage} />
+                  )}
+                  <h4 className={styles.mutedText}>{line.productName}</h4>
+                  <h4 className={styles.mutedText}>{formatEuro(line.unitPrice)}</h4>
                   <QuantityInput line={line} />
-                  <h4>{formatEuro(line.basePrice * line.quantity)}</h4>
+                  <h4>{formatEuro(line.unitPrice * line.quantity)}</h4>
                   <button className={styles.removeButton}>
                     <img src={trashCan} alt="Quitar del carrito" />
                   </button>
@@ -45,7 +49,7 @@ export function CartPage() {
               <span>{formatEuro(totals.subtotal)}</span>
             </div>
             <div className={styles.totalRow}>
-              <span>IVA (21 %)</span>
+              <span>IVA</span>
               <span>{formatEuro(totals.vat)}</span>
             </div>
             <div className={styles.totalRow}>
@@ -76,6 +80,7 @@ function QuantityInput({ line }: { line: CartItem }) {
 
     if (value > line.stock) {
       setError(`Solo quedan ${line.stock} unidades`);
+      setQuantityText(String(line.quantity));
       return;
     }
     setError(null);

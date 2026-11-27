@@ -5,27 +5,42 @@ import cartReducer, {
   getAddToCartError,
   quantityChanged,
   selectCartTotals,
+  toCartItem,
 } from "./cartSlice";
 
 const nora = {
   productId: "nora",
-  name: "Silla Nora",
-  basePrice: 100,
+  productName: "Silla Nora",
+  unitPrice: 100,
   taxRate: 21,
+  imgURL: "/silla-nora.jpg",
   stock: 5,
-  imageUrl: "/silla-nora.jpg",
   quantity: 2,
 };
 
 const asgaard = {
   productId: "asgaard",
-  name: "Mesa Asgaard",
-  basePrice: 250,
+  productName: "Mesa Asgaard",
+  unitPrice: 250,
   taxRate: 21,
+  imgURL: "/mesa-asgaard.jpg",
   stock: 3,
-  imageUrl: "/mesa-asgaard.jpg",
   quantity: 1,
 };
+
+describe("cart line", () => {
+  it("builds a cart line from a product of the API", () => {
+    const product = {
+      id: "nora",
+      title: "Silla Nora",
+      description: "Silla de diseño",
+      basePrice: 100,
+      taxRate: 21,
+      imgURL: "/silla-nora.jpg",
+    };
+    expect(toCartItem(product, 2, 5)).toEqual(nora);
+  });
+});
 
 describe("cartSlice", () => {
   it("adds 2 chairs to an empty cart", () => {
@@ -69,6 +84,13 @@ describe("cartSlice", () => {
   it("calculates subtotal, VAT and total of two chairs", () => {
     const state = { cart: { items: [nora] } } as RootState;
     expect(selectCartTotals(state)).toEqual({ subtotal: 200, vat: 42, total: 242 });
+  });
+
+  it("calculates the VAT with the tax rate of each line", () => {
+    // 2 chairs at 100 € with 21 % and 1 lamp at 50 € with 10 %
+    const lamp = { ...asgaard, productId: "lamp", unitPrice: 50, taxRate: 10, quantity: 1 };
+    const state = { cart: { items: [nora, lamp] } } as RootState;
+    expect(selectCartTotals(state)).toEqual({ subtotal: 250, vat: 47, total: 297 });
   });
 });
 

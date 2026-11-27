@@ -7,11 +7,11 @@ import { itemAdded } from "./cartSlice";
 
 const nora = {
   productId: "nora",
-  name: "Silla Nora",
-  basePrice: 100,
+  productName: "Silla Nora",
+  unitPrice: 100,
   taxRate: 21,
+  imgURL: "/silla-nora.jpg",
   stock: 5,
-  imageUrl: "/silla-nora.jpg",
 };
 
 describe("AddToCartButton", () => {

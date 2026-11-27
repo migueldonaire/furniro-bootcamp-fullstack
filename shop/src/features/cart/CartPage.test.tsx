@@ -11,11 +11,11 @@ const euro = (amount: number) => formatEuro(amount).replace(/\u00a0/g, " ");
 
 const nora = {
   productId: "nora",
-  name: "Silla Nora",
-  basePrice: 100,
+  productName: "Silla Nora",
+  unitPrice: 100,
   taxRate: 21,
+  imgURL: "/silla-nora.jpg",
   stock: 5,
-  imageUrl: "/silla-nora.jpg",
   quantity: 2,
 };
 
@@ -36,22 +36,27 @@ describe("CartPage", () => {
   it("shows the lines without VAT and the totals with VAT", () => {
     const { store } = renderWithProviders(<CartPage />);
     act(() => {
-      store.dispatch(
-        itemAdded({
-          productId: "nora",
-          name: "Silla Nora",
-          basePrice: 100,
-          taxRate: 21,
-          stock: 5,
-          imageUrl: "/silla-nora.jpg",
-          quantity: 2,
-        }),
-      );
+      store.dispatch(itemAdded(nora));
     });
     expect(screen.getByText("Silla Nora")).toBeInTheDocument();
     expect(screen.getByText(euro(100))).toBeInTheDocument();
     expect(screen.getAllByText(euro(200))).toHaveLength(2);
     expect(screen.getByText(euro(242))).toBeInTheDocument();
+  });
+
+  it("shows the VAT without a fixed rate, because each product has its own", () => {
+    renderCartWithNora();
+    expect(screen.getByText("IVA")).toBeInTheDocument();
+    expect(screen.queryByText(/21 %/)).not.toBeInTheDocument();
+  });
+
+  it("shows the line without a photo when the product has none", () => {
+    const { store } = renderWithProviders(<CartPage />);
+    act(() => {
+      store.dispatch(itemAdded({ ...nora, imgURL: null }));
+    });
+    expect(screen.getByText("Silla Nora")).toBeInTheDocument();
+    expect(screen.queryByRole("img", { name: "Silla Nora" })).not.toBeInTheDocument();
   });
 });
 
@@ -78,6 +83,16 @@ describe("CartPage quantity input (FUR-37)", () => {
     // Entonces: ve «Solo quedan 5 unidades» y el carrito sigue con 2
     expect(screen.getByRole("alert")).toHaveTextContent("Solo quedan 5 unidades");
     expect(store.getState().cart.items[0].quantity).toBe(2);
+  });
+
+  it("does not keep a quantity above the stock in the field", () => {
+    // Dado: el carrito tiene 2 "Silla Nora" (stock 5)
+    const { input } = renderCartWithNora();
+    // Cuando: el visitante pone 6 (escribiendo o con las flechas)
+    fireEvent.change(input, { target: { value: "6" } });
+    // Entonces: ve el aviso y el campo vuelve a 2
+    expect(screen.getByRole("alert")).toHaveTextContent("Solo quedan 5 unidades");
+    expect(input).toHaveValue(2);
   });
 
   it("does not accept a quantity below 1", () => {
