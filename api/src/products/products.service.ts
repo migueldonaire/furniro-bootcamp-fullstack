@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { type ProductRow } from "./product";
+import { toProduct, type ProductRow } from "./product";
 import { Pool } from "pg";
 
 @Injectable()
@@ -13,6 +13,6 @@ export class ProductsService {
       ON p.id = i.product_id AND i.is_primary
       WHERE p.status = 'ACTIVE'`,
     );
-    return result.rows;
+    return result.rows.map(toProduct);
   }
 }

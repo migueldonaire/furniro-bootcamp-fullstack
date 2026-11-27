@@ -3,10 +3,10 @@ import { ProductsService } from "./products.service";
 
 @Controller("products")
 export class ProductsController {
-  constructor(private readonly ProductsService: ProductsService) {}
+  constructor(private readonly productsService: ProductsService) {}
 
   @Get() // GET /api/products
   findAll() {
-    return this.ProductsService.findAll();
+    return this.productsService.findAll();
   }
 }
