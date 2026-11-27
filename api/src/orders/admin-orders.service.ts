@@ -85,7 +85,7 @@ export class AdminOrdersService {
               o.status,
               u.name || ' ' || u.last_name AS customer_name,
               u.email AS customer_email,
-              ROUND(SUM(ol.unit_price * ol.quantity * (1 + ol.tax_rate / 100)) + o.shipping_cost, 2) AS total,
+              ROUND(COALESCE(SUM(ol.unit_price * ol.quantity * (1 + ol.tax_rate / 100)), 0) + o.shipping_cost, 2) AS total,
               json_agg(
                 json_build_object(
                   'id', ol.id,
@@ -93,10 +93,11 @@ export class AdminOrdersService {
                   'quantity', ol.quantity,
                   'imageUrl', pi.url
                 )
-              ) AS products
+              ) FILTER (WHERE ol.id IS NOT NULL) AS products
        FROM orders o
        JOIN users u ON u.id = o.user_id
-       JOIN order_lines ol ON ol.order_id = o.id
+       -- LEFT JOIN: an order without lines still shows up (and matches the COUNT)
+       LEFT JOIN order_lines ol ON ol.order_id = o.id
        LEFT JOIN product_images pi
          ON pi.product_id = ol.product_id AND pi.is_primary = true
        ${where}

@@ -64,7 +64,7 @@ describe("AdminOrdersService", () => {
     });
     expect(fakePool.query).toHaveBeenNthCalledWith(
       2,
-      expect.not.stringContaining("WHERE"),
+      expect.not.stringContaining("WHERE o."),
       [10, 0],
     );
   });
@@ -109,6 +109,20 @@ describe("AdminOrdersService", () => {
       expect.stringContaining("o.order_date >= $1 AND o.order_date < $2::date + 1"),
       ["2026-11-01", "2026-11-15", 10, 0],
     );
+  });
+
+  it("also lists orders without lines, so the list matches the total", async () => {
+    // Dado: la base de datos no devuelve pedidos (solo nos interesa la consulta)
+    mockPaginatedQuery([]);
+
+    // Cuando: se pide la lista
+    await service.findAll();
+
+    // Entonces: usa LEFT JOIN, total 0 si no hay líneas y sin productos vacíos
+    const sql = (fakePool.query.mock.calls as string[][])[1][0];
+    expect(sql).toContain("LEFT JOIN order_lines");
+    expect(sql).toContain("COALESCE(SUM(");
+    expect(sql).toContain("FILTER (WHERE ol.id IS NOT NULL)");
   });
 
   it("applies page and limit and calculates totalPages", async () => {
