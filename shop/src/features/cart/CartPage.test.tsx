@@ -1,5 +1,5 @@
-import { act, fireEvent, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { act, fireEvent, screen } from "@testing-library/react";
+import { describe, expect, it } from "vitest";
 import { renderWithProviders } from "../../test/renderWithProviders";
 import { formatEuro } from "../../lib/money";
 import { CartPage } from "./CartPage";
@@ -20,19 +20,12 @@ const nora = {
 };
 
 function renderCartWithNora() {
-  const fetchMock = vi
-    .spyOn(globalThis, "fetch")
-    .mockImplementation(async () => new Response("{}", { status: 201 }));
   const result = renderWithProviders(<CartPage />);
   act(() => {
     result.store.dispatch(itemAdded(nora));
   });
-  return { ...result, fetchMock, input: screen.getByLabelText("Cantidad") };
+  return { ...result, input: screen.getByLabelText("Cantidad") };
 }
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
 describe("CartPage", () => {
   it("shows a message when the cart is empty", () => {
@@ -63,41 +56,33 @@ describe("CartPage", () => {
 });
 
 describe("CartPage quantity input (FUR-37)", () => {
-  it("limits the quantity between 1 and the stock", () => {
+  it("does not let the quantity go below 1", () => {
     const { input } = renderCartWithNora();
     expect(input).toHaveAttribute("min", "1");
-    expect(input).toHaveAttribute("max", "5");
   });
 
-  it("changes the quantity and tells the API", async () => {
+  it("changes the quantity", () => {
     // Dado: el carrito tiene 2 "Silla Nora" (stock 5)
-    const { store, input, fetchMock } = renderCartWithNora();
+    const { store, input } = renderCartWithNora();
     // Cuando: el visitante cambia la cantidad a 4
     fireEvent.change(input, { target: { value: "4" } });
-    // Entonces: el carrito tiene 4 "Silla Nora" y la API recibe el cambio
+    // Entonces: el carrito tiene 4 "Silla Nora"
     expect(store.getState().cart.items[0].quantity).toBe(4);
-    await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
-    const request = fetchMock.mock.calls[0][0] as Request;
-    expect(request.method).toBe("POST");
-    expect(request.url).toMatch(/\/cartUpdates$/);
-    expect(await request.json()).toEqual({ productId: "nora", quantity: 4 });
   });
 
   it("shows a message and does not change the cart above the stock", () => {
     // Dado: el carrito tiene 2 "Silla Nora" (stock 5)
-    const { store, input, fetchMock } = renderCartWithNora();
+    const { store, input } = renderCartWithNora();
     // Cuando: el visitante cambia la cantidad a 6
     fireEvent.change(input, { target: { value: "6" } });
     // Entonces: ve «Solo quedan 5 unidades» y el carrito sigue con 2
     expect(screen.getByRole("alert")).toHaveTextContent("Solo quedan 5 unidades");
     expect(store.getState().cart.items[0].quantity).toBe(2);
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it("does not accept a quantity below 1", () => {
-    const { store, input, fetchMock } = renderCartWithNora();
+    const { store, input } = renderCartWithNora();
     fireEvent.change(input, { target: { value: "0" } });
     expect(store.getState().cart.items[0].quantity).toBe(2);
-    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

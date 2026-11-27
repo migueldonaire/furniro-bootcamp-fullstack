@@ -1,10 +1,10 @@
-import { useState, type ChangeEvent } from "react";
 import styles from "./CartPage.module.css";
 import trashCan from "../../assets/icons/trash-can.svg";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { formatEuro } from "../../lib/money";
-import { useSendCartUpdateMutation } from "./cartApi";
+
 import { quantityChanged, selectCartTotals, type CartItem } from "./cartSlice";
+import { useEffect, useState, type ChangeEvent } from "react";
 
 export function CartPage() {
   const items = useAppSelector((state) => state.cart.items);
@@ -61,8 +61,12 @@ export function CartPage() {
 }
 function QuantityInput({ line }: { line: CartItem }) {
   const dispatch = useAppDispatch();
-  const [sendCartUpdate] = useSendCartUpdateMutation();
   const [error, setError] = useState<string | null>(null);
+  useEffect(() => {
+    if (error === null) return;
+    const timer = setTimeout(() => setError(null), 3000);
+    return () => clearTimeout(timer);
+  }, [error]);
   function handleChange(event: ChangeEvent<HTMLInputElement>) {
     if (event.target.value === "") return;
     const value = Number(event.target.value);
@@ -74,20 +78,23 @@ function QuantityInput({ line }: { line: CartItem }) {
     }
     setError(null);
     dispatch(quantityChanged({ productId: line.productId, quantity: value }));
-    sendCartUpdate({ productId: line.productId, quantity: value });
   }
   return (
-    <div>
+    <div className={styles.quantityBox}>
       <input
         type="number"
         aria-label="Cantidad"
         className={styles.quantity}
         min={1}
-        max={line.stock}
         value={line.quantity}
         onChange={handleChange}
+        onBlur={() => setError(null)}
       />
-      {error && <p role="alert">{error}</p>}
+      {error && (
+        <p role="alert" className={styles.error}>
+          {error}
+        </p>
+      )}
     </div>
   );
 }

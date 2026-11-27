@@ -80,3 +80,18 @@
   font-size: 20px;
   font-weight: 500;
 }
+
+.quantityBox {
+  position: relative;
+}
+
+.error {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 4px 0 0;
+  white-space: nowrap;
+  font-size: 13px;
+  color: #f93a3a;
+}
