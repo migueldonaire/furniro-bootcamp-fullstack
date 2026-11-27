@@ -97,7 +97,28 @@ describe("ProductsPage", () => {
     } as never);
     renderWithProviders(<ProductsPage />);
     await user.selectOptions(screen.getByLabelText("Estado:"), "Desactivados");
-    expect(vi.mocked(useGetAdminProductsQuery)).toHaveBeenLastCalledWith({ status: "INACTIVE" });
+    // objectContaining: comprueba solo status; el resto de filtros (category, sort, page) da igual aquí
+    expect(vi.mocked(useGetAdminProductsQuery)).toHaveBeenLastCalledWith(
+      expect.objectContaining({ status: "INACTIVE" }),
+    );
+  });
+  it("el select de categoría filtra por el id de la categoría", async () => {
+    // Dado: la página está pintada (no hace falta que haya productos)
+    const user = userEvent.setup();
+    vi.mocked(useGetAdminProductsQuery).mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: false,
+    } as never);
+    renderWithProviders(<ProductsPage />);
+
+    // Cuando: elige "Mesas" en el select de categoría
+    await user.selectOptions(screen.getByLabelText("Categoría:"), "Mesas");
+
+    // Entonces: la query recibe el id de Mesas (la API compara con category_id), no el nombre
+    expect(vi.mocked(useGetAdminProductsQuery)).toHaveBeenLastCalledWith(
+      expect.objectContaining({ category: "c0000000-0000-4000-8000-000000000002" }),
+    );
   });
   it("busca por nombre o SKU cuando se deja de escribir", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
@@ -109,16 +130,14 @@ describe("ProductsPage", () => {
     } as never);
     renderWithProviders(<ProductsPage />);
     await user.type(screen.getByLabelText("Buscar:"), "FUR-SIL-001");
-    expect(vi.mocked(useGetAdminProductsQuery)).not.toHaveBeenLastCalledWith({
-      search: "FUR-SIL-001",
-      status: undefined,
-    });
+    expect(vi.mocked(useGetAdminProductsQuery)).not.toHaveBeenLastCalledWith(
+      expect.objectContaining({ search: "FUR-SIL-001" }),
+    );
     act(() => {
       vi.advanceTimersByTime(500);
     });
-    expect(vi.mocked(useGetAdminProductsQuery)).toHaveBeenLastCalledWith({
-      search: "FUR-SIL-001",
-      status: undefined,
-    });
+    expect(vi.mocked(useGetAdminProductsQuery)).toHaveBeenLastCalledWith(
+      expect.objectContaining({ search: "FUR-SIL-001" }),
+    );
   });
 });

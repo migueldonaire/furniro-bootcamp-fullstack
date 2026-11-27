@@ -1,10 +1,17 @@
-import { productCategories, useGetAdminProductsQuery, type ProductStatus } from "./productsApi";
+import {
+  productCategories,
+  type SortOption,
+  useGetAdminProductsQuery,
+  type ProductStatus,
+} from "./productsApi";
 import { formatEuro } from "../../lib/money";
 import { useEffect, useState } from "react";
 import styles from "./ProductsPage.module.css";
 
 export function ProductsPage() {
   const [status, setStatus] = useState<ProductStatus | "">("");
+  const [category, setCategory] = useState<string>("");
+  const [sort, setSort] = useState<SortOption>("newest");
   const [searchText, setSearchText] = useState<string>("");
   const [debouncedSearch, setDebouncedSearch] = useState<string>("");
 
@@ -24,6 +31,8 @@ export function ProductsPage() {
     isError,
   } = useGetAdminProductsQuery({
     status: status || undefined,
+    category: category || undefined,
+    sort: sort || "newest",
     search: debouncedSearch || undefined,
   });
   return (
@@ -60,9 +69,17 @@ export function ProductsPage() {
           <label className={styles.visuallyHidden} htmlFor="category-filter">
             Categoría:
           </label>
-          <select className={styles.field} id="category-filter">
+          <select
+            className={styles.field}
+            id="category-filter"
+            onChange={(e) => setCategory(e.target.value)}
+            value={category}
+          >
+            <option value={""}>Todas</option>
             {productCategories.map((category) => (
-              <option key={category.id}>{category.name}</option>
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
             ))}
           </select>
         </div>
@@ -85,11 +102,16 @@ export function ProductsPage() {
           <label className={styles.visuallyHidden} htmlFor="sort-filter">
             Ordenar por:
           </label>
-          <select className={styles.field} id="sort-filter">
+          <select
+            onChange={(e) => setSort(e.target.value as SortOption)}
+            className={styles.field}
+            id="sort-filter"
+            value={sort}
+          >
             <option value="newest">Más recientes</option>
             <option value="oldest">Más antiguos</option>
-            <option value="oldest">Precio Acendente</option>
-            <option value="oldest">Precio Decentente</option>
+            <option value="priceAsc">Precio Acendente</option>
+            <option value="priceDesc">Precio Decentente</option>
           </select>
         </div>
       </div>
