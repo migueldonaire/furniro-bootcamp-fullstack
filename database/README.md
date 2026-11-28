@@ -3,7 +3,7 @@
 | Fichero | Qué es |
 |---|---|
 | `schema.sql` | Las tablas (sale del diagrama de clases, `docs/class-diagram.md`) |
-| `seed.sql` | Datos de prueba: 13 usuarios, 6 categorías, 32 productos, 41 imágenes y 12 pedidos |
+| `seed.sql` | Datos de prueba: 13 usuarios, 6 categorías, 80 productos, 89 imágenes y 72 pedidos |
 | `images/` | Las fotos de los productos |
 
 En local no tienes que hacer nada: `docker compose up -d` (en la raíz) carga `schema.sql` y `seed.sql`.
@@ -13,6 +13,7 @@ En local no tienes que hacer nada: `docker compose up -d` (en la raíz) carga `s
 - Salen del diseño de Furniro en Figma, reducidas a 1000 px y en JPG.
 - Cada fichero se llama como el producto: `silla-nora-1.jpg` es la foto principal de la Silla Nora y `silla-nora-2.jpg`, la segunda.
 - Todos los productos tienen al menos una foto. Algunas son recortes o volteos de fotos del diseño, porque el diseño no traía una foto propia para ese producto: `silla-nora-2`, `silla-leviosa-1`, `silla-respira-1`, `mesa-nube-1`, `mesa-pingky-1`, `lampara-syltherine-1`, `flexo-duna-1`, `banco-kioto-1` y `alfombra-sahara-1`.
+- Los productos del 33 al 80 (el final de `seed.sql`, para probar la paginación y los filtros) tienen una foto de [Unsplash](https://unsplash.com/license) (licencia libre), recortada a 1000x750 px.
 
 En la base de datos solo se guarda la URL de cada imagen (tabla `product_images`). En `seed.sql` las URLs apuntan a este repositorio en GitHub:
 
