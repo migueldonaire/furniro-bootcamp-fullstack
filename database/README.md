@@ -25,6 +25,8 @@ Así funcionan desde el primer día, también en local. Solo hace falta que las 
 
 ## En Supabase (staging y producción)
 
+Para rehacer un entorno desde cero (o meterle solo los datos nuevos), el profesor tiene la skill `/reset-environment` de Claude (`.claude/skills/reset-environment/`).
+
 Cada entorno es un proyecto de Supabase con dos cosas:
 
 - **Base de datos:** `schema.sql` y `seed.sql` cargados en el SQL Editor.
